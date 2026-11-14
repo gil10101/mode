@@ -1,0 +1,110 @@
+[package]
+name = "mode-unify"
+description = "Feature unification for subset builds: dependency declarations only, no code"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+# Empty; it exists so the `[build-dependencies]` below take part in resolution
+# (they pin the features of build-time crates: proc-macro2, syn).
+build = "build.rs"
+
+[lib]
+path = "src/lib.rs"
+
+# What this crate is for (the "workspace-hack" pattern): Cargo resolves features
+# per selection. A `cargo test --workspace` compiles the shared crates with
+# every feature Tauri's graph turns on; `cargo test -p mode-core` alone would
+# see fewer and compile a second copy of each (serde, memchr, rustix, syn, ...).
+# mode-core depends on this crate, so every selection that contains mode-core
+# or mode-app sees the features below, which are exactly what the workspace
+# build resolves for crates no member names itself (the crates members do
+# name carry their union in the root `[workspace.dependencies]`).
+#
+# Change it when its test says so: `cargo test -p mode-unify` (also part of
+# `cargo test --workspace`) compares `cargo tree` for the subset selections
+# with the workspace's and, after a Tauri or plugin update makes them drift,
+# fails with the crate, the target and the workspace's features to declare
+# here. Versions follow Cargo.lock.
+
+[build-dependencies]
+proc-macro2 = { version = "1.0.107", features = ["proc-macro", "span-locations"] }
+syn-2 = { package = "syn", version = "2.0.119", features = [
+  "clone-impls", "derive", "extra-traits", "full", "parsing", "printing", "proc-macro", "visit",
+  "visit-mut",
+] }
+
+[dependencies]
+icu_properties = { version = "2.3.0", features = ["compiled_data"] }
+memchr = { version = "2.8.3", features = ["alloc", "std"] }
+
+[target.'cfg(target_os = "linux")'.build-dependencies]
+syn-3 = { package = "syn", version = "3.0.9", features = [
+  "clone-impls", "derive", "extra-traits", "fold", "full", "parsing", "printing", "proc-macro",
+  "visit", "visit-mut",
+] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+bitflags = { version = "2.13.2", default-features = false, features = [
+  "serde", "serde_core", "std",
+] }
+futures-task = { version = "0.3.34", default-features = false, features = ["alloc", "std"] }
+futures-util = { version = "0.3.34", features = [
+  "alloc", "async-await", "async-await-macro", "futures-macro", "slab", "std",
+] }
+linux-raw-sys = { version = "0.12.1", default-features = false, features = [
+  "auxvec", "elf", "errno", "general", "if_ether", "ioctl", "net", "netlink", "no_std", "prctl",
+  "system", "xdp",
+] }
+rustix = { version = "1.1.5", features = [
+  "alloc", "event", "fs", "net", "pipe", "process", "std", "system", "time",
+] }
+smallvec = { version = "1.16.3", default-features = false, features = [
+  "const_generics", "const_new", "union",
+] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+bitflags = { version = "2.13.2", default-features = false, features = [
+  "serde", "serde_core", "std",
+] }
+block2 = { version = "0.6.2", features = ["alloc", "std"] }
+errno = { version = "0.3.14", default-features = false, features = ["std"] }
+objc2 = { workspace = true }
+# The whole crate since cpal (dictation, CoreAudio) asks for its defaults.
+objc2-core-foundation = { version = "0.3.2", features = [
+  "CFArray", "CFAttributedString", "CFAvailability", "CFBag", "CFBase", "CFBinaryHeap",
+  "CFBitVector", "CFBundle", "CFByteOrder", "CFCGTypes", "CFCalendar", "CFCharacterSet", "CFData",
+  "CFDate", "CFDateFormatter", "CFDictionary", "CFError", "CFFileDescriptor", "CFFileSecurity",
+  "CFLocale", "CFMachPort", "CFMessagePort", "CFNotificationCenter", "CFNumber",
+  "CFNumberFormatter", "CFPlugIn", "CFPlugInCOM", "CFPreferences", "CFPropertyList", "CFRunLoop",
+  "CFSet", "CFSocket", "CFStream", "CFString", "CFStringEncodingExt", "CFStringTokenizer",
+  "CFTimeZone", "CFTree", "CFURL", "CFURLAccess", "CFURLEnumerator", "CFUUID",
+  "CFUserNotification", "CFUtilities", "CFXMLNode", "CFXMLParser", "alloc", "bitflags", "block2",
+  "default", "dispatch2", "libc", "objc2", "std",
+] }
+objc2-foundation = { workspace = true }
+# cpal (dictation, CoreAudio) asks for its defaults.
+dispatch2 = { version = "0.3.1", features = ["alloc", "block2", "default", "libc", "objc2", "std"] }
+rustix = { version = "1.1.5", features = ["alloc", "fs", "std", "system"] }
+
+[target.'cfg(windows)'.dependencies]
+bitflags = { version = "2.13.2", default-features = false, features = ["serde", "serde_core"] }
+windows = { workspace = true }
+windows-core = { version = "0.62.2", features = ["std"] }
+windows-sys-059 = { package = "windows-sys", version = "0.59.0", features = [
+  "Win32", "Win32_Foundation", "Win32_Globalization", "Win32_Graphics",
+  "Win32_Graphics_Gdi", "Win32_Security", "Win32_Storage", "Win32_Storage_FileSystem",
+  "Win32_System", "Win32_System_Com", "Win32_System_Console", "Win32_System_SystemServices",
+  "Win32_UI", "Win32_UI_Input", "Win32_UI_Input_KeyboardAndMouse", "Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+] }
+windows-sys-060 = { package = "windows-sys", version = "0.60.2", features = [
+  "Win32", "Win32_Foundation", "Win32_Globalization", "Win32_Graphics",
+  "Win32_Graphics_Dwm", "Win32_Graphics_Gdi", "Win32_Networking", "Win32_Networking_WinSock",
+  "Win32_Security", "Win32_Storage", "Win32_Storage_FileSystem", "Win32_System",
+  "Win32_System_Com", "Win32_System_IO", "Win32_System_LibraryLoader", "Win32_System_SystemInformation",
+  "Win32_System_SystemServices", "Win32_System_Threading", "Win32_System_WindowsProgramming", "Win32_UI",
+  "Win32_UI_Accessibility", "Win32_UI_Controls", "Win32_UI_HiDpi", "Win32_UI_Input",
+  "Win32_UI_Input_KeyboardAndMouse", "Win32_UI_Shell", "Win32_UI_Shell_Common", "Win32_UI_WindowsAndMessaging",
+] }

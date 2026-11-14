@@ -1,0 +1,9 @@
+/* Onboarding (03 §2.8): the panel, rail, copy, previews and footer are kit classes (m-ob-*, mode.css); these fit the Integrations hook preview into the 40 % column: the file, its +/− count, the backup line and the buttons show, the diff opens on "Show the change", the relay line and the event list stay on the Claude Code page. */
+.ob-path{flex:1;min-width:0}
+.ob-hooks .ig-preview{gap:6px}
+.ob-hooks .ig-diff{display:none;max-height:160px}
+.ob-hooks.is-open .ig-diff{display:block}
+.ob-hooks{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.ob-hooks .ig-events,.ob-hooks .ig-scope,.ob-hooks .ig-preview-head > .m-meta:last-child{display:none}
+.ob-hooks .m-card-actions{margin-top:4px;flex-wrap:wrap}
+.ob-hooks > .ig-preview{align-self:stretch}

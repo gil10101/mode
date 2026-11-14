@@ -1,0 +1,6 @@
+/* notes.html only: the window fills the page, as app.css does for app.html. */
+html, body, #root { height: 100%; margin: 0; }
+body { background: var(--m-bg); color: var(--m-fg); font: 13px/1.4 var(--m-font-ui); }
+#root > .m-window { height: 100%; border: 0; border-radius: 0; }
+/* The window's main column never grows past the window (app-window.html: .aw-window .m-main{min-height:0}). */
+#root > .m-window > .m-main { min-height: 0; }

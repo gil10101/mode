@@ -1,0 +1,67 @@
+/* Settings (03 §8; 10 §7.4.19): the page list and the page column of the kit's Settings pattern
+   (.m-snav, .m-set-*), plus the package's own helpers (sg-*). Layout only; colors are mode.css tokens. */
+.ap-view.sg-view > .m-main-head .m-t-title{flex:1}
+.sg-split{display:flex;flex:1;min-height:0;min-width:0}
+.sg-split > .m-snav{overflow-y:auto}
+.sg-view .sg-body{flex:1;min-width:0;overflow:auto;padding:0}
+.sg-text{width:220px}
+.sg-wide{width:360px;max-width:100%}
+.sg-num{width:96px}
+.sg-time{width:72px}
+.m-set-ctl > .m-input.sg-num{width:96px}
+.m-set-ctl > .m-input.sg-time{width:72px}
+.sg-confirm{width:100%;margin-top:10px}
+.sg-push{margin-left:auto}
+.sg-error{flex-basis:100%;font-size:12px;color:var(--m-bad)}
+.sg-note.m-t-meta{color:var(--m-fg-2)}
+.sg-path{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px;display:inline-block;vertical-align:bottom}
+.sg-usage{max-width:360px}
+.sg-warn{background:var(--m-accent)}
+.sg-skeleton{display:flex;flex-direction:column;gap:10px;margin-top:16px;max-width:480px}
+.sg-skeleton i{display:block;height:12px;border-radius:var(--m-r-xs);background:var(--m-sunken)}
+.sg-skeleton i:nth-child(2){width:70%}
+.sg-skeleton i:nth-child(3){width:40%}
+/* lists and sections inside the cards (groupings, statuses, tags, diagnostics, logs) */
+.sg-section{min-width:0}
+.sg-section + .sg-section{margin-top:20px}
+.sg-grow{display:flex;align-items:center;gap:10px;min-height:36px;padding:0 4px 0 6px;border-radius:var(--m-r-ctl);min-width:0}
+.sg-grow:hover{background:var(--m-hover)}
+.sg-grow-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sg-glyph{flex:none;width:16px;text-align:center;font-family:var(--m-font-mono);color:var(--m-fg-2)}
+.sg-glyph-in{width:40px;text-align:center}
+.sg-num-col{flex:none;min-width:48px;text-align:right}
+.sg-sw-cell{display:inline-flex;align-items:center;gap:6px;flex:none}
+.sg-editor{margin-top:10px;padding:12px;border-radius:var(--m-r-card);background:var(--m-surface)}
+/* the custom alert rule editor page (03 §8.11 on the automation editor's pattern, 03 §7B.2) */
+.ap-view.sg-rule-view > .m-main-body{overflow:auto}
+.sg-crumb{flex:1}
+.sg-dirty{flex:none}
+.m-input.sg-short,.m-set-ctl > .m-input.sg-short{width:64px}
+.sg-save{justify-content:flex-end;margin-top:16px}
+.sg-line{width:100%}
+.sg-line > .m-input,.sg-line > .m-combo{flex:1;min-width:0}
+.sg-err-action{margin-left:8px}
+.sg-hits{display:flex;flex-direction:column}
+.sg-hit{width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.sg-hit:hover,.sg-hit:focus-visible{background:var(--m-hover)}
+.sg-list{padding:0;background:none}
+/* chip toggles: app-window.html's .m-chip.is-on (the Inbox account chips), tokens only */
+.m-chip.is-on{background:var(--m-selected);color:var(--m-fg)}
+.sg-chip{cursor:pointer}
+.sg-chip:hover{background:var(--m-hover)}
+.sg-chip.is-on:hover{background:var(--m-selected)}
+.sg-chip:focus-visible{outline:0;box-shadow:0 0 0 1px var(--m-line-strong)}
+.sg-events{display:flex;flex-direction:column;min-width:0;max-width:520px;width:100%}
+.sg-log-tools{margin:6px 0 8px}
+.sg-log{margin:0 0 6px;max-height:320px;overflow:auto;padding:8px 10px;border-radius:var(--m-r-card);background:var(--m-surface);font:11px/1.6 var(--m-font-mono);white-space:pre}
+.sg-log-line.is-error{color:var(--m-bad)}
+.sg-log-line.is-debug{color:var(--m-fg-3)}
+.sg-import{margin-top:10px;max-width:520px}
+/* Appearance: the gallery of the wireframe's figure, drawn from the live tokens */
+.sg-themes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+/* the card's swatch and dots are the kit's (.m-swatch, .m-swatch-dots); the row keeps the pack's ⋮ beside the dots */
+.sg-card-title{margin-top:8px}
+.sg-dots{display:flex;gap:4px;margin-top:8px}
+.sg-after{margin-top:8px}
+/* the profile row's second line hides below 700 px of window height (03 §2.3.1) */
+@media (max-height:699px){.m-sidebar .m-profile .m-row-detail{display:none}}

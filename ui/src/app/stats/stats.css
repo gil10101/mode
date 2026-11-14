@@ -1,0 +1,24 @@
+/* Stats (03 §7A): the wireframe's .aw-stats rules for this view plus the package's helpers (ss-*). */
+.ap-view.ss-view > .m-main-head .m-t-title{flex:1}
+.ss-view > .m-main-body{flex:1;min-height:0;overflow:auto}
+.ss-body{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0 16px 24px}
+.ss-body .m-group-label{padding-left:0;margin-top:8px}
+.ss-body .m-stats-head{margin-top:8px}
+.ss-body .m-stat-row{padding:0 2px}
+.ss-view .m-tracker-tip{right:auto;left:-4px}
+.ss-w{max-width:520px}
+.ss-sub{margin:4px 0 8px}
+.ss-note{margin-top:8px}
+.ss-more{margin-top:6px}
+.ss-tracker{display:inline-block;max-width:100%;margin-bottom:12px}
+.ss-tracker .m-tracker-grid i{cursor:default}
+.ss-tracker .m-tracker-grid i:focus-visible{outline:0}
+.ss-panel{display:flex;flex-direction:column;gap:12px}
+.ss-states{max-width:320px}
+.ss-link{cursor:default;border-radius:var(--m-r-ctl)}
+.ss-link:hover,.ss-link:focus-visible{background:var(--m-hover);outline:0}
+.ss-agent{display:inline-flex;align-items:center;cursor:default;border-radius:var(--m-r-ctl)}
+.ss-agent:hover,.ss-agent:focus-visible{color:var(--m-fg);outline:0;text-decoration:underline;text-underline-offset:2px}
+/* 03 §7A Loading (10 §3.7): a band that replaces its skeleton, or a panel that replaces another, rises in; a window change dims the figures shown (.is-stale) */
+.ss-in{animation:m-in-rise 120ms var(--m-ease-out)}
+.ss-note,.ss-panel{transition:opacity 120ms var(--m-ease-out)}

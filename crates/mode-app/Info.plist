@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Dictation (XC-37, 08 §6.2): the text macOS shows when Mode first opens the microphone. Tauri merges this file into the bundle's Info.plist (and embeds it in dev builds). -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Mode listens only while you hold the dictation key, and turns the words into text on this machine.</string>
+	<!-- Now playing (OV-37, 06 §12A): the Automation prompt when Mode first sends an Apple Event to Spotify or Music. -->
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Mode shows what is playing in Spotify or Music and lets you pause or skip from the overlay.</string>
+</dict>
+</plist>

@@ -1,0 +1,27 @@
+// ui/kit (08 §3.3): the design system as React components. Every component
+// renders the class structure of docs/wireframes/components.html, so
+// mode.css (a byte copy of docs/wireframes/mode.css) styles it without
+// page CSS. Sections follow the gallery's order.
+export * from './types'
+export { cx } from './cx'
+export * from './mascot'
+export * from './theme'
+export * from './icons'
+export * from './brands'
+export * from './primitives'
+export * from './button'
+export * from './avatars'
+export * from './lists'
+export * from './controls'
+export * from './layout'
+export * from './overlay'
+export * from './nowplaying'
+export * from './cards'
+export * from './swatch'
+export * from './chat'
+export * from './calendar'
+export * from './stats'
+export * from './skeleton'
+export * from './views'
+export * from './settings'
+export * from './text'

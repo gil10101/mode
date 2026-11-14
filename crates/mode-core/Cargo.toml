@@ -1,0 +1,78 @@
+[package]
+name = "mode-core"
+description = "Everything that is not pixels: db, ipc, sessions, transcript, files, notes, settings, push, diag (08 §3.2)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[features]
+# Dictation (XC-37): whisper.cpp, the microphone and the resampler; mode-app
+# turns it on by default. Without it every microphone or engine call answers
+# `Unavailable` (the Linux cross-checks and the stub compilers never build
+# whisper.cpp; `crates/mode-unify` pins what it changes in the shared graph).
+speech = ["dep:whisper-rs", "dep:whisper-rs-sys", "dep:cpal", "dep:rubato"]
+
+[dependencies]
+mode-wire = { workspace = true }
+# Feature unification only (no code): subset builds resolve like the workspace.
+mode-unify = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+rusqlite = { workspace = true }
+uuid = { workspace = true }
+time = { workspace = true }
+sha2 = { workspace = true }
+dirs = { workspace = true }
+similar = { workspace = true }
+notify = { workspace = true }
+# Deleted notes go to the OS trash, never unlink (04 §12).
+trash = { workspace = true }
+# The PTY host for embedded sessions (05 §8.1, 08 §3.3 `pty`).
+portable-pty = { workspace = true }
+# PTY bytes cross the bridge as standard base64.
+base64 = { workspace = true }
+# Connectors and AI backends (06 §2, §10; 08 §3.2 `http`).
+reqwest = { workspace = true }
+rustls = { workspace = true }
+# Keyword rules (07 §3.3); join-link patterns (06 §7.4).
+regex = { workspace = true }
+# Authorization URLs, query strings and form bodies (06 §4.2).
+url = { workspace = true }
+# PKCE verifier and OAuth state from the OS RNG (06 §4.3).
+getrandom = { workspace = true }
+# The secret store facade (06 §5, 08 §8).
+keyring-core = { workspace = true }
+# Automations (03 §7B.4): IANA zones with their DST rules.
+jiff = { workspace = true }
+# Dictation (XC-37): the `speech` feature.
+whisper-rs = { workspace = true, optional = true }
+cpal = { workspace = true, optional = true }
+rubato = { workspace = true, optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Keychain (08 §8).
+apple-native-keyring-store = { workspace = true }
+# whisper.cpp on the GPU (the `speech` feature).
+whisper-rs-sys = { workspace = true, optional = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
+
+# The named pipe's DACL (05 §3.2) and "Stop turn" on a headless run (CTRL_BREAK
+# to its process group, 05 §8.5); raw bindings only.
+[target.'cfg(windows)'.dependencies]
+windows-sys = { workspace = true }
+# Credential Manager for the secret store facade (06 §5, 08 §8).
+windows-native-keyring-store = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

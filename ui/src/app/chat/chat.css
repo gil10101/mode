@@ -1,0 +1,93 @@
+/* Chat (03 §7; app-window.html data-view="chat"): the wireframe's .aw-chat /
+   .aw-chat-col layout rules, kept verbatim under this package's ch- names,
+   plus citations, action cards and the Sources panel. Layout only; every
+   color is a mode.css token. */
+.ap-view.ch-view > .m-main-head .m-t-title{flex:1}
+.ch-view > .m-main-body{overflow:hidden}
+/* one column; the Sources column slides from 0 to 320 px (03 §7.1, 10 §3.7) */
+.ch-body{display:grid;grid-template-columns:minmax(0,1fr) 0px;column-gap:0;height:100%;min-height:0;transition:grid-template-columns 220ms var(--m-ease-in-out),column-gap 220ms var(--m-ease-in-out)}
+.ch-body.is-sources{grid-template-columns:minmax(0,1fr) 320px;column-gap:8px}
+
+/* the column (.aw-chat-col) */
+.ch-col{display:flex;flex-direction:column;min-width:0;min-height:0;height:100%}
+.ch-col .m-chat{flex:1;min-height:0;width:100%}
+.ch-col .m-chat-thread{flex:1;min-height:0;overflow:hidden auto;padding-top:8px}
+.ch-col .m-chat-input{flex:none;margin-top:4px}
+.ch-field{resize:none;white-space:pre-wrap}
+.ch-field:disabled{cursor:default}
+.m-chat-input.is-disabled{opacity:.5}
+
+/* the Sources panel: a column with a hairline rule only while open; its content keeps its 320-px width while the column slides, fades in, and is hidden once closed */
+.ch-sources{padding:0;border-radius:0;background:none;visibility:hidden;transition:visibility 0s linear 220ms}
+.ch-body.is-sources > .ch-sources{visibility:visible;border-left:1px solid var(--m-line);transition:none}
+.ch-sources-in{display:flex;flex-direction:column;gap:8px;width:319px;height:100%;min-height:0;padding:2px 4px 8px 12px;overflow:hidden auto}
+.ch-body.is-sources > .ch-sources > .ch-sources-in{animation:m-in-fade 220ms var(--m-ease-out)}
+.ch-sources-head{display:flex;align-items:center;gap:8px;min-width:0;min-height:28px}
+.ch-sources-head .m-card-title{flex:1}
+.ch-counts{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--m-fg-2)}
+.ch-count{display:inline-flex;align-items:center;gap:4px}
+.ch-call{display:flex;flex-direction:column;gap:6px;padding:6px 4px;border-radius:var(--m-r-ctl);min-width:0}
+.ch-call.is-focus{background:var(--m-selected)}
+.ch-call-head{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--m-fg-2);white-space:nowrap}
+.ch-call-head code{flex:none;color:var(--m-fg)}
+.ch-call-head span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ch-items{display:flex;flex-wrap:wrap;gap:6px}
+.ch-items .m-chip,.ch-cites .m-chip{max-width:100%;cursor:pointer;overflow:hidden;text-overflow:ellipsis}
+.ch-items .m-chip:hover,.ch-cites .m-chip:hover,.ch-cite:hover{background:var(--m-hover)}
+.ch-chip-icon{width:14px;height:14px}
+
+/* the conversations list */
+
+/* replies: citations, code, errors */
+.ch-cite{height:18px;padding:0 6px;margin:0 1px;vertical-align:1px;font-size:11px;cursor:pointer}
+.ch-cites{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ch-n{font-variant-numeric:tabular-nums;color:var(--m-fg-3)}
+.ch-nosrc{margin-top:8px}
+.ch-code{position:relative;margin:12px 0 0;padding:8px 36px 8px 10px;border-radius:var(--m-r-ctl);background:var(--m-sunken);font:13px/1.5 var(--m-font-mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.ch-code code{padding:0;background:none}
+.ch-code-copy{position:absolute;top:4px;right:4px}
+.ch-error{margin-top:8px}
+.ch-stopped{margin-top:6px}
+.m-reply-actions .m-btn-icon[aria-pressed="true"]{color:var(--m-fg)}
+
+/* action cards (03 §7.5) */
+.ch-action{display:flex;flex-direction:column;gap:8px}
+.ch-action:focus-visible{outline:0;box-shadow:0 0 0 1px var(--m-line-strong)}
+.ch-action .m-card-head{margin-bottom:0}
+.ch-fields{display:grid;grid-template-columns:72px minmax(0,1fr);gap:4px 10px;font-size:13px;min-width:0}
+.ch-fields > span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-fields > .m-t-meta{font-size:12px;line-height:19px}
+.ch-before{color:var(--m-fg-3);text-decoration:line-through}
+.ch-preview{margin:0;padding:8px 10px;border-radius:var(--m-r-ctl);background:var(--m-sunken);font:12px/1.5 var(--m-font-mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--m-fg-2)}
+.ch-action .m-card-actions{margin-top:0}
+.ch-result{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--m-fg-2)}
+.ch-result a{cursor:pointer}
+
+/* the composer: attachments, the slash popover, notices, privacy */
+.ch-compose{position:relative;flex:none}
+.ch-attach{display:flex;flex-wrap:wrap;gap:6px;padding:4px 8px 0}
+.ch-attach .m-chip{max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.ch-slash{position:absolute;left:8px;bottom:calc(100% + 4px);z-index:5}
+.ch-slash .m-slash-row{cursor:pointer}
+.ch-notice{margin-top:8px}
+.ch-privacy{padding:2px 14px 0;line-height:16px}
+.ch-col > .ap-banner{flex:none;margin:0 0 4px}
+
+/* the empty state (03 §7.6 First use) */
+.ch-empty{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:auto;padding:0 0 8px}
+.ch-empty p{font-size:15px;color:var(--m-fg-2)}
+.ch-examples{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.ch-examples .m-btn{height:auto;min-height:28px;padding:4px 10px;white-space:normal;text-align:left}
+
+/* popovers anchored to the composer */
+.ch-pop{position:fixed;z-index:22}
+.ch-pop .m-menu{max-height:min(420px,70vh);overflow:auto}
+.ch-pop .m-menu-item{cursor:pointer}
+.ch-pop .m-menu-item:focus-visible{outline:0;background:var(--m-hover)}
+
+/* the attach picker */
+.ch-picker-list{display:flex;flex-direction:column;max-height:300px;overflow:auto;margin-top:8px}
+.ch-picker-list .m-palette-row{cursor:pointer}
+.ch-picker-list .m-ellipsis{flex:1}
+/* the conversations live under Chat in the sidebar (03 §2.3.2): the view keeps the thread and the sources */
+.ch-side{display:flex;flex-direction:column;min-width:0}

@@ -1,0 +1,12 @@
+/* The app window fills the webview; the gallery's bordered .m-window becomes edge-to-edge.
+   Body type comes from mode.css (no `font` shorthand here: it would reset its tabular numerals). */
+html, body, #root { height: 100%; margin: 0; }
+body { background: var(--m-bg); color: var(--m-fg); }
+#root > .m-window { height: 100%; border: 0; border-radius: 0; }
+/* Views scroll inside the main area instead of growing the window (the wireframe's .aw-window .m-main). */
+#root > .m-window .m-main { min-height: 0; }
+
+/* Link rows of the thread and event panels (03 §4.1, §6.6; app/links.tsx): the × appears on hover or
+   keyboard focus and takes no room until then, so a row at rest is the wireframe's .m-task. */
+.ap-link-row .ap-link-remove { display: none; width: 24px; height: 24px; flex: none; color: var(--m-fg-3); }
+.ap-link-row:hover .ap-link-remove, .ap-link-row:focus-within .ap-link-remove { display: inline-flex; }

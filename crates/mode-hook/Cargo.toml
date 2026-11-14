@@ -1,0 +1,26 @@
+[package]
+name = "mode-hook"
+description = "The Claude Code hook relay: stdin -> Mode IPC endpoint -> stdout, never blocks (05 §3.3)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "mode-hook"
+path = "src/main.rs"
+
+[dependencies]
+mode-wire = { workspace = true }
+serde_json = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
+
+# Toolhelp32 for the parent pid and the console window as the tty equivalent (05 §9.1).
+[target.'cfg(windows)'.dependencies]
+windows-sys = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

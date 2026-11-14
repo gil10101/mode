@@ -1,0 +1,51 @@
+/* Calendar (03 §6): the wireframe's .aw-cal / .aw-month-out rules of
+   docs/wireframes/app-window.html (kept verbatim, tokens only) plus this
+   package's helpers (cv-*). Chips stay the kit's flat .m-event. */
+.ap-view.cv-view > .m-main-head .m-t-title{flex:1}
+.cv-title{cursor:pointer}
+.cv-syncing{font-size:11px;font-weight:400;color:var(--m-fg-3)}
+.cv-body{display:grid;grid-template-columns:minmax(0,1fr) 240px;grid-auto-rows:max-content;gap:8px;align-items:start}
+.cv-body.is-narrow{grid-template-columns:minmax(0,1fr)}
+.cv-body .m-agenda{width:auto}
+.cv-banners{grid-column:1/-1}
+.cv-month-out b{color:var(--m-fg-3)}
+.m-month-cell > b{cursor:pointer}
+.cv-more-n{padding:2px 6px;cursor:pointer}
+.cv-more-n:hover{color:var(--m-fg-2)}
+
+/* day layout: one column with the same 40-px gutter */
+.m-calendar.cv-day{grid-template-columns:40px minmax(0,1fr)}
+.m-calendar.cv-day .m-cal-allday{grid-template-columns:40px minmax(0,1fr)}
+.m-calendar.cv-day > :nth-last-child(-n+8){border-bottom:1px solid var(--m-line)}
+.m-calendar.cv-day > :nth-last-child(-n+2){border-bottom:0}
+
+/* chips: glyphs after the title, canceled struck, tentative italic, declined dimmed */
+.cv-glyph{display:inline-block;width:12px;height:12px;margin-left:4px;vertical-align:-2px;color:var(--m-fg-3)}
+.m-event.cv-cancelled b{text-decoration:line-through;text-decoration-thickness:1px}
+.m-event.cv-tentative b{font-style:italic}
+.m-event.cv-declined{opacity:.6}
+.m-event:focus-visible{outline:0;box-shadow:0 0 0 1px var(--m-line-strong)}
+/* month chips with a join link: the title ellipsizes, the mark after it never does */
+.m-event.cv-join > b{display:flex;align-items:center}
+.m-event.cv-join > b > .cv-glyph{flex:none}
+.cv-allday-more{padding:0 6px 3px;font-size:11px;color:var(--m-fg-3);cursor:pointer}
+.cv-declined-line{position:absolute;left:4px;right:4px;bottom:2px;z-index:2;font-size:11px;color:var(--m-fg-3);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* the detail panel (03 §6.6) */
+.cv-panel .cv-gap4{margin-top:4px}
+.cv-desc{padding:2px 4px 0;font-size:12px;line-height:1.5;color:var(--m-fg-2);white-space:pre-wrap;overflow-wrap:anywhere}
+.cv-actions{margin-top:10px}
+.cv-foot{margin-top:10px;padding:0 4px}
+
+/* the agenda rail (03 §6.4) */
+.cv-agenda-label{padding-left:4px}
+.m-agenda .m-task{cursor:pointer}
+.m-agenda .m-task:hover{background:var(--m-hover);border-radius:var(--m-r-ctl)}
+.cv-nothing{padding:4px 4px 8px;font-size:12px;color:var(--m-fg-3)}
+.cv-slide{position:fixed;top:52px;right:8px;max-height:calc(100vh - 60px);z-index:15;width:280px;overflow:auto;box-shadow:var(--m-shadow-pop);border-radius:var(--m-r-card);background:var(--m-bg)}
+.cv-slide .m-agenda{width:auto}
+
+/* empty states */
+.cv-empty{grid-column:1/-1}
+.cv-banners .ap-banner:last-child{margin-bottom:0}
+.cv-banners:empty{display:none}

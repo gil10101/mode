@@ -1,0 +1,6 @@
+# Build environment for every cargo invocation in this workspace.
+
+[env]
+# whisper-rs-sys ships pre-generated bindings; never run bindgen (no libclang
+# on the runners or the dev machines). Dictation, XC-37.
+WHISPER_DONT_GENERATE_BINDINGS = "1"

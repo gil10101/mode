@@ -1,0 +1,221 @@
+name: release
+
+# Installable builds for every OS, and a draft GitHub release with the files
+# and a checksum list. Unsigned: v0.1 / v0.2 ship as direct builds for the
+# owner (docs/11-roadmap.md; certificates are owner-parked until v1.0, R-26).
+# The signing placeholders below are comments only; nothing reads a secret.
+#
+# - push of a `v*` tag: build, then a draft release for that tag (the tag
+#   must equal the version in tauri.conf.json / Cargo.toml / ui/package.json);
+# - manual dispatch: build and upload the files as workflow artifacts; with
+#   `draft_release` also a draft release `v<version>` on the dispatched commit.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      draft_release:
+        description: Also create a draft GitHub release v<version> from this run
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: never
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  check:
+    name: release check
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: release check (currency, branding, key caps, console.log, dbg!/todo!, versions, tag)
+        shell: bash
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            scripts/ci-run.sh "release check" scripts/release-check.sh --tag "$GITHUB_REF_NAME"
+          else
+            scripts/ci-run.sh "release check" scripts/release-check.sh
+          fi
+      - id: version
+        name: version
+        run: echo "version=$(python3 -c 'import json; print(json.load(open("crates/mode-app/tauri.conf.json"))["version"])')" >> "$GITHUB_OUTPUT"
+
+  bundle:
+    name: bundle ${{ matrix.name }}
+    needs: check
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux x86_64 (deb, AppImage)
+            os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            bundles: deb,appimage
+          - name: macos arm64 (app, dmg)
+            os: macos-15
+            target: aarch64-apple-darwin
+            bundles: app
+            arch: aarch64
+          - name: macos x86_64 (app, dmg)
+            os: macos-15
+            target: x86_64-apple-darwin
+            bundles: app
+            arch: x64
+          - name: windows x86_64 (nsis)
+            os: windows-2022
+            target: x86_64-pc-windows-msvc
+            bundles: nsis
+    env:
+      VERSION: ${{ needs.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Tauri system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev \
+            libsoup-3.0-dev libjavascriptcoregtk-4.1-dev patchelf file \
+            libasound2-dev cmake
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-${{ matrix.target }}
+          cache-on-failure: true
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: npm ci
+        shell: bash
+        working-directory: ui
+        run: ../scripts/ci-run.sh "npm ci" npm ci
+
+      - name: mode-hook sidecar (crates/mode-app/binaries/mode-hook-${{ matrix.target }})
+        shell: bash
+        run: scripts/ci-run.sh "mode-hook sidecar" node ui/scripts/build-hook.mjs --target ${{ matrix.target }}
+
+      # --- Signing: owner-parked until v1.0 (docs/08 §13.2–§13.3, docs/11 R-26). Not active. ---
+      # Windows Authenticode, per the Tauri docs: import the .pfx, then pass its
+      # thumbprint to `tauri build` with
+      #   --config '{"bundle":{"windows":{"certificateThumbprint":"<thumbprint>","digestAlgorithm":"sha256","timestampUrl":"http://timestamp.digicert.com"}}}'
+      # - name: Import the Authenticode certificate
+      #   if: runner.os == 'Windows'
+      #   shell: pwsh
+      #   env:
+      #     WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}                  # base64 of the .pfx
+      #     WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+      #   run: |
+      #     New-Item -ItemType directory -Path certificate
+      #     Set-Content -Path certificate/tempCert.txt -Value $env:WINDOWS_CERTIFICATE
+      #     certutil -decode certificate/tempCert.txt certificate/certificate.pfx
+      #     Remove-Item -path certificate -include tempCert.txt
+      #     Import-PfxCertificate -FilePath certificate/certificate.pfx -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String $env:WINDOWS_CERTIFICATE_PASSWORD -Force -AsPlainText)
+
+      - name: tauri build (${{ matrix.bundles }}, unsigned)
+        shell: bash
+        working-directory: ui
+        env:
+          # macOS: an ad-hoc signature ("-", no certificate, no secret) seals the
+          # bundle and the sidecar so Apple Silicon offers "Open Anyway" instead of
+          # reporting the download as damaged. Ignored on Linux and Windows.
+          APPLE_SIGNING_IDENTITY: ${{ runner.os == 'macOS' && '-' || '' }}
+          # --- Signing placeholders (not active) ---
+          # macOS Developer ID + notarization (replaces the ad-hoc identity above):
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}                      # base64 of the .p12
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}            # "Developer ID Application: <name> (<team id>)"
+          # APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}                        # notarytool with an App Store Connect API key
+          # APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          # APPLE_API_KEY_PATH: ${{ runner.temp }}/AuthKey.p8                        # written from a secret in a step before
+          # Updater artifacts (v1.0, docs/08 §13.4; also set bundle.createUpdaterArtifacts):
+          # TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: ../scripts/ci-run.sh "tauri build" npm run tauri -- build --ci --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+
+      - name: package the dmg (macOS; plain hdiutil, no Finder scripting)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: scripts/ci-run.sh "make-dmg" scripts/make-dmg.sh "target/${{ matrix.target }}/release/bundle/macos/Mode.app" "target/${{ matrix.target }}/release/bundle/dmg/Mode_${VERSION}_${{ matrix.arch }}.dmg"
+
+      - name: collect the files
+        shell: bash
+        run: |
+          set -euo pipefail
+          bundle="target/${{ matrix.target }}/release/bundle"
+          mkdir -p dist-release
+          find "$bundle" -maxdepth 2 -type f \( -name '*.deb' -o -name '*.AppImage' -o -name '*.dmg' -o -name '*-setup.exe' \) \
+            -exec cp {} dist-release/ \;
+          if [ "$RUNNER_OS" = macOS ]; then
+            ditto -c -k --sequesterRsrc --keepParent "$bundle/macos/Mode.app" "dist-release/Mode_${VERSION}_${{ matrix.arch }}.app.zip"
+          fi
+          ls -l dist-release
+          [ -n "$(ls dist-release)" ] || { echo "::error title=collect::no bundle files under $bundle"; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mode-${{ needs.check.outputs.version }}-${{ matrix.target }}
+          path: dist-release/*
+          if-no-files-found: error
+
+  release:
+    name: draft GitHub release
+    needs: [check, bundle]
+    if: github.ref_type == 'tag' || inputs.draft_release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VERSION: ${{ needs.check.outputs.version }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: mode-*
+          merge-multiple: true
+
+      - name: checksums
+        working-directory: dist
+        run: |
+          sha256sum -- * | tee SHA256SUMS.txt
+
+      - name: create or update the draft release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF_TYPE" = tag ]; then tag="$GITHUB_REF_NAME"; else tag="v$VERSION"; fi
+          cat > notes.md <<EOF
+          Unsigned build of Mode $VERSION (direct builds until signing arrives with v1.0).
+
+          - macOS 15+: \`Mode_${VERSION}_aarch64.dmg\` (Apple Silicon) or \`Mode_${VERSION}_x64.dmg\` (Intel); the \`.app.zip\` files hold the same app. On first launch macOS refuses an unidentified developer: System Settings → Privacy & Security → Open Anyway.
+          - Windows 11: \`Mode_${VERSION}_x64-setup.exe\` installs for the current user without administrator rights; SmartScreen asks once: More info → Run anyway.
+          - Linux: \`Mode_${VERSION}_amd64.deb\` (\`sudo apt install ./Mode_${VERSION}_amd64.deb\`) or the \`.AppImage\`.
+
+          The hook relay \`mode-hook\` ships inside each bundle and is copied to Mode's data folder at launch; Settings → Integrations → Claude Code installs the hooks. Verify downloads against \`SHA256SUMS.txt\`.
+          EOF
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+          else
+            gh release create "$tag" dist/* --draft --target "$GITHUB_SHA" \
+              --title "Mode $VERSION" --notes-file notes.md --generate-notes
+          fi

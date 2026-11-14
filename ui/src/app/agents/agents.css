@@ -1,0 +1,38 @@
+/* Agents (03 §7E; app-window.html data-view="agents"): the wireframe's
+   split, the selected row and the detail panel under this package's ag-
+   names, plus the edit page (the Settings pattern: page head, tabs, then
+   cards and rows in the centered page column, 10 §7.4.19). Layout only; every color is a mode.css token. */
+.ap-view.ag-view > .m-main-head .m-t-title{flex:1}
+.ag-view > .m-main-body{overflow:auto}
+.ag-split{display:grid;grid-template-columns:minmax(0,1fr) 500px;gap:8px;align-items:start}
+.ag-only > .m-list{max-width:none}
+.ag-err{font-size:11px;color:var(--m-bad)}
+.ag-list-empty{padding:8px 12px;font-size:12px;color:var(--m-fg-3)}
+
+/* the detail panel (03 §7E.1) */
+.ag-panel{display:flex;flex-direction:column;gap:8px}
+.ag-panel-head{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;min-width:0}
+.ag-panel-head .m-t-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-summary{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ag-summary > div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-panel .m-card-actions{margin-top:2px}
+
+/* the empty state (03 §7E.4) */
+.ag-empty{padding:12px 16px 16px}
+.ag-empty .m-btn-group{margin-top:12px}
+
+/* the edit page (03 §7E.2): the head, the page head, the tabs, the page */
+.ag-crumb{flex:1}
+.ag-dirty{flex:none}
+.ag-page-head{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:12px;align-items:center;margin:4px 8px 8px;min-width:0}
+.ag-page-head .m-card-title{font-size:15px}
+.ag-tabs-wrap{flex:none;min-width:0}
+.ag-body{flex:1;min-height:0;overflow:auto}
+.ag-list{padding:0;background:none}
+.ag-memory{grid-template-columns:88px minmax(0,1fr) auto 28px}
+.ag-memory > .m-t-meta{white-space:nowrap}
+.ag-memory .m-row-detail{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-skills{display:flex;flex-direction:column}
+.ag-rules{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ag-rule{grid-template-columns:minmax(0,1fr) 28px}
+.ag-rule .m-row-name{white-space:normal}

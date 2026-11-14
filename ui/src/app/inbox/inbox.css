@@ -1,0 +1,73 @@
+/* Inbox (03 §4): the wireframe's .aw-chips / .m-chip.is-on / .aw-mtext rules of
+   docs/wireframes/app-window.html (kept verbatim, tokens only) plus this
+   package's helpers (ib-*). Layout only; colors are mode.css tokens. */
+.aw-chips{display:flex;flex-wrap:wrap;gap:6px;padding:2px 4px 4px}
+.m-chip.is-on{background:var(--m-selected);color:var(--m-fg)}
+.aw-mtext{margin-top:2px;font-size:13px;line-height:1.5;color:var(--m-fg);overflow-wrap:anywhere}
+
+.ap-view.ib-view > .m-main-head .m-t-title{flex:1}
+.ib-view > .m-main-body{overflow:hidden}
+.ib-split{height:100%;min-height:0;grid-template-rows:100%}
+.ib-split > *{max-height:100%;overflow:auto}
+.ib-list{max-height:100%;overflow:auto}
+.ib-only{height:100%;overflow:auto}
+.ib-panel{overflow:auto}
+.ib-chip{cursor:pointer}
+.ib-chip:hover{background:var(--m-hover)}
+.ib-chip.is-on:hover{background:var(--m-selected)}
+.ib-label{padding-top:0}
+.ib-fold > span{cursor:pointer}
+.ib-fold > span:hover{color:var(--m-fg-2)}
+.m-list .m-msg{cursor:pointer}
+.m-msg:focus-visible{outline:0;box-shadow:inset 0 0 0 1px var(--m-line-strong)}
+.ib-pending{flex:none;font-size:11px;color:var(--m-fg-3)}
+.ib-hit b{font-weight:600;color:var(--m-fg)}
+.ib-bulk{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 4px 0 12px;border-radius:var(--m-r-ctl);background:var(--m-surface);font-size:12px;color:var(--m-fg-2)}
+.ib-bulk > span{flex:1}
+.ib-why{margin-top:10px;cursor:pointer}
+.ib-why:hover{color:var(--m-fg-2)}
+.ib-rule{margin:12px 0 6px}
+.ib-more{padding:4px 0 2px;font-size:11px;color:var(--m-fg-3)}
+.ib-facts{display:grid;grid-template-columns:88px minmax(0,1fr);gap:4px 10px;padding:4px 4px 0;font-size:12px;color:var(--m-fg-2);min-width:0}
+.ib-facts > span:nth-child(odd){color:var(--m-fg-3)}
+.ib-facts > span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib-vip{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 4px;font-size:12px;color:var(--m-fg-2)}
+.ib-vip > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib-local{margin-top:8px;padding:0 4px;font-size:11px;color:var(--m-fg-3)}
+.ib-skeleton{display:flex;flex-direction:column;gap:10px;padding:12px}
+.ib-skeleton i{display:block;height:12px;border-radius:var(--m-r-xs);background:var(--m-sunken)}
+.ib-skeleton i:nth-child(2){width:70%}
+.ib-skeleton i:nth-child(3){width:45%}
+.ib-line{display:flex;align-items:center;gap:8px;min-height:28px;padding:0 4px;font-size:12px;color:var(--m-fg-3)}
+.ib-line a{cursor:pointer}
+.ib-sentinel{height:1px}
+.ib-error{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border-radius:var(--m-r-ctl);background:var(--m-sunken);font-size:12px;color:var(--m-bad)}
+.ib-error > span{flex:1}
+
+/* the full-page thread view (03 §4.5) */
+.ib-page{display:flex;flex-direction:column;min-height:0;height:100%}
+.ib-page-head{padding:12px 16px 0;min-width:0}
+.ib-page-head .m-meta{margin-top:2px}
+.ib-page-msgs{flex:1;min-height:0;overflow:auto;padding:8px 16px}
+.ib-page-msgs .m-msg{max-width:840px;margin:0 auto;padding:10px 12px}
+.ib-page-msgs .m-msg.is-target{background:var(--m-selected);border-radius:var(--m-r-card)}
+.ib-page-msgs .m-msg + .m-msg{border-top:1px solid var(--m-line)}
+.ib-msg-why{margin-top:1px}
+.ib-actionbar{display:flex;align-items:center;gap:8px;padding:8px 16px 12px;border-top:1px solid var(--m-line);flex:none}
+.ib-actionbar .ib-grow{flex:1;min-width:0;font-size:11px;color:var(--m-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* the snooze popover (03 §4.7) */
+.ib-popover{position:fixed;z-index:22}
+.ib-popover .m-menu{min-width:260px}
+.ib-snooze-hint{margin-left:auto;font-size:11px;color:var(--m-fg-3)}
+.ib-snooze-pick{display:flex;align-items:center;gap:6px;padding:4px 8px}
+.ib-snooze-pick .m-input{flex:1}
+.ib-snooze-foot{display:flex;flex-direction:column;gap:6px;padding:6px 8px 4px;border-top:1px solid var(--m-line);margin-top:4px}
+.ib-preview{font-size:12px;color:var(--m-fg-2)}
+.m-menu-item.is-focus{background:var(--m-hover)}
+
+/* the filters dialog (03 §4.4) */
+.ib-filters .aw-chips{padding:0}
+.ib-list > .ap-banner{margin:0}
+.ib-page-head,.ib-actionbar{max-width:872px;width:100%;margin-left:auto;margin-right:auto}
+.ib-link-list{max-height:280px;overflow:auto;margin:8px 0 0}

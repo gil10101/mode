@@ -1,0 +1,10 @@
+/* Shortcuts (03 §7D): the wireframe's .aw-keys and .aw-search rules for this view plus the package's helpers (sc-*). */
+.ap-view.sc-view > .m-main-head .m-t-title{flex:1}
+.sc-view > .m-main-body{flex:1;min-height:0;overflow:auto}
+.sc-search{width:200px;flex:none}
+.sc-lists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}
+@media (max-width:1099px){.sc-lists{grid-template-columns:minmax(0,1fr)}}
+.sc-recording{box-shadow:0 0 0 1px var(--m-line-strong)}
+.sc-fixed{cursor:default}
+.sc-unbound{padding:0 4px}
+.m-shortcut:focus-visible{outline:0;box-shadow:0 0 0 1px var(--m-line-strong);border-radius:var(--m-r-ctl)}

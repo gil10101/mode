@@ -1,0 +1,187 @@
+/* The Notes view, its editor, board, query bar and cards. Layout rules are
+   the page-local rules of docs/wireframes/app-window.html (.aw-notes,
+   .aw-panel, .aw-board, .aw-col-head, .aw-add, .aw-fold, .aw-editor-*) and
+   query-cards.html (.qc-card, .qc-rows, .qc-refine, .qc-bar, .qc-pop,
+   .qc-add, .qc-empty, .qc-row-ctl), renamed to .nt-* so they cannot collide
+   with another view; everything else is new and uses the --m-* tokens only. */
+
+/* ---- view and grid ------------------------------------------------------- */
+
+.nt-view{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0;height:100%;overflow:hidden}
+.nt-view > .m-main-body{flex:1;min-height:0;overflow:hidden}
+.nt-notes{position:relative;display:grid;grid-template-columns:220px 300px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"tree list editor" "dock dock dock";gap:8px;align-items:start}
+.nt-notes.has-detail{grid-template-columns:220px 300px minmax(0,1fr) 320px;grid-template-areas:"tree list editor detail" "dock dock dock dock"}
+/* 03 §5.1's four columns leave the editor too narrow below 1440 px: the folder tree folds while the details are open. */
+@media (max-width:1439px){
+  .nt-notes.has-detail{grid-template-columns:280px minmax(0,1fr) 300px;grid-template-areas:"list editor detail" "dock dock dock"}
+  .nt-notes.has-detail > .nt-tree{display:none}
+}
+.nt-notes > .nt-tree{grid-area:tree;align-self:stretch;overflow:auto}
+.nt-notes > .nt-list{grid-area:list;max-height:100%;overflow:auto}
+.nt-notes > .nt-editor-panel{grid-area:editor}
+.nt-notes > .nt-board{grid-row:1;grid-column:list-start / editor-end}
+.nt-notes > .nt-details{grid-area:detail;align-self:stretch;overflow:auto}
+.nt-notes > .nt-cards{grid-row:1;grid-column:list-start / -1}
+.nt-notes > .nt-dock{grid-area:dock;align-self:end;min-width:0}
+
+/* rows: selection by background only (app-window.html) */
+.nt-list .m-task,.nt-col .m-task{border-radius:var(--m-r-ctl);cursor:default}
+.nt-list .m-task:hover,.nt-col .m-task:hover{background:var(--m-hover)}
+.nt-list .m-task.is-selected,.nt-col .m-task.is-selected{background:var(--m-selected)}
+.nt-list:focus-visible{box-shadow:0 0 0 1px var(--m-line-strong)}
+.nt-list-pad{padding:4px 4px}
+.nt-list-pad > .m-group-label{padding-left:4px}
+.nt-cycle{cursor:pointer;border-radius:var(--m-r-ctl)}
+.nt-cycle:hover{background:var(--m-sunken)}
+.m-task .m-tag{cursor:pointer}
+.nt-scope-chips{padding:4px 4px 0}
+.nt-empty{margin:0;padding:6px 4px 2px;font-size:13px;color:var(--m-fg-3)}
+.nt-empty-vault{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:12px 4px}
+.nt-empty-vault p{margin:0;font-size:13px;color:var(--m-fg-2)}
+
+/* folder tree: a drop target while a note hovers it */
+.nt-tree .m-tree-item{cursor:default}
+.nt-tree .m-tree-item.nt-drop-over{background:var(--m-selected)}
+
+/* ---- editor panel -------------------------------------------------------- */
+
+.nt-panel{min-width:0;min-height:0;padding:12px;border-radius:var(--m-r-card);background:var(--m-surface);overflow:hidden}
+.nt-editor-panel{display:flex;flex-direction:column;align-self:stretch}
+.nt-editor-head{display:flex;align-items:center;gap:8px;min-width:0}
+.nt-editor-head .m-t-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt-title-input{height:28px;margin:0;padding:0;border:0;background:transparent;color:var(--m-fg);font-family:inherit;outline:none}
+.nt-title-input::placeholder{color:var(--m-fg-3)}
+.nt-title-input:focus-visible{box-shadow:none}
+.nt-strip{margin-top:8px}
+.nt-chip-btn{cursor:pointer}
+.nt-chip-btn:hover{background:var(--m-hover)}
+.nt-editor-body{display:flex;flex:1;min-height:0;margin-top:14px;font-size:13px;line-height:1.55;color:var(--m-fg);overflow-wrap:anywhere}
+.nt-banner{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px;padding:6px 8px 6px 10px;border-radius:var(--m-r-ctl);background:var(--m-sunken);font-size:12px;color:var(--m-fg-2)}
+.nt-banner > span{flex:1;min-width:0}
+
+/* CodeMirror live preview (04 §9.1, 10 §7.2) */
+.nt-cm{flex:1;min-width:0;min-height:0}
+.nt-cm .cm-editor{height:100%;font-family:var(--m-font-ui);font-size:13px}
+.nt-cm .cm-scroller{font-family:inherit;line-height:1.55;overflow:auto}
+.nt-h{font-weight:600;line-height:1.3}
+.nt-h1{font-size:20px}
+.nt-cm .cm-line.nt-h1{padding-bottom:4px}
+.nt-h2{font-size:17px}
+.nt-h3{font-size:15px}
+.nt-strong{font-weight:600}
+.nt-em{font-style:italic}
+.nt-strike{text-decoration:line-through;text-decoration-thickness:1px;color:var(--m-fg-3)}
+.nt-code{font-family:var(--m-font-mono);font-size:12px;padding:0 3px;border-radius:var(--m-r-xs);background:var(--m-sunken)}
+.nt-codeblock{font-family:var(--m-font-mono);font-size:12px;background:var(--m-sunken)}
+.nt-cm .cm-line.nt-codeblock{padding:0 8px}
+.nt-quote{border-left:2px solid var(--m-line-strong);color:var(--m-fg-2)}
+.nt-cm .cm-line.nt-quote{padding-left:10px}
+.nt-table{font-family:var(--m-font-mono);font-size:12px;white-space:pre}
+.nt-hr{border-bottom:1px solid var(--m-line)}
+.nt-hr-mark{color:transparent}
+.nt-link{color:var(--m-info);text-decoration:underline;text-decoration-color:var(--m-line-strong);text-underline-offset:2px}
+.nt-link.is-unresolved{text-decoration-style:dashed}
+.nt-bullet{display:inline-block;width:12px;color:var(--m-fg-3)}
+.nt-task-line{min-height:26px}
+.nt-glyph{display:inline-block;width:16px;margin-right:6px;cursor:pointer;text-align:center;vertical-align:baseline}
+.nt-glyph[data-marker="x"]{color:var(--m-fg-3)}
+.nt-ghost{color:var(--m-fg-3);opacity:.5}
+.nt-done{color:var(--m-fg-3);text-decoration:line-through;text-decoration-thickness:1px}
+
+/* ---- detail panel -------------------------------------------------------- */
+
+.nt-details{display:flex;flex-direction:column;gap:4px}
+.nt-fields{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;align-items:center;padding:4px}
+.nt-fields > .m-seg{justify-self:start;max-width:100%;overflow:hidden}
+.nt-fields select.m-input{appearance:auto}
+.nt-date{width:136px;flex:none}
+.nt-tag-input{width:96px;flex:none}
+.nt-links,.nt-history,.nt-file{display:flex;flex-direction:column;gap:2px;padding:0 4px}
+.nt-link-row{display:flex;align-items:center;gap:8px;min-width:0;height:28px;padding:0 4px;border-radius:var(--m-r-ctl);font-size:12px}
+.nt-rev{cursor:pointer}
+.nt-rev:hover,.nt-rev[aria-pressed="true"]{background:var(--m-hover)}
+.nt-diff{display:flex;flex-direction:column;max-height:240px;margin:4px 0;overflow:auto;border-radius:var(--m-r-ctl);background:var(--m-bg)}
+.nt-diff-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 6px}
+.nt-diff-row code{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;line-height:1.5;color:var(--m-fg-2)}
+.nt-diff-row:not(.is-same){background:var(--m-sunken)}
+.nt-diff-row:not(.is-same) code{color:var(--m-fg)}
+.nt-file{gap:4px;padding-bottom:8px}
+.nt-file code{font-size:11px;color:var(--m-fg-2)}
+
+/* ---- board (app-window.html .aw-board) ----------------------------------- */
+
+.nt-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-height:0;max-height:100%;overflow:auto;align-items:start}
+.nt-col-head{display:flex;align-items:center;gap:6px;height:32px;padding:0 4px 0 6px;font-weight:600;white-space:nowrap}
+.nt-col-head .m-ellipsis{flex:1}
+.nt-col-head .m-n{font-size:11px;font-weight:400;color:var(--m-fg-3)}
+.nt-add{display:flex;align-items:center;height:28px;padding:0 6px;font-size:12px;color:var(--m-fg-3);cursor:pointer}
+.nt-add:hover{color:var(--m-fg-2)}
+.nt-add .m-input{height:24px}
+.nt-fold{display:flex;align-items:center;gap:12px;height:32px;padding:0 12px;font-size:12px;color:var(--m-fg-3);white-space:nowrap;cursor:pointer}
+.nt-col.nt-drop-ok{box-shadow:0 0 0 1px var(--m-line-strong)}
+.nt-col.nt-drop-no{background:var(--m-sunken)}
+.nt-drop-hint{margin:0 6px 4px;font-size:11px;line-height:1.4;color:var(--m-fg-2)}
+
+/* ---- query bar (query-cards.html .qc-bar, .qc-pop) ----------------------- */
+
+.nt-dock .nt-bar{width:100%}
+.nt-bar{position:relative;display:flex;align-items:center;gap:6px;padding:5px;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-surface)}
+.nt-bar .m-query{flex:1;min-width:0}
+.nt-bar.is-floating{width:640px;max-width:100%;box-shadow:var(--m-shadow-pop);border:0}
+.nt-floating{position:fixed;left:50%;top:72px;z-index:40;width:640px;max-width:calc(100% - 32px);transform:translateX(-50%)}
+.m-query .nt-entry{display:inline-grid;flex:0 1 auto;min-width:8px;max-width:100%}
+.m-query .nt-entry > *{grid-area:1 / 1;min-width:0;margin:0;padding:0;border:0;font:inherit;font-size:13px;line-height:20px;white-space:pre}
+.m-query .nt-sizer{visibility:hidden;overflow:hidden}
+.m-query .nt-entry > input{width:0;min-width:100%;background:transparent;color:var(--m-fg);outline:none}
+.m-query .nt-entry > input::placeholder{color:var(--m-fg-3)}
+.m-query .nt-entry > input:focus-visible{box-shadow:none}
+.nt-completion{color:var(--m-fg-3);font-size:13px;white-space:pre;margin-left:-6px}
+.m-query .m-chip .m-x{cursor:pointer}
+.m-chip.nt-term{font-style:italic;background:transparent;box-shadow:inset 0 0 0 1px var(--m-line-strong);outline:1px dashed transparent}
+.nt-pop{position:absolute;left:40px;bottom:calc(100% + 6px);min-width:240px;z-index:30}
+.nt-bar.is-floating .nt-pop{top:calc(100% + 6px);bottom:auto}
+.nt-refine .nt-pop{left:8px}
+
+/* chip commit sparkle (10 §7.3): 10 particles, 300 ms, never under reduced motion */
+.m-chip.nt-spark{position:relative}
+.m-chip.nt-spark::after{content:"";position:absolute;left:50%;top:50%;width:2px;height:2px;border-radius:50%;color:var(--m-fg-3);pointer-events:none;
+  box-shadow:24px 0 0 .5px currentColor,19.4px 14.1px 0 0 currentColor,7.4px 22.8px 0 .5px currentColor,-7.4px 22.8px 0 0 currentColor,-19.4px 14.1px 0 .5px currentColor,-24px 0 0 0 currentColor,-19.4px -14.1px 0 .5px currentColor,-7.4px -22.8px 0 0 currentColor,7.4px -22.8px 0 .5px currentColor,19.4px -14.1px 0 0 currentColor;
+  animation:nt-burst 300ms cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes nt-burst{from{transform:scale(.15);opacity:1}to{transform:scale(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.m-chip.nt-spark::after{display:none}}
+
+/* ---- menus ---------------------------------------------------------------- */
+
+.nt-menu .m-glyph{width:14px;flex:none;text-align:center;font:12px/1 var(--m-font-mono);color:var(--m-fg-2)}
+.nt-menu .m-menu-item{cursor:default}
+.nt-menu .m-menu-item.is-active{background:var(--m-hover)}
+.nt-menu .m-menu-item.is-current{background:var(--m-selected)}
+.nt-menu .m-menu-item.is-danger .m-label{color:var(--m-bad)}
+.nt-float{position:fixed;z-index:50;max-height:calc(100vh - 16px);overflow:auto}
+.nt-menu-input{gap:6px;height:auto;padding:4px 8px}
+.nt-menu-input .m-input{width:140px}
+.nt-save{display:flex;flex-direction:column;gap:6px;width:220px;padding:4px}
+.nt-error{margin:0;font-size:11px;color:var(--m-bad)}
+
+/* ---- cards (query-cards.html .qc-card) ----------------------------------- */
+
+.nt-cards{position:relative;align-self:stretch;min-width:0;min-height:0;pointer-events:none;z-index:5}
+.nt-card{position:absolute;width:360px;padding:0;pointer-events:auto}
+.nt-card .m-card-head{height:40px;margin:0;padding:0 6px 0 12px;cursor:grab;user-select:none}
+.nt-card .m-card-head .m-card-title{flex:0 1 auto}
+.nt-rows{max-height:384px;padding:0 8px 4px;overflow:auto}
+.nt-card .m-task{border-radius:var(--m-r-ctl)}
+.nt-card .m-task:hover{background:var(--m-hover)}
+.nt-card .m-shimmer{padding:8px 4px 10px}
+.nt-card .m-card-actions{margin:4px 4px 8px}
+.nt-row-ctl{display:flex;gap:2px;margin-left:4px;flex:none}
+.nt-row-ctl .m-btn-icon{width:24px;height:24px;color:var(--m-fg-3)}
+.nt-add-row{cursor:pointer}
+.nt-add-row .m-task-title,.nt-add-row .m-task-glyph{color:var(--m-fg-3)}
+.nt-add-row .m-input{height:24px}
+.nt-refine{position:relative;padding:8px;border-top:1px solid var(--m-line)}
+.nt-resize{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:ew-resize}
+
+/* ---- inline notice (10 §12.3) -------------------------------------------- */
+
+.nt-notice{position:absolute;left:16px;bottom:72px;z-index:25;display:flex;align-items:center;gap:12px;max-width:min(480px,calc(100% - 32px));min-height:36px;padding:4px 4px 4px 12px;border-radius:var(--m-r-card);background:var(--m-surface);box-shadow:var(--m-shadow-pop);font-size:12px;color:var(--m-fg)}

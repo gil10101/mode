@@ -1,0 +1,303 @@
+{
+  "note": "Brand marks Mode draws to identify external apps and services (10 §7.4.16, ADR-0053). `source` names the public set the file was fetched from: simple-icons (CC0 1.0, monochrome paths), lobe-icons (MIT, monochrome AI marks), logos (gilbarbara/logos, the owners' full-colour marks), vscode-icons (MIT, full-colour product tiles); commons (Wikimedia Commons, with the licence the file page states in each mark's `licence`); fluent (Microsoft's Fluent UI brand-icons CDN, under the Fluent UI assets licence); `drawn` is kept only for the plain terminal window and the Kitty cat, which no set carries. `color` is `own` (the file carries its colours; the stylesheet sets none, so the mark stays right on a dark ground), the brand's hex for a monochrome mark, or `fg` for a near-black monochrome mark that follows the text colour. `ui/scripts/fetch-brand.mjs` fetches and normalises a mark; `ui/scripts/brands.mjs` generates the kit, the stylesheet block and the wireframe symbols from this file.",
+  "grounds": {
+    "note": "The reference surfaces a brand colour must read on at 3:1 (WCAG 1.4.11): the darkest ground of a built-in light pack (Gruvbox Light's sunken fill) and the lightest ground of a built-in dark pack (Nord's surface). ui/scripts/brands.mjs moves a colour's lightness in OKLab until it reads; the hex stays where it already does.",
+    "light": "#F2E5BC",
+    "dark": "#3B4252"
+  },
+  "marks": [
+    {
+      "id": "claudecode",
+      "label": "Claude Code",
+      "color": "#D97757",
+      "source": "simple-icons"
+    },
+    {
+      "id": "claude",
+      "label": "Claude API",
+      "color": "#D97757",
+      "source": "simple-icons"
+    },
+    {
+      "id": "ollama",
+      "label": "Ollama",
+      "color": "fg",
+      "source": "simple-icons"
+    },
+    {
+      "id": "lmstudio",
+      "label": "LM Studio",
+      "color": "fg",
+      "source": "simple-icons"
+    },
+    {
+      "id": "gmail",
+      "label": "Gmail",
+      "color": "own",
+      "source": "logos",
+      "note": "the 2020 M; its four colours and the white are in the file",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/google-gmail-2020.svg"
+    },
+    {
+      "id": "slack",
+      "label": "Slack",
+      "color": "own",
+      "source": "logos",
+      "note": "the pinwheel in its four colours",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/slack-icon.svg"
+    },
+    {
+      "id": "googlecalendar",
+      "label": "Google Calendar",
+      "color": "own",
+      "source": "logos",
+      "note": "the 2020 tile with its white 31",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/google-calendar-2020.svg"
+    },
+    {
+      "id": "googlemeet",
+      "label": "Google Meet",
+      "color": "own",
+      "source": "logos",
+      "note": "the 2020 camera in its four colours",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/google-meet-2020.svg"
+    },
+    {
+      "id": "zoom",
+      "label": "Zoom",
+      "color": "own",
+      "source": "logos",
+      "note": "the camera on its blue disc, white kept",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/zoom-icon.svg"
+    },
+    {
+      "id": "teams",
+      "label": "Microsoft Teams",
+      "color": "own",
+      "source": "logos",
+      "note": "the owner's mark; fetched, never drawn",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/microsoft-teams.svg"
+    },
+    {
+      "id": "outlook",
+      "label": "Outlook",
+      "color": "own",
+      "source": "fluent",
+      "note": "Microsoft's current multicolour Outlook product icon from the Fluent UI brand-icons CDN; the owner's mark, fetched, never drawn",
+      "url": "https://res-1.cdn.office.net/files/fabric-cdn-prod_20251008.001/assets/brand-icons/product/svg/outlook_48x1.svg",
+      "licence": "Microsoft Fluent UI assets license agreement (https://aka.ms/fluentui-assets-license)"
+    },
+    {
+      "id": "github",
+      "label": "GitHub",
+      "color": "fg",
+      "source": "simple-icons"
+    },
+    {
+      "id": "linear",
+      "label": "Linear",
+      "color": "#5E6AD2",
+      "source": "simple-icons"
+    },
+    {
+      "id": "notion",
+      "label": "Notion",
+      "color": "fg",
+      "source": "simple-icons"
+    },
+    {
+      "id": "modelcontextprotocol",
+      "label": "MCP server",
+      "color": "fg",
+      "source": "simple-icons"
+    },
+    {
+      "id": "terminal",
+      "label": "Terminal",
+      "color": "fg",
+      "source": "drawn",
+      "note": "a terminal window: Terminal.app, Windows Terminal, Konsole, xterm and any terminal without a mark of its own"
+    },
+    {
+      "id": "iterm2",
+      "label": "iTerm2",
+      "color": "fg",
+      "source": "simple-icons"
+    },
+    {
+      "id": "warp",
+      "label": "Warp",
+      "color": "#01A4FF",
+      "source": "simple-icons"
+    },
+    {
+      "id": "ghostty",
+      "label": "Ghostty",
+      "color": "#3551F3",
+      "source": "simple-icons"
+    },
+    {
+      "id": "alacritty",
+      "label": "Alacritty",
+      "color": "#F46D01",
+      "source": "simple-icons"
+    },
+    {
+      "id": "wezterm",
+      "label": "WezTerm",
+      "color": "#4E49EE",
+      "source": "simple-icons"
+    },
+    {
+      "id": "gnometerminal",
+      "label": "GNOME Terminal",
+      "color": "fg",
+      "source": "simple-icons"
+    },
+    {
+      "id": "kitty",
+      "label": "Kitty",
+      "color": "fg",
+      "source": "drawn",
+      "note": "a cat's head"
+    },
+    {
+      "id": "powershell",
+      "label": "PowerShell",
+      "color": "own",
+      "source": "vscode-icons",
+      "note": "the owner's tile; fetched, never drawn",
+      "url": "https://raw.githubusercontent.com/vscode-icons/vscode-icons/master/icons/file_type_powershell.svg"
+    },
+    {
+      "id": "linux",
+      "label": "WSL",
+      "color": "own",
+      "source": "logos",
+      "note": "Tux in colour stands for a Linux shell (WSL)",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/linux-tux.svg"
+    },
+    {
+      "id": "openrouter",
+      "label": "OpenRouter",
+      "color": "fg",
+      "source": "simple-icons",
+      "note": "the brand's slate grey follows the text colour instead, for legibility on both grounds"
+    },
+    {
+      "id": "groq",
+      "label": "Groq",
+      "color": "#F55036",
+      "source": "lobe-icons",
+      "note": "the Groq mark from lobe-icons; the brand's orange"
+    },
+    {
+      "id": "openai",
+      "label": "OpenAI",
+      "color": "fg",
+      "source": "lobe-icons",
+      "note": "the OpenAI mark from lobe-icons; near-black, follows the text colour"
+    },
+    {
+      "id": "mistral",
+      "label": "Mistral AI",
+      "color": "#FA520F",
+      "source": "simple-icons"
+    },
+    {
+      "id": "deepseek",
+      "label": "DeepSeek",
+      "color": "#5786FE",
+      "source": "simple-icons"
+    },
+    {
+      "id": "perplexity",
+      "label": "Perplexity",
+      "color": "#1FB8CD",
+      "source": "simple-icons"
+    },
+    {
+      "id": "googlecloud",
+      "label": "Google Cloud",
+      "color": "#4285F4",
+      "source": "simple-icons",
+      "note": "Vertex AI providers"
+    },
+    {
+      "id": "bedrock",
+      "label": "Amazon Bedrock",
+      "color": "fg",
+      "source": "lobe-icons",
+      "note": "the Amazon Bedrock service mark from lobe-icons; never the Amazon logo"
+    },
+    {
+      "id": "foundry",
+      "label": "Microsoft Foundry",
+      "color": "own",
+      "source": "logos",
+      "note": "the Azure mark: Foundry is Azure AI Foundry; fetched, never drawn",
+      "url": "https://raw.githubusercontent.com/gilbarbara/logos/main/logos/microsoft-azure.svg"
+    },
+    {
+      "id": "grok",
+      "label": "Grok",
+      "color": "fg",
+      "source": "lobe-icons",
+      "note": "xAI's Grok; near-black, follows the text colour",
+      "url": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/grok.svg"
+    },
+    {
+      "id": "opencode",
+      "label": "OpenCode",
+      "color": "fg",
+      "source": "simple-icons",
+      "url": "https://cdn.jsdelivr.net/npm/simple-icons/icons/opencode.svg"
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor",
+      "color": "fg",
+      "source": "simple-icons",
+      "url": "https://cdn.jsdelivr.net/npm/simple-icons/icons/cursor.svg"
+    },
+    {
+      "id": "cline",
+      "label": "Cline",
+      "color": "fg",
+      "source": "simple-icons",
+      "url": "https://cdn.jsdelivr.net/npm/simple-icons/icons/cline.svg"
+    },
+    {
+      "id": "googlegemini",
+      "label": "Gemini CLI",
+      "color": "#8E75B2",
+      "source": "simple-icons",
+      "url": "https://cdn.jsdelivr.net/npm/simple-icons/icons/googlegemini.svg"
+    },
+    {
+      "id": "nousresearch",
+      "label": "Hermes",
+      "color": "fg",
+      "source": "lobe-icons",
+      "url": "https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/icons/nousresearch.svg"
+    },
+    {
+      "id": "applemail",
+      "label": "Apple Mail",
+      "color": "own",
+      "source": "commons",
+      "note": "the envelope tile Apple ships for Mail on iOS and, since Big Sur, macOS (no macOS-named SVG on Commons); Apple's artwork, nominative use; the owner accepted the trademark risk on 2026-11-08",
+      "licence": "Public domain (as stated on Wikimedia Commons, File:Mail (iOS).svg; trademarked)",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_%28iOS%29.svg"
+    },
+    {
+      "id": "applecalendar",
+      "label": "Apple Calendar",
+      "color": "own",
+      "source": "commons",
+      "note": "the white date tile with the red weekday, an SVG vectorised from Apple's icon (preferred over the MacOSCalendar.png raster); Apple's artwork, nominative use; the owner accepted the trademark risk on 2026-11-08",
+      "licence": "Public domain (as stated on Wikimedia Commons, File:Apple Calendar (iOS).svg)",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Apple_Calendar_%28iOS%29.svg"
+    }
+  ]
+}

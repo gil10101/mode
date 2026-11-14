@@ -1,0 +1,99 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Mode",
+  "version": "0.1.0",
+  "identifier": "app.mode.desktop",
+  "build": {
+    "frontendDist": "../../ui/dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "overlay",
+        "url": "overlay.html",
+        "title": "Mode overlay",
+        "width": 560,
+        "height": 40,
+        "transparent": true,
+        "decorations": false,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "focusable": false,
+        "focus": false,
+        "resizable": false,
+        "visible": false,
+        "visibleOnAllWorkspaces": true
+      },
+      {
+        "label": "app",
+        "url": "app.html",
+        "title": "Mode",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 600,
+        "center": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": { "x": 14, "y": 18 }
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost data: https://i.scdn.co https://*.mzstatic.com; font-src 'self'; connect-src ipc: http://ipc.localhost; frame-src 'none'; object-src 'none'",
+      "dangerousDisableAssetCspModification": false,
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$DATA/Mode/profile/**",
+          "$DATA/Mode-dev/profile/**"
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "appimage", "app", "dmg", "nsis"],
+    "externalBin": ["binaries/mode-hook"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "DeveloperTool",
+    "shortDescription": "Your notes, your Claude Code sessions and your inbox, in the notch and in one window.",
+    "longDescription": "Mode is a desktop command centre for developers who run Claude Code and also live in Gmail and Slack. It watches three attention streams and shows only what needs you now: your Claude Code sessions, with permission approvals and questions answered from an overlay at the top of the screen; a Markdown notes vault with tasks, statuses and quick capture from a hotkey; and your inbox and calendar, ranked by urgency with a one-line reason. Everything else stays one click away in the app window.",
+    "publisher": "Mode",
+    "copyright": "Copyright © 2026 the Mode authors",
+    "macOS": {
+      "minimumSystemVersion": "15.0"
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico",
+        "startMenuFolder": "Mode"
+      }
+    },
+    "linux": {
+      "deb": {
+        "section": "devel",
+        "recommends": ["xdg-utils", "git", "wmctrl"]
+      },
+      "appimage": {
+        "bundleMediaFramework": false
+      }
+    }
+  }
+}

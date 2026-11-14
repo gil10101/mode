@@ -1,0 +1,70 @@
+[package]
+name = "mode-app"
+description = "The Mode desktop app (Tauri 2): windows, commands, events, native overlay glue (08 §3.3)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+build = "build.rs"
+
+[lib]
+name = "mode_app"
+path = "src/lib.rs"
+
+[[bin]]
+name = "mode"
+path = "src/main.rs"
+
+[features]
+# Dictation (XC-37) is on in every shipped build; `--no-default-features`
+# (scripts/xcheck.sh) leaves whisper.cpp out and `dictation_status` says
+# `available: false`.
+default = ["speech"]
+speech = ["mode-core/speech"]
+
+[build-dependencies]
+tauri-build = { workspace = true }
+# build.rs drops `bundle.externalBin` through a TAURI_CONFIG merge patch when
+# the relay sidecar has not been built (plain `cargo build` / `cargo test`).
+serde_json = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[dependencies]
+mode-core = { workspace = true }
+mode-wire = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+dirs = { workspace = true }
+time = { workspace = true }
+rusqlite = { workspace = true }
+tokio = { workspace = true }
+# `macos-private-api` (the transparent overlay) and `protocol-asset` (the
+# profile picture) are declared in the workspace table.
+tauri = { workspace = true }
+tauri-plugin-global-shortcut = { workspace = true }
+tauri-plugin-notification = { workspace = true }
+tauri-plugin-os = { workspace = true }
+tauri-plugin-single-instance = { workspace = true }
+tauri-plugin-opener = { workspace = true }
+# Folder / file pickers the core shows (vault, export / import, profile
+# picture; 03 §2.8, §8.2, §8.18). The webviews never get `dialog:*`.
+tauri-plugin-dialog = { workspace = true }
+
+# GDK pointer state for the hot zone on the Linux dev build (the same gtk 0.18 Tauri links).
+[target.'cfg(not(any(target_os = "macos", windows)))'.dependencies]
+gtk = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+block2 = { workspace = true }
+objc2 = { workspace = true }
+objc2-app-kit = { workspace = true }
+objc2-foundation = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true }

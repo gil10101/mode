@@ -1,0 +1,213 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/mode-wire",
+  "crates/mode-hook",
+  "crates/mode-core",
+  "crates/mode-app",
+  "crates/mode-unify",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+publish = false
+repository = "https://github.com/gil10101/mode"
+
+# Every dependency of every member is declared here, once. Member manifests
+# say `workspace = true` and never add features or versions of their own.
+#
+# Feature lists are the union the whole workspace resolves (what `cargo test
+# --workspace` compiles, Tauri's graph included), not only what one member
+# calls. Cargo unifies features per selection, so a member that asked for
+# less would resolve differently under `-p` and compile a second copy of the
+# shared crates (`cargo test -p mode-core` after a workspace build used to
+# rebuild ~80 dependency units and write another ~7 GB). With one declaration
+# per crate, `-p mode-core`, `-p mode-app -p mode-hook` and the native CI
+# selections reuse the workspace build's artifacts. Transitive crates that
+# only Tauri's graph turns features on for are pinned by `crates/mode-unify`,
+# whose test fails with the lines to add when the graphs drift apart.
+#
+# Every version below was verified against the crates.io index on 2026-10-21
+# (`curl https://index.crates.io/...`); Cargo.lock pins the exact resolution.
+[workspace.dependencies]
+mode-wire = { path = "crates/mode-wire" }
+mode-core = { path = "crates/mode-core" }
+mode-unify = { path = "crates/mode-unify" }
+
+# `alloc`, `rc`: Tauri's graph.
+serde = { version = "1.0.229", features = ["alloc", "derive", "rc"] }
+# `alloc`, `raw_value`: Tauri's graph.
+serde_json = { version = "1.0.154", features = ["alloc", "raw_value"] }
+thiserror = "2.0.21"
+anyhow = "1.0.104"
+# core: the IPC server, PTY pumps and connectors; app: the async commands. `fs`: Tauri's graph.
+tokio = { version = "1.54.0", features = ["fs", "io-util", "macros", "net", "rt", "rt-multi-thread", "sync", "time"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", default-features = false, features = ["fmt", "env-filter", "std", "ansi"] }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+# `v4` and `serde`: Tauri's graph (macOS adds `v4`; declared for every target so they match).
+uuid = { version = "1.28.0", features = ["serde", "v4", "v7"] }
+# `macros`, `parsing`, `serde`: Tauri's graph.
+time = { version = "0.3.55", features = ["formatting", "macros", "parsing", "serde"] }
+sha2 = "0.11.1"
+dirs = "7.0.0"
+libc = "0.2.191"
+tempfile = "3.27.0"
+# Unified diff for the hook-install preview (05 §3.6); pure Rust, MSRV 1.85.
+similar = "3.2.0"
+# Transcript watcher (05 §5.2): inotify / FSEvents / ReadDirectoryChangesW, with a polling mode for tests and WSL paths.
+notify = "8.2.0"
+# Deleted notes go to the OS trash, never unlink (04 §12): macOS Trash,
+# Windows Recycle Bin, freedesktop trash. MIT; objc2 / windows versions
+# already in the tree. Without chrono (only its Linux `time_deleted` parsing).
+trash = { version = "5.2.9", default-features = false, features = ["coinit_apartmentthreaded"] }
+# The PTY host for embedded sessions (05 §8.1, 08 §3.3 `pty`): openpty +
+# fork/exec on macOS / Linux, ConPTY on Windows. MIT; crates.io release.
+portable-pty = "=0.9.0"
+# PTY bytes cross the bridge as standard base64 (`ui/src/state/contract-terminal.ts`);
+# the version Tauri already links.
+base64 = "0.22.1"
+# Connectors and AI backends (06 §2, §10; 08 §3.2 `http`): HTTPS to Google,
+# Slack and Anthropic, loopback HTTP to Ollama / LM Studio. reqwest (the
+# version Tauri already links) on rustls with the ring provider (no aws-lc
+# C build, never OpenSSL: deny.toml); the OS root store through
+# rustls-platform-verifier; the system proxy honored (06 §12).
+reqwest = { version = "=0.13.5", default-features = false, features = ["rustls-no-provider", "http2", "system-proxy"] }
+rustls = { version = "=0.23.46", default-features = false, features = ["ring", "std", "tls12", "logging"] }
+# Keyword rules are Rust `regex` syntax, linear time (07 §3.3); join-link
+# patterns (06 §7.4). Already in the tree.
+regex = "=1.13.1"
+# Authorization URLs, query strings and form bodies (06 §4.2). Already in the
+# tree. `serde`: Tauri's graph.
+url = { version = "=2.5.8", features = ["serde"] }
+# PKCE verifier and OAuth state from the OS RNG (06 §4.3). Already in the
+# tree. `std`: Tauri's graph.
+getrandom = { version = "=0.3.4", features = ["std"] }
+# The secret store facade (06 §5, 08 §8): keyring-core plus the native
+# stores per OS; Linux (dev / CI only) uses the explicit file store.
+keyring-core = "=1.0.1"
+# Keychain (the `keychain` module; `protected` needs a provisioning profile, 08 §8).
+apple-native-keyring-store = { version = "=1.0.2", features = ["keychain"] }
+# Credential Manager for the secret store facade (06 §5, 08 §8).
+windows-native-keyring-store = { version = "=1.1.0", default-features = false }
+# Automations (03 §7B.4): IANA zones with their DST rules for `schedule_json.tz`
+# and the device zone; the version Tauri already links (via serde_with). The
+# bundled tzdb is a fallback so next-run math is identical on a machine
+# without /usr/share/zoneinfo (Windows uses it always).
+jiff = { version = "=0.2.38", features = ["tzdb-bundle-always"] }
+
+# Tauri 2 (>= 2.8 for the `focusable` window attribute; 08 §6.1, §13.1).
+# `macos-private-api` is required for a transparent window on macOS (the overlay);
+# `protocol-asset` serves the profile picture under `<app_data_dir>/profile/`
+# (scope in tauri.conf.json `app.security.assetProtocol`).
+tauri = { version = "2.12.4", features = ["macos-private-api", "protocol-asset"] }
+tauri-build = { version = "2.7.3", features = [] }
+tauri-plugin-global-shortcut = "2.4.1"
+tauri-plugin-notification = "2.7.0"
+tauri-plugin-os = "2.4.0"
+tauri-plugin-single-instance = "2.5.4"
+tauri-plugin-opener = "2.7.2"
+# Folder / file pickers the core shows (vault, export / import, profile
+# picture; 03 §2.8, §8.2, §8.18). The webviews never get `dialog:*`; gtk3
+# backend on Linux.
+tauri-plugin-dialog = "2.8.3"
+
+# Dictation (XC-37, ADR-0061): whisper.cpp on this machine (Unlicense
+# bindings, MIT library; built with cmake, bindings pre-generated:
+# `.cargo/config.toml` sets WHISPER_DONT_GENERATE_BINDINGS), the default
+# input device through cpal (CoreAudio / WASAPI / ALSA; Linux needs
+# libasound2-dev), and rubato to resample it to 16 kHz mono. Behind
+# mode-core's `speech` feature; whisper.cpp runs on the GPU through
+# Metal (its `-sys` crate's `metal` feature), declared for macOS only.
+whisper-rs = "0.16.0"
+whisper-rs-sys = { version = "0.15.0", features = ["metal"] }
+cpal = "0.18.2"
+rubato = "5.0.1"
+
+# Native glue (08 §6.2, §6.3); compiled only on the matching target. The
+# lists are what Tauri's graph resolves on that OS, a superset of the overlay's
+# own needs (objc2-foundation with its default features is the whole crate);
+# the `Win32_Media_*`, `Win32_Devices_Properties`, `Win32_Security` and
+# `Win32_System_Performance` features are cpal's WASAPI (dictation).
+objc2 = { version = "0.6.5", features = ["disable-encoding-assertions", "exception"] }
+# The microphone prompt's completion handler (`platform/macos/mic.rs`); the block2 objc2-app-kit already pulls in.
+block2 = "0.6.2"
+objc2-app-kit = { version = "0.3.2", default-features = false, features = [
+  "NSAccessibility", "NSAccessibilityProtocols", "NSAlert", "NSAnimation", "NSAppearance",
+  "NSApplication", "NSAttributedString", "NSBox", "NSButton", "NSCell", "NSColor", "NSControl",
+  "NSDragging", "NSEvent", "NSFont", "NSGlassEffectView", "NSGraphics", "NSImage", "NSMenu",
+  "NSMenuItem", "NSOpenGLView", "NSOpenPanel", "NSPanel", "NSPasteboard", "NSPopover",
+  "NSPrintInfo", "NSPrintOperation", "NSResponder", "NSRunningApplication", "NSSavePanel",
+  "NSScreen", "NSTextFinder", "NSTextView", "NSUserActivity", "NSUserInterfaceItemIdentification",
+  "NSUserInterfaceValidation", "NSView", "NSVisualEffectView", "NSWindow", "NSWorkspace", "alloc",
+  "bitflags", "block2", "objc2-core-foundation", "objc2-quartz-core", "std",
+] }
+objc2-foundation = "0.3.2"
+windows = { version = "0.62.2", features = [
+  # Media_Control and Storage_Streams: Now playing's SMTC session (`media/smtc.rs`, OV-37).
+  "Data_Xml_Dom", "Foundation_Collections", "Media_Control", "Storage_Streams",
+  "UI_Notifications", "Win32_Devices_HumanInterfaceDevice",
+  "Win32_Devices_Properties", "Win32_Foundation", "Win32_Globalization", "Win32_Graphics_Dwm",
+  "Win32_Graphics_Gdi", "Win32_Media_Audio", "Win32_Media_KernelStreaming", "Win32_Media_Multimedia",
+  "Win32_Security", "Win32_Storage_EnhancedStorage", "Win32_Storage_FileSystem",
+  "Win32_System_Com_StructuredStorage", "Win32_System_DataExchange", "Win32_System_Diagnostics_Debug",
+  "Win32_System_Diagnostics_ToolHelp", "Win32_System_LibraryLoader", "Win32_System_Memory",
+  "Win32_System_Ole", "Win32_System_Performance", "Win32_System_Registry",
+  "Win32_System_StationsAndDesktops", "Win32_System_SystemInformation", "Win32_System_SystemServices",
+  "Win32_System_Threading", "Win32_System_Variant", "Win32_System_WinRT",
+  "Win32_System_WindowsProgramming", "Win32_UI_Accessibility", "Win32_UI_Controls", "Win32_UI_HiDpi",
+  "Win32_UI_Input_Ime", "Win32_UI_Input_KeyboardAndMouse", "Win32_UI_Input_Pointer",
+  "Win32_UI_Input_Touch", "Win32_UI_Shell_Common", "Win32_UI_Shell_PropertiesSystem",
+  "Win32_UI_TextServices", "Win32_UI_WindowsAndMessaging",
+] }
+# GDK pointer state on the Linux dev build; the version Tauri already links.
+gtk = { version = "0.18.2", default-features = false, features = ["v3_24"] }
+# Raw bindings: the pipe name SID and DACL (wire, core), Toolhelp32 ppid and the
+# console window (relay), CTRL_BREAK to a headless run (core). The rest of the
+# list is what Tauri's graph resolves on Windows.
+windows-sys = { version = "0.61.2", features = [
+  "Wdk_Storage_FileSystem", "Wdk_System_IO", "Win32_Devices_Communication", "Win32_Foundation",
+  "Win32_Globalization", "Win32_Graphics_Dwm", "Win32_Graphics_Gdi", "Win32_Networking_WinSock",
+  "Win32_Security_Authorization", "Win32_Security_Credentials", "Win32_Security_Cryptography",
+  "Win32_Storage_FileSystem", "Win32_System_Com", "Win32_System_Console", "Win32_System_DataExchange",
+  "Win32_System_Diagnostics_ToolHelp", "Win32_System_IO", "Win32_System_LibraryLoader",
+  "Win32_System_Pipes", "Win32_System_Registry", "Win32_System_SystemInformation",
+  "Win32_System_SystemServices", "Win32_System_Threading", "Win32_System_WindowsProgramming",
+  "Win32_UI_Accessibility", "Win32_UI_Controls", "Win32_UI_HiDpi", "Win32_UI_Input_KeyboardAndMouse",
+  "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging",
+] }
+
+# Panic locations and backtraces keep file:line; the full DWARF type info is
+# dropped. Measured on the workspace's tests (2026-10-28, Linux, 4 cores): the
+# test executables went from 8.4 GB (51 binaries, 165 MB each, full debug)
+# to 0.4 GB (9 binaries, one integration binary per crate). `split-debuginfo
+# = "unpacked"` was measured on top and left out: 0.07 GB smaller, no faster.
+[profile.dev]
+debug = "line-tables-only"
+
+# Build scripts and proc-macros (and their dependencies) get the same debug
+# setting instead of Cargo's default of none. Crates such as quote and
+# unicode-ident are build-time and run-time dependencies in Tauri's graph; with
+# one profile, a native build compiles them once for both, and a subset build
+# that needs them only at build time reuses that unit instead of starting a
+# second proc-macro chain (syn, serde_derive, then serde and all its users).
+[profile.dev.build-override]
+debug = "line-tables-only"
+
+# Spelled out: tests and their dependencies use exactly the dev settings, so a
+# `cargo test` and a `cargo build` share every dependency artifact.
+[profile.test]
+inherits = "dev"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+strip = true
+panic = "abort"
+
+# The relay must stay small and start fast even in debug builds.
+[profile.dev.package.mode-hook]
+opt-level = 1

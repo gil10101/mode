@@ -1,0 +1,22 @@
+/* The Terminal tab (03 §3.8) and the prompt delivery marks (05 §14).
+   `tm-*` only, tokens only. The pane keeps the wireframe's `.sd-term` box
+   (sessions.css); xterm fills it. The terminal palette reads
+   `--m-terminal-*` (10 §2) with the closest `--m-*` role as fallback, the
+   same order palette.ts uses for the xterm theme. */
+
+.tm-bar{display:flex;align-items:center;gap:8px;height:32px;margin:12px 16px 0;min-width:0;flex:none}
+.tm-status{flex:1;min-width:0;font-size:12px;color:var(--m-fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.sd-term.tm-pane{position:relative;display:flex;flex-direction:column;margin-top:8px;padding:10px 4px 10px 14px;background:var(--m-terminal-bg,var(--m-surface));color:var(--m-terminal-fg,var(--m-fg));white-space:normal}
+.tm-host{position:relative;flex:1;min-height:0;min-width:0}
+.tm-host .xterm{height:100%}
+.tm-pane .tm-host .xterm .xterm-viewport{background-color:var(--m-terminal-bg,var(--m-surface))}
+.tm-pane .tm-host .xterm .composition-view{background:var(--m-terminal-bg,var(--m-surface));color:var(--m-terminal-fg,var(--m-fg))}
+.tm-host .xterm:focus,.tm-host .xterm-helper-textarea:focus{outline:none}
+
+.tm-find{position:absolute;top:8px;right:12px;z-index:10;display:flex;align-items:center;gap:4px;padding:4px;border-radius:var(--m-r-ctl);background:var(--m-surface);box-shadow:var(--m-shadow-pop);font:13px/1.4 var(--m-font-ui)}
+.tm-find .m-input{width:200px}
+.tm-find-count{min-width:64px;padding:0 4px;font-size:11px;color:var(--m-fg-3);white-space:nowrap;text-align:right}
+
+.sd-thread .m-thread.tm-delivery{margin-top:10px}
+.tm-mark{align-self:flex-end;margin-top:-6px;font-size:11px;color:var(--m-fg-3)}

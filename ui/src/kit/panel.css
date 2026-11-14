@@ -1,0 +1,12 @@
+/* The list · detail-panel split of docs/wireframes/app-window.html (.aw-split / .aw-panel),
+   which mode.css does not define yet. Kept verbatim so the app matches the wireframe. */
+.m-split{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:8px;align-items:start}
+/* 10 §3.7: a split that stays mounted opens its panel column 0 → 440 px (motion.slow) and the panel slides in; the list never jumps */
+.m-split.is-closed,.m-split.is-open{overflow-x:clip;transition:grid-template-columns 220ms var(--m-ease-in-out),column-gap 220ms var(--m-ease-in-out)}
+.m-split.is-closed{grid-template-columns:minmax(0,1fr) 0px;column-gap:0}
+.m-split.is-open > .m-panel{width:440px}
+.m-split > .m-panel{animation:m-panel-in 220ms var(--m-ease-out)}
+@keyframes m-panel-in{from{opacity:0;transform:translateX(12px)}}
+.m-panel{min-width:0;min-height:0;padding:12px;border-radius:var(--m-r-card);background:var(--m-surface);overflow:hidden}
+.m-panel .m-group-label{padding-left:4px}
+.m-panel .m-msg{padding:8px 4px;margin:0 -4px}

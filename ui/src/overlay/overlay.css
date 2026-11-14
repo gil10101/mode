@@ -1,0 +1,129 @@
+/* Overlay page rules, scoped under .ov-* (mode.css is the kit and stays a byte
+   copy of the wireframe stylesheet). The webview is transparent; only the
+   drawn shape paints. */
+html, body { margin: 0; background: transparent; overflow: hidden; }
+#root { display: block; }
+
+.ov-root { position: relative; width: 100%; min-height: 0; font: 13px/1.4 var(--m-font-ui); color: var(--m-fg); -webkit-font-smoothing: antialiased; zoom: var(--ov-scale, 1); }
+.ov-root[data-placement="notch"], .ov-root[data-placement="top-bar"] { display: flex; justify-content: center; align-items: flex-start; }
+.ov-root[data-placement="right-edge"] { display: flex; justify-content: flex-end; align-items: flex-start; }
+.ov-root[data-state="hidden"] { height: 0; }
+.ov-frame { flex: none; max-width: 100%; }
+.ov-root .m-mascot img { pointer-events: none; }
+.ov-root .m-mascot .m-badge-state { transition: background-color 120ms; }
+
+/* Fixed frame widths (02 §6; the wireframe draws 560 / 520 / 360): the window is a stage larger than the frame
+   (02 §12), so the frame never follows the window (mode.css's ≤ 900 px rule would make it). */
+.ov-root .m-overlay.is-topbar { width: 520px; }
+.ov-root .m-overlay.is-rightedge { width: 360px; }
+
+/* notch geometry comes from display.changed */
+.ov-root .m-overlay-wings { grid-template-columns: minmax(0, 1fr) var(--ov-notch-w, 184px) minmax(0, 1fr); height: var(--ov-notch-h, 36px); }
+/* the notch frame morphs (02 §12): one node across peek, compact and expanded, its size set by NotchFrame (--ov-w × --ov-h, the
+   content's own size) and carried there by the row's transition (--ov-ms, --ov-ease); the background crosses from the peek's black
+   to the bezel with it, and the wrapper's fillets follow; clipped, never scrollable, so focusing the capture box mid-move cannot scroll
+   the content inside the moving frame */
+.ov-root[data-placement="notch"] .m-overlay.is-notch { display: flex; flex-direction: column; align-items: center; width: var(--ov-w); height: var(--ov-h); overflow: clip; transition: width var(--ov-ms) var(--ov-ease), height var(--ov-ms) var(--ov-ease), background-color var(--ov-ms) var(--ov-ease); }
+.ov-root[data-placement="notch"] .m-notch::before, .ov-root[data-placement="notch"] .m-notch::after { transition: background-color var(--ov-ms) var(--ov-ease); }
+/* the content is laid out at its state's final size and never reflows with the frame: a child wider than the frame overflows equally
+   on both sides, so it stays centered under the housing and the frame's rounded clip reveals it */
+.ov-root[data-placement="notch"] .m-overlay.is-notch > * { flex: none; }
+.ov-root[data-placement="notch"][data-state="expanded"] .m-overlay.is-notch > * { width: var(--ov-notch-expanded-w, 560px); }
+.ov-root[data-placement="notch"][data-state="compact"] .m-overlay.is-notch > * { width: calc(var(--ov-notch-w, 184px) + 2 * var(--ov-wing-w, 166px)); }
+.ov-root[data-placement="notch"][data-state="peek"] .m-overlay.is-notch > * { width: calc(var(--ov-notch-w, 184px) + 48px); }
+.ov-root[data-state="compact"] .m-overlay.is-notch .m-overlay-wings { height: calc(var(--ov-notch-h, 36px) + 4px); }
+.ov-root[data-state="compact"] .m-overlay.is-notch .m-overlay-housing { height: var(--ov-notch-h, 36px); align-self: start; }
+/* the capsule placements morph too (02 §12): .ov-morph is one node across peek, compact and expanded, its size set by CapsuleFrame
+   (--ov-w × --ov-h, the arriving view's own size) and carried there by the row's transition; while it moves it draws the silhouette
+   (the surface, the hairline on top of the clipped view, the state's corners), and at rest it is the view's own box, so nothing of it
+   shows; the view keeps its final size, centered (flush right at right-edge), and is revealed by the clip */
+.ov-root:not([data-placement="notch"]) .ov-morph { position: relative; display: flex; flex: none; align-items: flex-start; justify-content: center; width: var(--ov-w); height: var(--ov-h); overflow: clip; background: var(--m-surface); border-radius: var(--m-r-overlay); transition: width var(--ov-ms) var(--ov-ease), height var(--ov-ms) var(--ov-ease), border-radius var(--ov-ms) var(--ov-ease); }
+.ov-root[data-placement="right-edge"] .ov-morph { justify-content: flex-end; border-radius: var(--m-r-overlay) 0 0 var(--m-r-overlay); }
+.ov-root[data-placement="top-bar"] .ov-morph[data-shape="peek"] { border-radius: 0 0 12px 12px; } /* design: the kit's .m-peek.is-top corners, which the moving frame matches at rest */
+.ov-root .ov-morph > * { flex: none; }
+.ov-root .ov-morph > span.ov-frame { display: flex; }
+.ov-root .ov-morph::after { content: ""; position: absolute; inset: 0; z-index: 1; border: 1px solid var(--m-line); border-radius: inherit; pointer-events: none; }
+.ov-root[data-placement="right-edge"] .ov-morph::after { border-right-width: 0; }
+.ov-root[data-placement="top-bar"] .ov-morph[data-shape="peek"]::after { border-top-width: 0; }
+/* every frame keeps its own size, centered on the anchor (flush right at right-edge), and is never clamped to the stage */
+.ov-root .ov-frame, .ov-root .m-notch, .ov-root .m-overlay { max-width: none; }
+.ov-root[data-state="peek"] .m-overlay-wing.is-right { padding: 0; justify-content: center; }
+.ov-root .m-overlay-wing { gap: 4px; }
+.ov-root .m-overlay-wing .m-btn { height: 24px; font-size: 12px; }
+.ov-root .m-overlay-wing .m-btn-icon { width: 24px; }
+.ov-root .m-overlay-wing .m-ellipsis { flex: 1; }
+.ov-root .m-overlay-wing.is-right .m-ellipsis { flex: none; }
+
+/* arrival pulse (02 §12): accent along the housing, a dot on the capsule peeks */
+.ov-pulse .m-overlay-housing { border-bottom: 2px solid var(--m-accent); }
+.ov-pulse.m-peek::after, .ov-pulse .ov-peek-dot { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--m-accent); flex: none; }
+
+/* compact capsule per placement */
+.ov-root .m-pill { max-width: 440px; }
+.ov-root .m-pill .m-btn { height: 24px; font-size: 12px; }
+.ov-root .m-pill .m-btn-icon { width: 24px; }
+.ov-root[data-placement="right-edge"] .m-pill { max-width: 400px; border-right: 0; border-radius: var(--m-r-pill) 0 0 var(--m-r-pill); }
+.ov-root[data-placement="right-edge"] .m-peek { border-right: 0; }
+.ov-root .m-pill-text { flex: 1 1 auto; }
+.ov-root .m-pill-text .m-diff { font-size: 11px; }
+.ov-flash { color: var(--m-fg); }
+.ov-flash.is-muted { color: var(--m-fg-3); }
+.ov-flash a { color: var(--m-fg-2); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--m-line-strong); }
+
+/* menus anchored under their trigger */
+.ov-anchor { position: relative; display: inline-flex; }
+.ov-menu { position: absolute; right: 0; top: 100%; z-index: 5; margin-top: 4px; }
+.ov-menu-up { top: auto; bottom: 100%; margin: 0 0 4px; }
+.ov-root[data-state="compact"] .ov-menu, .ov-root[data-state="peek"] .ov-menu { position: fixed; top: auto; right: auto; }
+
+/* expanded */
+.ov-root .m-overlay-head .m-tag, .ov-root .m-overlay-wing .m-tag { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+.ov-health { opacity: .6; }
+.ov-health.m-dot { background: var(--m-bad); }
+.ov-pin { color: var(--m-fg); }
+.ov-pin .m-icon { fill: currentColor; }
+.ov-root .m-list { min-height: 0; }
+.ov-root .m-list > .m-thread-permission, .ov-root .m-list > .m-thread-question { margin: 2px 12px 8px; }
+.ov-root .m-thread-permission .m-cmd { margin: 0 0 10px; }
+.ov-root .m-thread-permission .m-btn, .ov-root .m-thread-question .m-btn { height: 24px; font-size: 12px; }
+.ov-root .m-thread-question .m-btn-group { margin-top: 6px; }
+.ov-root .m-choice { cursor: default; }
+.ov-decided { margin-top: 8px; font-size: 11px; color: var(--m-fg-3); }
+.ov-rule { margin-left: 6px; }
+.ov-root .m-row { cursor: default; }
+.ov-root .m-row.is-selected { background: var(--m-selected); }
+.ov-root .m-row-meta { min-width: 24px; }
+.ov-root .m-row-detail .m-diff { font-size: 11px; }
+.ov-paging { margin-left: auto; font-weight: 400; font-size: 11px; color: var(--m-fg-3); display: inline-flex; align-items: center; gap: 4px; }
+.ov-paging .m-btn { height: 20px; width: 20px; font-size: 11px; }
+
+/* fold, overflow, banner and empty rows (the wireframe's page classes; mode.css has no .m-fold yet) */
+.ov-line { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; font-size: 12px; color: var(--m-fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ov-line.ov-action:hover { background: var(--m-hover); }
+.ov-line > .m-btn { margin-left: auto; height: 22px; font-size: 12px; }
+.ov-line .ov-chev { width: 10px; font-size: 10px; color: var(--m-fg-3); } /* design: the pill count glyph, not text */
+.ov-empty { padding: 14px 12px 12px; font-size: 12px; line-height: 1.5; color: var(--m-fg-2); }
+.ov-empty .m-btn { margin-top: 8px; }
+.ov-empty code { font-family: var(--m-font-mono); }
+.ov-empty a { color: var(--m-fg-2); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--m-line-strong); }
+.ov-root .m-capture .m-chip { flex: none; max-width: 160px; }
+.ov-root .m-capture .m-input[aria-disabled="true"] { color: var(--m-fg-3); }
+.ov-time { width: 88px; flex: none; font-size: 12px; color: var(--m-fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ov-account { display: block; width: 8px; height: 8px; margin: auto; border-radius: 50%; background: var(--m-fg-3); }
+.ov-root .m-task { cursor: default; }
+.ov-root .m-task.is-selected { background: var(--m-selected); border-radius: var(--m-r-ctl); }
+
+/* motion (02 §12); every rule is canceled under reduced motion */
+@keyframes ov-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ov-slide { from { opacity: 0; transform: translateX(4px); } to { opacity: 1; transform: none; } }
+/* the arriving state's content fades in over the frame's move, with the move's row (02 §12; the children remount on a state change,
+   so a same-state update leaves them be) */
+.ov-root[data-placement="notch"] .m-overlay.is-notch > * { animation: ov-fade var(--ov-ms, 120ms) var(--ov-ease, ease-out) both; }
+.ov-root:not([data-placement="notch"]) .ov-morph > * { animation: ov-fade var(--ov-ms, 120ms) var(--ov-ease, ease-out) both; }
+.ov-root[data-state="expanded"] .m-row, .ov-root[data-state="expanded"] .m-msg, .ov-root[data-state="expanded"] .m-task { animation: ov-fade 80ms ease-out both; }
+.ov-swap { animation: ov-slide 120ms ease-out both; }
+.ov-flash { animation: ov-fade 200ms ease-out both; }
+.ov-root[data-motion="reduced"] *, .ov-root[data-motion="reduced"] *::before, .ov-root[data-motion="reduced"] *::after { animation: none !important; transition: none !important; } /* design: the reduced-motion override must win */
+@media (prefers-reduced-motion: reduce) {
+  .ov-root *, .ov-root *::before, .ov-root *::after { animation: none !important; transition: none !important; } /* design: the reduced-motion override must win */
+}

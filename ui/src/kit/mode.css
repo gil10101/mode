@@ -1,0 +1,1520 @@
+/* ==========================================================================
+   mode.css — Mode design system v0.2 (docs phase)
+   Shared stylesheet for every wireframe in docs/wireframes/.
+   Source of truth: this file, with docs/10-ui-ux.md for the tokens (§3,
+   prefix --m-) and the component names (§7), verbatim.
+
+   Sections
+     1  tokens (light, dark, notch bezel)
+     2  base reset, type scale, small primitives
+     3  app window and sidebar, bottom group and profile row (§7.1)
+     4  list rows, state column, group labels, avatars, subagent rows (§7.4)
+     5  message rows
+     6  diff and usage
+     7  buttons, menus, inputs, capture
+     8  tabs, segmented control, chips, query bar, folder tree
+     9  overlay, compact pill, peek tab, mascot and state badge
+    10  stage and callout gutter
+    11  cards, session header, task rows, thread, composer
+    11b chat: thread, bubbles, activity groups, shimmer, input, + menu, slash popover
+    12  calendar grid; round 2 week (all-day, now-line, flat events), agenda, month (§7.2)
+    13  stats and the day tracker (§7.3); skeletons and the stale state (§7.4.21)
+    13b views (§7.5–7.11): breadcrumb, key caps, shortcuts, integrations, automations, switch, form, palette
+    13c onboarding
+    13d settings: page list, page column, groups, cards and rows; select and combobox; notices; swatch grid
+    13e motion: press feedback, hover fades, entering elements, the reduced-motion switch-off
+    14  doc-page chrome (.wf-*, .lg-*)
+   ========================================================================== */
+
+
+/* 1. TOKENS ------------------------------------------------------------- */
+
+:root{
+  color-scheme:light;
+  --m-bg:#F3F1EC;            /* canvas */
+  --m-surface:#FAF9F6;       /* panels, cards, rows */
+  --m-sunken:#ECE9E2;        /* inputs, code, inactive segments */
+  --m-hover:#EFECE6;
+  --m-selected:#E9E5DC;      /* selected row/card background, never an accent border */
+  --m-line:#E1DDD4;          /* dividers and the single container border */
+  --m-line-strong:#C9C4B8;   /* focus ring, 1 px, :focus-visible only */
+  --m-fg:#1E1D1A;
+  --m-fg-2:#5B5952;
+  --m-fg-3:#8A877E;
+  --m-accent:#D9480F;        /* one primary button per screen, waiting marker, urgent bar */
+  --m-accent-bg:#FBECE3;     /* only behind the waiting-row marker (and the query person chip) */
+  --m-ok:#2F7D4A;
+  --m-bad:#B3261E;
+  --m-info:#35669A;
+  --m-font-ui:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI",system-ui,"Helvetica Neue",Arial,sans-serif;   /* Geist is bundled (10 §3.3, ADR-0056); the system stack stands in until it loads */
+  --m-font-mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,"Cascadia Mono",Consolas,"DejaVu Sans Mono",monospace;
+  --m-shadow-pop:0 1px 2px rgba(30,29,26,.06),0 8px 24px rgba(30,29,26,.14),0 0 0 1px var(--m-line);
+  --m-r-xs:4px;              /* key caps, swatches, small chips */
+  --m-r-ctl:6px;             /* controls */
+  --m-r-card:10px;           /* cards */
+  --m-r-overlay:14px;        /* overlay expanded */
+  --m-r-pill:999px;          /* pills, avatars */
+  --m-ease-out:cubic-bezier(.2,0,0,1);      /* motion (10 §3.7): an element entering */
+  --m-ease-in:cubic-bezier(.4,0,1,1);       /* an element leaving */
+  --m-ease-in-out:cubic-bezier(.4,0,.2,1);  /* a control changing state */
+  --m-switch-off:color-mix(in oklab,var(--m-fg) 24%,var(--m-surface));   /* the off track of .m-switch (10 §7.4.14); restated in the dark pack so it mixes that pack's colors */
+}
+
+/* Dark pack: same roles, inverted neutrals, accent kept, ok/bad/info lifted a step.
+   The notch bezel (.is-notch) always uses this pack, in either theme. */
+[data-theme="dark"],
+.m-overlay.is-notch,
+.m-pill.is-notch,
+.m-notch{
+  color-scheme:dark;
+  --m-bg:#191816;
+  --m-surface:#21201D;
+  --m-sunken:#2C2B27;
+  --m-hover:#292824;
+  --m-selected:#312F2A;
+  --m-line:#34322D;
+  --m-line-strong:#4D4A43;
+  --m-fg:#ECEAE4;
+  --m-fg-2:#ADA99F;
+  --m-fg-3:#85817A;
+  --m-accent:#D9480F;
+  --m-accent-bg:#3B2219;
+  --m-ok:#4E9C69;
+  --m-bad:#D4574D;
+  --m-info:#5F8FC4;
+  --m-shadow-pop:0 1px 2px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.5),0 0 0 1px var(--m-line-strong);
+  --m-switch-off:color-mix(in oklab,var(--m-fg) 24%,var(--m-surface));
+}
+/* Notch = the light theme's --m-fg as a black bezel; a shade blacker on a dark canvas. */
+.m-overlay.is-notch,.m-pill.is-notch,.m-notch{--m-bg:#1E1D1A;--m-surface:#1E1D1A;--m-sunken:#2E2D2A;--m-hover:#2A2927;--m-selected:#343330;--m-line:#363430}
+[data-theme="dark"] .m-overlay.is-notch,[data-theme="dark"] .m-pill.is-notch,[data-theme="dark"] .m-notch{--m-bg:#111110;--m-surface:#111110;--m-sunken:#232220;--m-hover:#1E1D1B;--m-selected:#282725;--m-line:#2A2927}
+
+
+/* 2. BASE, TYPE, PRIMITIVES --------------------------------------------- */
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--m-bg);
+  color:var(--m-fg);
+  font:13px/20px var(--m-font-ui);
+  -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}
+img,svg{display:block;max-width:100%}
+h1,h2,h3,h4,p,ul,ol,figure,fieldset{margin:0}
+fieldset{padding:0;border:0;min-width:0}
+button,input,select,textarea{font:inherit;color:inherit;margin:0}
+button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+a{color:var(--m-info);text-decoration:none}
+code,.m-mono{font-family:var(--m-font-mono);font-size:12px}
+::selection{background:var(--m-selected)}
+:focus{outline:none}
+:focus-visible{outline:none;box-shadow:0 0 0 1px var(--m-line-strong)}   /* the only focus treatment; never accent */
+
+/* type scale (10 §3.3): 11/16 meta · 12/16 dense and overlay · 13/20 body · 15/20 title · 20/28 page; line heights on the 4-px grid; weights 400/500/600 */
+.m-t-meta{font-size:11px;line-height:16px;color:var(--m-fg-3)}
+.m-t-dense{font-size:12px;line-height:16px}
+.m-t-title{font-size:15px;font-weight:600;line-height:20px}
+.m-t-page{font-size:20px;font-weight:600;line-height:28px}
+.m-fg-2{color:var(--m-fg-2)}
+.m-fg-3{color:var(--m-fg-3)}
+.m-ellipsis{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-meta{min-width:0;font-size:11px;color:var(--m-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-meta code{font-size:11px}
+.m-divider{height:1px;border:0;margin:0;background:var(--m-line)}
+.m-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:var(--m-r-pill);
+  background:var(--m-sunken);
+  color:var(--m-fg-2);
+  font-size:11px;
+  font-weight:500;
+  line-height:1;
+  flex:none;
+}
+.m-dot{width:6px;height:6px;border-radius:50%;background:var(--m-accent);flex:none}
+.m-icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.m-stack{display:flex;flex-direction:column;gap:8px;min-width:0}
+.m-inline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+
+
+/* 3. APP WINDOW AND SIDEBAR --------------------------------------------- */
+
+.m-window{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  min-height:280px;
+  background:var(--m-bg);
+  border:1px solid var(--m-line);
+  border-radius:var(--m-r-card);
+  overflow:hidden;
+}
+.m-sidebar{
+  display:flex;
+  flex-direction:column;
+  width:220px;
+  min-width:0;
+  padding:10px 8px 8px;
+  background:var(--m-bg);
+  border-right:1px solid var(--m-line);
+}
+.m-sidebar.is-collapsed{width:56px;align-items:center}
+.m-sidebar-top{display:flex;align-items:center;gap:8px;height:28px;padding:0 6px;margin-bottom:10px;white-space:nowrap}
+.m-traffic{display:flex;gap:6px;margin-right:4px}
+.m-traffic i{display:block;width:11px;height:11px;border-radius:50%;background:var(--m-line-strong)}
+html[data-shell="tauri"] .m-traffic{display:none}   /* the real window: macOS draws its own buttons in this slot, which keeps its 28 px */
+.m-wordmark{font-weight:600}
+.m-sidebar-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  height:30px;
+  padding:0 8px;
+  border-radius:var(--m-r-ctl);
+  color:var(--m-fg-2);
+  min-width:0;
+  white-space:nowrap;
+  width:100%;
+}
+.m-sidebar-item:hover{background:var(--m-hover)}
+.m-sidebar-item.is-active{background:var(--m-selected);color:var(--m-fg)}
+.m-sidebar-item .m-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-sidebar-foot{
+  margin-top:auto;
+  padding:10px 8px 0;
+  border-top:1px solid var(--m-line);
+  font-size:11px;
+  color:var(--m-fg-3);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+/* collapsed: icons only; the count hides, the waiting dot stays (top-right of the icon) */
+.m-sidebar.is-collapsed .m-sidebar-top{padding:0;justify-content:center}
+.m-sidebar.is-collapsed .m-traffic,.m-sidebar.is-collapsed .m-wordmark,.m-sidebar.is-collapsed .m-label,.m-sidebar.is-collapsed .m-count,.m-sidebar.is-collapsed .m-sidebar-foot{display:none}
+.m-sidebar.is-collapsed .m-sidebar-item{position:relative;width:40px;justify-content:center;padding:0}
+.m-sidebar.is-collapsed .m-dot{position:absolute;top:7px;right:8px}
+/* round 2 (§7.1): no wordmark, no footer; bottom group after a divider, then the profile row (picture · name / tokens) */
+.m-sidebar-bottom{margin-top:auto;padding-top:8px;border-top:1px solid var(--m-line)}
+.m-profile{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:center;height:44px;margin-top:4px;padding:0 8px;border-radius:var(--m-r-ctl);cursor:pointer}
+.m-mascot.is-24{width:24px;height:24px}
+.m-sidebar.is-collapsed .m-profile{width:40px;grid-template-columns:24px;justify-content:center;padding:0}
+.m-sidebar.is-collapsed .m-profile .m-row-text{display:none}
+/* nested list under an entry (10 §7.4.7): the Chat conversations; opens with the view, 0fr → 1fr */
+.m-sidebar-sub{display:grid;grid-template-rows:0fr;transition:grid-template-rows 160ms ease}
+.m-sidebar-sub.is-open{grid-template-rows:1fr}
+.m-sidebar-sub-in{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.m-sidebar-subitem{display:flex;align-items:center;gap:4px;height:28px;padding:0 4px 0 32px;border-radius:var(--m-r-ctl);color:var(--m-fg-2);font-size:12px;min-width:0;white-space:nowrap;width:100%;cursor:pointer}
+.m-sidebar-subitem:hover{background:var(--m-hover)}
+.m-sidebar-subitem.is-active{background:var(--m-selected);color:var(--m-fg)}
+.m-sidebar-subitem .m-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-sidebar-subitem .m-btn-icon{width:24px;height:24px;opacity:0;transition:opacity 80ms var(--m-ease-out),background-color 80ms var(--m-ease-out),transform 80ms var(--m-ease-out)}   /* the hover ⋮ fades in (10 §3.7) */
+.m-sidebar-subitem:hover .m-btn-icon,.m-sidebar-subitem:focus-within .m-btn-icon{opacity:1}
+.m-sidebar-more{display:flex;align-items:center;gap:6px;height:28px;padding:0 8px 0 32px;border-radius:var(--m-r-ctl);color:var(--m-fg-3);font-size:12px;width:100%;white-space:nowrap}
+.m-sidebar-more:hover{background:var(--m-hover);color:var(--m-fg-2)}
+.m-sidebar-more-glyph{width:10px;font-size:10px;line-height:1}
+.m-sidebar-subnote{padding:4px 8px 6px 32px;font-size:11px;color:var(--m-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-sidebar.is-collapsed .m-sidebar-sub{display:none}
+@media (prefers-reduced-motion:reduce){.m-sidebar-sub{transition:none}}
+.m-main{display:flex;flex-direction:column;min-width:0;background:var(--m-bg)}
+.m-main-head{display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-bottom:1px solid var(--m-line)}
+.m-main-head .m-t-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-main-body{padding:8px 8px 12px;min-width:0}
+
+
+/* 4. ROWS, STATE COLUMN, GROUP LABELS, AVATARS --------------------------- */
+
+.m-list{background:var(--m-surface);border-radius:var(--m-r-card);padding:4px 0;min-width:0}
+.m-list.is-divided{padding:0}
+.m-list.is-divided > * + *{border-top:1px solid var(--m-line)}
+
+/* [state 88] [avatar 24] [name / detail, min-width 0] [meta right 11 px] [⋮ 28] */
+.m-row{
+  display:grid;
+  grid-template-columns:88px 24px minmax(0,1fr) auto 28px;
+  gap:8px;
+  align-items:center;
+  height:40px;
+  padding:0 6px 0 12px;
+  min-width:0;
+}
+.m-row:hover{background:var(--m-hover)}
+.m-row.is-selected{background:var(--m-selected)}
+/* in a list card the hover and the selection are an inset rounded tile, like the sidebar's items, not an edge-to-edge band (the content keeps its 12 px inset) */
+.m-list:not(.is-divided) > .m-row,.m-list:not(.is-divided) > * > .m-row{margin:0 4px;padding:0 2px 0 8px;border-radius:var(--m-r-ctl)}
+.m-list:not(.is-divided) > .m-row.is-agent,.m-list:not(.is-divided) > * > .m-row.is-agent{padding-left:32px}
+.m-row.is-selected .m-row-name{font-weight:500}
+.m-row-text{display:flex;flex-direction:column;justify-content:center;min-width:0;line-height:1.25}
+.m-row-name{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-row-detail{font-size:11px;color:var(--m-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-row-detail code{font-size:11px}
+.m-row.is-unread .m-row-name{font-weight:600}
+.m-row-meta{font-size:11px;color:var(--m-fg-3);white-space:nowrap;text-align:right}
+.m-row .m-btn-icon{color:var(--m-fg-3)}
+.m-overlay .m-row,.m-row.is-dense{height:32px}
+.m-overlay .m-row-name,.m-row.is-dense .m-row-name{font-size:12px}
+
+/* state column: glyph box 16 px + lowercase word, aligned across rows */
+.m-state{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  flex:none;
+  font-size:12px;
+  line-height:1;
+  color:var(--m-fg-2);
+  white-space:nowrap;
+}
+.m-state::before{content:"○";flex:none;width:16px;height:16px;border-radius:4px;font:12px/16px var(--m-font-mono);text-align:center;color:var(--m-fg-3)}
+.m-col-state{width:88px}   /* the fixed column, where states line up outside a row grid (a row's grid cell already is 88 px) */
+.m-state.is-waiting{color:var(--m-fg)}
+.m-state.is-waiting::before{content:"◆";color:var(--m-accent);background:var(--m-accent-bg)}
+.m-state.is-working::before{content:"⠋";color:var(--m-info);animation:m-braille 800ms steps(10,end) infinite}
+.m-state.is-failed::before{content:"✕";color:var(--m-bad)}
+.m-state.is-unread::before{content:"◉";color:var(--m-ok)}
+.m-state.is-finished::before{content:"◉"}
+.m-state.is-idle::before{content:"○"}
+.m-state.is-untracked::before{content:"◌"}
+.m-state.is-connected::before{content:"◉";color:var(--m-ok)}   /* §7.6 connector status; pending = the base ○, so .is-pending needs no rule */
+.m-state.is-allowed::before{content:"✓";color:var(--m-ok)}
+.m-state.is-denied::before{content:"✕";color:var(--m-bad)}
+/* braille spinner: ten frames, 80 ms each */
+@keyframes m-braille{0%{content:"⠋"}10%{content:"⠙"}20%{content:"⠹"}30%{content:"⠸"}40%{content:"⠼"}50%{content:"⠴"}60%{content:"⠦"}70%{content:"⠧"}80%{content:"⠇"}90%{content:"⠏"}100%{content:"⠋"}}
+.m-spinner::before{content:"⠋";font:12px/1 var(--m-font-mono);color:var(--m-info);animation:m-braille 800ms steps(10,end) infinite}
+@media (prefers-reduced-motion:reduce){
+  .m-state.is-working::before,.m-spinner::before{animation:none;content:"⠿"}
+}
+
+.m-group-label{padding:10px 12px 3px;font-size:11px;line-height:1;color:var(--m-fg-3)}
+.m-list > .m-group-label:first-child{padding-top:6px}
+
+/* session avatar: bot-head artwork in a circle tinted per repo (--repo-hue 0–360) */
+.m-avatar-agent{
+  --repo-hue:210;
+  position:relative;
+  width:24px;
+  height:24px;
+  flex:none;
+  border-radius:50%;
+  overflow:hidden;
+  isolation:isolate;
+  background:color-mix(in oklab,hsl(var(--repo-hue) 65% 50%) 18%,var(--m-surface));
+}
+.m-avatar-agent img{width:100%;height:100%;object-fit:cover;object-position:50% 72%;mix-blend-mode:multiply}
+.m-avatar-agent.is-32{width:32px;height:32px}
+.m-avatar-agent.is-40{width:40px;height:40px}
+/* an editable mark (03 §7E.2): the avatar with a pencil badge at its bottom-right that opens the accessory menu */
+.m-avatar-editable{position:relative;display:inline-flex;flex:none}
+.m-avatar-edit{position:absolute;right:-3px;bottom:-3px;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border:0;border-radius:50%;background:var(--m-surface);box-shadow:0 0 0 1px var(--m-line);color:var(--m-fg-2);cursor:pointer}
+.m-avatar-edit .m-icon{width:10px;height:10px}
+.m-avatar-edit:hover{background:var(--m-hover);color:var(--m-fg)}
+.m-avatar-agent.is-untracked{background:var(--m-surface);box-shadow:inset 0 0 0 1px var(--m-line-strong)}   /* needs an opaque ground for the blend */
+[data-theme="dark"] .m-avatar-agent img,.is-notch .m-avatar-agent img{mix-blend-mode:screen;filter:contrast(1.15)}   /* the dark PNG ground is #101010; contrast clamps it to black */
+.m-row.is-agent{padding-left:36px}   /* subagent rows (§7.4): 24-px indent; a 16-px bot-head at 60 % stands in for the avatar */
+.m-row.is-agent .m-avatar-agent{width:16px;height:16px;opacity:.6;justify-self:center}   /* the tinted ground stays: the blend needs an opaque ground, or the PNG's own disc shows (a black hole on a dark pack) */
+.m-row.is-plain,.m-connector-row{grid-template-columns:88px minmax(0,1fr) auto 28px}   /* no avatar column */
+
+/* sender avatar: photo or neutral initials; 12 px source mark bottom-right on a surface disc */
+.m-avatar-person{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:24px;
+  flex:none;
+  border-radius:50%;
+  background:var(--m-sunken);
+  color:var(--m-fg-2);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.02em;
+  line-height:1;
+}
+.m-avatar-person img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.m-avatar-person.is-32{width:32px;height:32px;font-size:12px}
+.m-src-gmail::after,.m-src-slack::after{
+  content:"";
+  position:absolute;
+  right:-3px;
+  bottom:-3px;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background-color:var(--m-surface);
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:8px;   /* the width; the height follows the mark's own ratio (Gmail is wider than tall) */
+}
+/* the official Gmail mark (assets/brands/gmail.svg via ui/scripts/brands.mjs), never a drawing of it */
+.m-src-gmail::after{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 193%22%3E%3Cg%3E%3Cpath d=%22M58.1818182,192.049515 L58.1818182,93.1404244 L27.5066233,65.0770089 L0,49.5040608 L0,174.59497 C0,184.253152 7.82545455,192.049515 17.4545455,192.049515 L58.1818182,192.049515 Z%22 fill=%22%234285F4%22%3E%3C/path%3E%3Cpath d=%22M197.818182,192.049515 L238.545455,192.049515 C248.203636,192.049515 256,184.224061 256,174.59497 L256,49.5040608 L224.844415,67.3422767 L197.818182,93.1404244 L197.818182,192.049515 Z%22 fill=%22%2334A853%22%3E%3C/path%3E%3Cpolygon fill=%22%23EA4335%22 points=%2258.1818182 93.1404244 54.0077618 54.4932827 58.1818182 17.5040608 128 69.8676972 197.818182 17.5040608 202.487488 52.4960089 197.818182 93.1404244 128 145.504061%22%3E%3C/polygon%3E%3Cpath d=%22M197.818182,17.5040608 L197.818182,93.1404244 L256,49.5040608 L256,26.2313335 C256,4.64587897 231.36,-7.65957557 214.109091,5.28587897 L197.818182,17.5040608 Z%22 fill=%22%23FBBC04%22%3E%3C/path%3E%3Cpath d=%22M0,49.5040608 L26.7588051,69.5731646 L58.1818182,93.1404244 L58.1818182,17.5040608 L41.8909091,5.28587897 C24.6109091,-7.65957557 0,4.64587897 0,26.2313335 L0,49.5040608 Z%22 fill=%22%23C5221F%22%3E%3C/path%3E%3C/g%3E%3C/svg%3E")}
+/* the official Slack mark (assets/brands/slack.svg via ui/scripts/brands.mjs), never a drawing of it */
+.m-src-slack::after{background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 256 256%22%3E%3Cg%3E%3Cpath d=%22M53.8412698,161.320635 C53.8412698,176.152381 41.8539683,188.139683 27.0222222,188.139683 C12.1904762,188.139683 0.203174603,176.152381 0.203174603,161.320635 C0.203174603,146.488889 12.1904762,134.501587 27.0222222,134.501587 L53.8412698,134.501587 L53.8412698,161.320635 Z M67.2507937,161.320635 C67.2507937,146.488889 79.2380952,134.501587 94.0698413,134.501587 C108.901587,134.501587 120.888889,146.488889 120.888889,161.320635 L120.888889,228.368254 C120.888889,243.2 108.901587,255.187302 94.0698413,255.187302 C79.2380952,255.187302 67.2507937,243.2 67.2507937,228.368254 L67.2507937,161.320635 Z%22 fill=%22%23E01E5A%22%3E%3C/path%3E%3Cpath d=%22M94.0698413,53.6380952 C79.2380952,53.6380952 67.2507937,41.6507937 67.2507937,26.8190476 C67.2507937,11.9873016 79.2380952,-7.10542736e-15 94.0698413,-7.10542736e-15 C108.901587,-7.10542736e-15 120.888889,11.9873016 120.888889,26.8190476 L120.888889,53.6380952 L94.0698413,53.6380952 Z M94.0698413,67.2507937 C108.901587,67.2507937 120.888889,79.2380952 120.888889,94.0698413 C120.888889,108.901587 108.901587,120.888889 94.0698413,120.888889 L26.8190476,120.888889 C11.9873016,120.888889 0,108.901587 0,94.0698413 C0,79.2380952 11.9873016,67.2507937 26.8190476,67.2507937 L94.0698413,67.2507937 Z%22 fill=%22%2336C5F0%22%3E%3C/path%3E%3Cpath d=%22M201.549206,94.0698413 C201.549206,79.2380952 213.536508,67.2507937 228.368254,67.2507937 C243.2,67.2507937 255.187302,79.2380952 255.187302,94.0698413 C255.187302,108.901587 243.2,120.888889 228.368254,120.888889 L201.549206,120.888889 L201.549206,94.0698413 Z M188.139683,94.0698413 C188.139683,108.901587 176.152381,120.888889 161.320635,120.888889 C146.488889,120.888889 134.501587,108.901587 134.501587,94.0698413 L134.501587,26.8190476 C134.501587,11.9873016 146.488889,-1.42108547e-14 161.320635,-1.42108547e-14 C176.152381,-1.42108547e-14 188.139683,11.9873016 188.139683,26.8190476 L188.139683,94.0698413 Z%22 fill=%22%232EB67D%22%3E%3C/path%3E%3Cpath d=%22M161.320635,201.549206 C176.152381,201.549206 188.139683,213.536508 188.139683,228.368254 C188.139683,243.2 176.152381,255.187302 161.320635,255.187302 C146.488889,255.187302 134.501587,243.2 134.501587,228.368254 L134.501587,201.549206 L161.320635,201.549206 Z M161.320635,188.139683 C146.488889,188.139683 134.501587,176.152381 134.501587,161.320635 C134.501587,146.488889 146.488889,134.501587 161.320635,134.501587 L228.571429,134.501587 C243.403175,134.501587 255.390476,146.488889 255.390476,161.320635 C255.390476,176.152381 243.403175,188.139683 228.571429,188.139683 L161.320635,188.139683 Z%22 fill=%22%23ECB22E%22%3E%3C/path%3E%3C/g%3E%3C/svg%3E")}
+
+
+/* 5. MESSAGE ROWS -------------------------------------------------------- */
+
+/* line 1: name · #channel or Inbox · @ when mentioned · time right; line 2: subject or first text line */
+.m-msg{position:relative;display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;min-height:48px;padding:7px 12px}
+.m-msg:hover{background:var(--m-hover)}
+.m-msg.is-selected{background:var(--m-selected)}
+.m-msg.is-urgent::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:1px;background:var(--m-accent)}
+.m-msg .m-avatar-person{margin-top:3px}
+.m-msg-body{min-width:0}
+.m-msg-l1{display:flex;align-items:center;gap:6px;min-width:0;line-height:18px}
+.m-msg-name{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-msg.is-unread .m-msg-name{font-weight:600}
+.m-msg-time{margin-left:auto;flex:none;font-size:11px;color:var(--m-fg-3)}
+.m-msg-l2{font-size:12px;line-height:16px;color:var(--m-fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-tag{
+  display:inline-flex;
+  align-items:center;
+  height:18px;
+  padding:0 6px;
+  border-radius:var(--m-r-pill);
+  background:var(--m-sunken);
+  color:var(--m-fg-2);
+  font-size:11px;
+  white-space:nowrap;
+  flex:none;
+}
+.m-at{flex:none;font-size:12px;font-weight:500;color:var(--m-fg-2)}
+.m-overlay .m-msg{min-height:44px;padding:6px 12px}
+
+
+/* 6. DIFF AND USAGE ------------------------------------------------------ */
+
+.m-diff{font-family:var(--m-font-mono);font-size:12px;white-space:nowrap}
+.m-diff .add{color:var(--m-ok)}
+.m-diff .del{color:var(--m-bad)}
+.m-usage{min-width:0;font-size:12px;color:var(--m-fg-2)}
+.m-usage-bar{height:4px;margin-top:6px;border-radius:2px;background:var(--m-sunken);overflow:hidden}
+.m-usage-bar i{display:block;height:100%;width:var(--pct,0%);border-radius:2px;background:var(--m-fg-3)}
+
+
+/* 7. BUTTONS, MENUS, INPUTS, CAPTURE ------------------------------------- */
+
+.m-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  height:28px;
+  padding:0 10px;
+  border:0;
+  border-radius:var(--m-r-ctl);
+  background:var(--m-sunken);
+  color:var(--m-fg);
+  font-size:13px;
+  font-weight:500;
+  line-height:1;
+  white-space:nowrap;
+  flex:none;
+  transition:background-color 80ms var(--m-ease-out),transform 80ms var(--m-ease-out);
+}
+.m-btn:hover{background:var(--m-selected)}
+.m-btn-primary{background:var(--m-accent);color:#fff}
+.m-btn-primary:hover{background:#C4410D}
+.m-btn-icon{width:28px;padding:0;font-size:14px}
+.m-btn.is-quiet{background:transparent;color:var(--m-fg-2)}
+.m-btn.is-quiet:hover{background:var(--m-hover)}
+.m-btn[disabled]{opacity:.5;cursor:default}
+.m-btn:not([disabled]):active{transform:scale(.97)}
+.m-btn-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* a disclosure chevron for a side panel (03 §7.1 Sources): points left while the panel is closed and turns 180° as it opens */
+.m-btn-chev > .m-icon{transform:rotate(90deg);transition:transform 160ms var(--m-ease-in-out)}
+.m-btn-chev[aria-expanded="true"] > .m-icon{transform:rotate(-90deg)}
+
+.m-menu{
+  display:inline-flex;
+  flex-direction:column;
+  min-width:180px;
+  padding:4px;
+  border-radius:var(--m-r-card);
+  background:var(--m-surface);
+  box-shadow:var(--m-shadow-pop);
+  transform-origin:var(--m-menu-origin,top);   /* grows from the edge at its anchor (the host sets bottom when it opens above) */
+  animation:m-in-pop 120ms var(--m-ease-out);
+}
+.m-menu-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  height:28px;
+  padding:0 8px;
+  border-radius:var(--m-r-ctl);
+  color:var(--m-fg);
+  font-size:13px;
+  white-space:nowrap;
+}
+.m-menu-item:hover{background:var(--m-hover)}
+.m-menu-item .m-key{margin-left:auto;font-size:11px;color:var(--m-fg-3)}   /* shortcuts live here and in the Shortcuts sheet only */
+.m-menu-item.is-danger{color:var(--m-bad)}
+.m-menu-sep{height:1px;margin:4px 0;background:var(--m-line)}
+
+.m-input{
+  display:flex;
+  align-items:center;
+  width:100%;
+  min-width:0;
+  height:28px;
+  padding:0 10px;
+  border:0;
+  border-radius:var(--m-r-ctl);
+  background:var(--m-sunken);
+  color:var(--m-fg);
+  font-size:13px;
+  line-height:1.4;
+}
+.m-input::placeholder{color:var(--m-fg-3)}
+.m-input:focus-visible,.m-input.is-focused{box-shadow:0 0 0 1px var(--m-line-strong)}
+.m-input.is-lg{height:32px}
+.m-input .m-placeholder{color:var(--m-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-input .m-caret{width:1px;height:14px;margin-left:1px;background:var(--m-fg);flex:none}
+textarea.m-input{display:block;height:auto;min-height:56px;padding:7px 10px;resize:vertical}
+
+/* capture: one input; after save the placeholder is replaced by "Saved · Open" for 3 s */
+.m-capture{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--m-line)}
+.m-capture .m-input{flex:1}
+.m-list > .m-capture:first-child{border-top:0}
+.m-capture-saved{font-size:11px;color:var(--m-fg-3);white-space:nowrap}
+.m-capture-saved a{color:var(--m-fg-3);text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--m-line-strong)}
+
+
+/* 8. TABS, SEGMENTED CONTROL, CHIPS, QUERY BAR, TREE --------------------- */
+
+.m-tabs{position:relative;display:flex;align-items:stretch;gap:16px;height:36px;padding:0 12px;border-bottom:1px solid var(--m-line);overflow:hidden}
+.m-tab{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:0 2px;
+  margin-bottom:-1px;
+  border-bottom:2px solid transparent;
+  color:var(--m-fg-2);
+  font-size:13px;
+  white-space:nowrap;
+  transition:color 160ms var(--m-ease-in-out),border-color 160ms var(--m-ease-in-out),transform 80ms var(--m-ease-out);
+}
+.m-tab.is-active{color:var(--m-fg);border-bottom-color:var(--m-fg)}
+.m-tab:focus-visible{box-shadow:inset 0 0 0 1px var(--m-line-strong)}   /* inset: the strip clips (10 §11.3) */
+.m-tab .m-n{font-size:11px;color:var(--m-fg-3)}
+.m-overlay .m-tabs{height:32px}
+.m-overlay .m-tab{font-size:12px}
+
+.m-seg{position:relative;isolation:isolate;display:inline-flex;gap:2px;height:28px;padding:2px;border-radius:var(--m-r-ctl);background:var(--m-sunken);flex:none}
+.m-seg-item{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  height:24px;
+  padding:0 10px;
+  border-radius:4px;
+  color:var(--m-fg-2);
+  font-size:12px;
+  font-weight:500;
+  white-space:nowrap;
+  transition:background-color 160ms var(--m-ease-in-out),color 160ms var(--m-ease-in-out),transform 80ms var(--m-ease-out);
+}
+.m-seg-item.is-active{background:var(--m-surface);color:var(--m-fg)}
+/* the active background is one thumb that slides to the chosen segment (10 §7.4.6): anchored to it, scoped to its own control; engines without anchor positioning keep the crossfade above */
+@supports (anchor-name:--m-x) and (anchor-scope:--m-x){
+  .m-seg{anchor-scope:--m-seg}
+  .m-seg::before{content:"";position:absolute;z-index:0;inset-block:2px;left:anchor(--m-seg left,0px);width:anchor-size(--m-seg width,0px);border-radius:4px;background:var(--m-surface);transition:left 160ms var(--m-ease-in-out),width 160ms var(--m-ease-in-out)}
+  .m-seg-item{position:relative;z-index:1}
+  .m-seg-item.is-active{anchor-name:--m-seg;background:transparent}
+  .m-tabs{anchor-scope:--m-tab}
+  .m-tabs::after{content:"";position:absolute;bottom:-1px;height:2px;left:anchor(--m-tab left,0px);width:anchor-size(--m-tab width,0px);background:var(--m-fg);transition:left 160ms var(--m-ease-in-out),width 160ms var(--m-ease-in-out)}   /* the tab's own 2-px underline, drawn once for the strip */
+  .m-tab.is-active{anchor-name:--m-tab;border-bottom-color:transparent}
+}
+.m-seg-item .m-caret{font-size:9px;color:var(--m-fg-3)}
+
+.m-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  height:22px;
+  padding:0 8px;
+  border-radius:var(--m-r-pill);
+  background:var(--m-sunken);
+  color:var(--m-fg-2);
+  font-size:12px;
+  white-space:nowrap;
+  flex:none;
+}
+.m-chip.is-person{background:var(--m-accent-bg);color:var(--m-fg)}
+/* a chips field (03 §7E.2): removable chips and a bare input in one sunken frame; Enter or a comma adds, Backspace on an empty input removes the last */
+.m-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:28px;padding:3px 6px;border-radius:var(--m-r-ctl);background:var(--m-sunken);min-width:0}
+.m-chips input{flex:1;min-width:96px;height:22px;margin:0;padding:0 2px;border:0;background:none;color:var(--m-fg);font:inherit;font-size:12px;outline:0}
+.m-chips input::placeholder{color:var(--m-fg-3)}
+.m-chips:focus-within{box-shadow:0 0 0 1px var(--m-line-strong)}
+.m-chip .m-x{font-size:11px;color:var(--m-fg-3)}
+.m-chip .m-avatar-person{width:14px;height:14px;font-size:7px;background:var(--m-surface)}
+.m-query{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  min-height:32px;
+  padding:4px 10px;
+  border-radius:var(--m-r-ctl);
+  background:var(--m-sunken);
+}
+.m-query .m-placeholder{color:var(--m-fg-3);font-size:13px}
+
+/* folder tree: ▸/▾ chevrons, 16 px nesting, counts right; view rows carry a task glyph */
+.m-tree{padding:4px 0;font-size:13px;min-width:0}
+.m-tree-item{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  height:28px;
+  padding:0 8px 0 4px;
+  border-radius:var(--m-r-ctl);
+  color:var(--m-fg);
+  min-width:0;
+  white-space:nowrap;
+}
+.m-tree-item:hover{background:var(--m-hover)}
+.m-tree-item.is-active{background:var(--m-selected)}
+.m-tree-chev{width:16px;flex:none;text-align:center;font-size:10px;color:var(--m-fg-3)}
+.m-tree-chev::before{content:"▸"}
+.m-tree-item.is-open > .m-tree-chev::before{content:"▾"}
+.m-tree-item.is-leaf > .m-tree-chev::before{content:""}
+.m-tree-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-tree-n{flex:none;font-size:11px;color:var(--m-fg-3)}
+.m-tree-children{padding-left:16px}
+.m-tree .m-glyph{width:14px;flex:none;text-align:center;font:12px/1 var(--m-font-mono);color:var(--m-fg-3)}
+.m-tree .m-group-label{padding-left:8px}
+
+
+/* 9. OVERLAY, PILL, PEEK, MASCOT ----------------------------------------- */
+
+.m-overlay{
+  position:relative;
+  width:520px;
+  max-width:100%;
+  background:var(--m-surface);
+  color:var(--m-fg);
+  border:1px solid var(--m-line);
+  border-radius:var(--m-r-overlay);
+  overflow:hidden;
+  font-size:12px;
+}
+.m-overlay.is-notch{width:560px;border:0;border-radius:0 0 var(--m-r-overlay) var(--m-r-overlay);corner-shape:squircle;background:var(--m-surface)}
+/* the notch wrapper (02 §6.1): the frame hangs from the screen's top edge; its top corners flare away from it into that edge with 14-px concave fillets outside the frame, in the bezel color, the same squircle curve as the bottom corners turned inside out (the exponent-4 superellipse centered on the fillet's outer bottom corner, as a clip-path polygon so every webview draws it alike); the wrapper is the rect the frame reports to the core (02 §12) */
+.m-notch{position:relative;display:inline-flex;align-items:flex-start;vertical-align:top;max-width:100%;padding:0 14px}
+.m-notch > .m-overlay,.m-notch > .m-pill{flex:none}
+.m-notch::before,.m-notch::after{content:"";position:absolute;top:0;width:14px;height:14px;background:var(--m-surface);pointer-events:none}
+.m-notch::before{left:0;clip-path:polygon(0% 0%,28% 0.2%,39.6% 0.6%,48.3% 1.4%,55.6% 2.5%,61.9% 3.9%,67.4% 5.6%,72.3% 7.7%,76.7% 10.1%,80.6% 12.8%,84.1% 15.9%,87.2% 19.4%,89.9% 23.3%,92.3% 27.7%,94.4% 32.6%,96.1% 38.1%,97.5% 44.4%,98.6% 51.7%,99.4% 60.4%,99.8% 72%,100% 100%,100% 0)}
+.m-notch::after{right:0;clip-path:polygon(100% 0%,72% 0.2%,60.4% 0.6%,51.7% 1.4%,44.4% 2.5%,38.1% 3.9%,32.6% 5.6%,27.7% 7.7%,23.3% 10.1%,19.4% 12.8%,15.9% 15.9%,12.8% 19.4%,10.1% 23.3%,7.7% 27.7%,5.6% 32.6%,3.9% 38.1%,2.5% 44.4%,1.4% 51.7%,0.6% 60.4%,0.2% 72%,0% 100%,0 0)}
+/* the resting peek in the notch (02 §6.1): frame and fillets in the housing's black, so the two wings read as the camera housing grown sideways and the mascot on the right wing reads on any menu bar */
+.m-notch.is-peek::before,.m-notch.is-peek::after,.m-overlay.is-notch.is-peek{background:#000}
+.m-overlay.is-peek .m-notch-bot{--m-ring:#000}
+.m-overlay.is-peek .m-overlay-housing{box-shadow:none}
+.m-overlay.is-topbar{border-radius:var(--m-r-overlay)}
+.m-overlay.is-rightedge{width:360px;border-right:0;border-radius:var(--m-r-overlay) 0 0 var(--m-r-overlay)}
+/* notch top strip: wings either side of the camera housing */
+.m-overlay-wings{display:grid;grid-template-columns:minmax(0,1fr) 184px minmax(0,1fr);align-items:center;height:36px}
+.m-overlay-wing{position:relative;display:flex;align-items:center;gap:6px;min-width:0;padding:0 10px;white-space:nowrap}
+.m-overlay-wing.is-right{justify-content:flex-end}
+.m-overlay-wing .m-ellipsis{font-weight:500}
+.m-overlay-housing{height:100%;background:#000;border-radius:0 0 10px 10px}
+[data-theme="dark"] .m-overlay-housing{background:#000;box-shadow:inset 0 0 0 1px #1A1A1A}
+.m-overlay-head{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;min-width:0;white-space:nowrap}
+.m-overlay .m-list{border-radius:0;padding:0}
+/* the voice reply card (02 §5.7): a "Hey Mode" request's answer in place of the tabs, rows and capture box; the reply at the overlay's 13 px, twelve 20-px lines at most with a fade over the last (the overlay never scrolls), the shimmer while the request runs; the text streams in place with no per-token motion */
+.m-reply-card{display:flex;flex-direction:column;gap:10px;min-width:0;padding:6px 14px 12px}
+.m-reply-card .m-reply{max-height:240px;overflow:hidden;font-size:13px;line-height:20px;animation:m-in-fade 120ms var(--m-ease-out) both}
+.m-reply-card .m-reply.is-clamped{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),transparent)}
+.m-reply-card .m-reply p + p,.m-reply-card .m-reply ul,.m-reply-card .m-reply ol,.m-reply-card .m-reply ul + p,.m-reply-card .m-reply ol + p{margin-top:8px}
+.m-reply-card .m-reply ul,.m-reply-card .m-reply ol{padding-left:18px}
+.m-reply-card .m-reply li + li{margin-top:2px}
+.m-reply-card .m-reply code{font-size:12px}
+.m-reply-card .m-reply .m-chip{height:18px;padding:0 6px;margin:0 1px;vertical-align:1px;font-size:11px;cursor:pointer}
+.m-reply-card .m-reply .m-chip:hover{background:var(--m-hover)}
+.m-reply-card .m-shimmer{padding:6px 0 4px}
+.m-reply-card-error{font-size:13px;line-height:20px;color:var(--m-fg-2);animation:m-in-fade 120ms var(--m-ease-out) both}
+.m-reply-card-foot{display:flex;align-items:center;gap:6px}
+.m-reply-card-foot .m-btn:first-child{margin-right:auto}
+.m-reply-card-label{animation:m-in-fade 120ms var(--m-ease-out) both}
+@media (prefers-reduced-motion:reduce){.m-reply-card .m-reply,.m-reply-card-error,.m-reply-card-label{animation:none}}
+
+.m-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  height:28px;
+  max-width:100%;
+  padding:0 10px 0 5px;
+  border:1px solid var(--m-line);
+  border-radius:var(--m-r-pill);
+  background:var(--m-surface);
+  color:var(--m-fg);
+  font-size:12px;
+  white-space:nowrap;
+}
+.m-pill-text{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-pill.is-notch{height:32px;padding:0 12px 1px 9px;border:0;border-radius:0 0 12px 12px;corner-shape:squircle}
+/* dictation (02 §5.6): the input level as three 2-px bars (heights from the level, set inline), then the spinner while transcribing / thinking */
+.m-meter{display:inline-flex;align-items:center;justify-content:center;gap:2px;width:18px;height:18px;flex:none}
+.m-meter i{display:block;width:2px;height:4px;border-radius:var(--m-r-pill);background:var(--m-accent);transition:height 80ms linear}
+.m-meter.is-static i{height:8px;transition:none}
+.m-meter.is-static i:nth-child(2){height:12px}
+.m-overlay-wing .m-spinner{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex:none}
+@media (prefers-reduced-motion:reduce){.m-meter i{transition:none}}
+
+.m-peek{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:64px;
+  border:1px solid var(--m-line);
+  border-right:0;
+  border-radius:var(--m-r-overlay) 0 0 var(--m-r-overlay);
+  background:var(--m-surface);
+}
+.m-peek.is-top{
+  width:120px;
+  height:26px;
+  border:1px solid var(--m-line);
+  border-top:0;
+  border-radius:0 0 12px 12px;
+  gap:8px;
+  font-size:11px;
+  color:var(--m-fg-2);
+}
+
+/* the resting mascot (02 §6.1, overlay.idle = mascot): site/bot.js's vector bot (hero scene, pointer: 'gaze', its eyes on the pointer through the mount's look()) on a 28-px-tall canvas at device scale, ink in fg on whatever is behind it (the bezel in the notch, the tab's surface elsewhere), fading in once bot.js has drawn it (.is-live); the state badge at its bottom-right as on the duck. 24 wide in the notch's 24-px wing, 26 in the right-edge tab, 24 × 24 in the 26-px top-bar tab */
+.m-notch-bot{position:relative;display:inline-block;width:24px;height:28px;flex:none;--m-ring:var(--m-surface)}
+.m-notch-bot canvas{display:block;width:100%;height:100%;color:var(--m-fg);opacity:0;transition:opacity 120ms var(--m-ease-out)}
+.m-notch-bot.is-live canvas{opacity:1}
+.m-notch-bot .m-badge-state{right:0;bottom:3px;width:6px;height:6px;box-shadow:0 0 0 1.5px var(--m-ring)}
+.m-peek .m-notch-bot{width:26px}
+.m-peek.is-top .m-notch-bot{width:24px;height:24px}
+.m-peek.is-top .m-notch-bot .m-badge-state{bottom:1px}
+@media (prefers-reduced-motion:reduce){.m-notch-bot canvas{transition:none}}
+/* a flash from the app window (02 §5.4): its kind as a glyph before the phrase, a check in ok, a dot in info, a cross in bad */
+.m-flash-glyph{display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;flex:none;font-size:11px;line-height:1}
+.m-flash-glyph.is-ok::before{content:"✓";color:var(--m-ok)}
+.m-flash-glyph.is-info::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--m-info)}
+.m-flash-glyph.is-bad::before{content:"✕";color:var(--m-bad)}
+/* Now playing (02 §6.1–6.3, §7.1; 10 §7.4.22): the resting peek's equalizer while a track plays, in every placement (the notch's left wing; in the top-bar tab at its right end, 12 px in; in the right-edge tab at its foot, 6 px up; out of the flow, so the mascot never moves; three 2-px bars, still at their resting heights when paused and under reduced motion; fades in, and out with .is-leaving), and the expanded panel's strip: artwork, title / artist, ⏮ ⏯ ⏭, a 2-px progress hairline whose fill runs from --np-from to the end over --np-left */
+.m-eq{display:inline-flex;align-items:flex-end;justify-content:center;gap:2px;width:10px;height:10px;flex:none;animation:m-in-fade 120ms var(--m-ease-out);transition:opacity 120ms var(--m-ease-out)}
+.m-eq.is-leaving{opacity:0}
+.m-peek>.m-eq{position:absolute;bottom:6px;left:50%;margin-left:-5px}
+.m-peek.is-top>.m-eq{top:50%;right:12px;bottom:auto;left:auto;margin:-5px 0 0}
+.m-eq i{display:block;width:2px;height:10px;border-radius:var(--m-r-pill);background:var(--m-fg-3);transform:scaleY(.4);transform-origin:50% 100%}
+.m-eq i:nth-child(2){transform:scaleY(.8)}
+.m-eq i:nth-child(3){transform:scaleY(.6)}
+.m-eq.is-playing i{animation:m-eq 900ms linear infinite}
+.m-eq.is-playing i:nth-child(2){animation-delay:-300ms}
+.m-eq.is-playing i:nth-child(3){animation-delay:-600ms}
+@keyframes m-eq{0%,100%{transform:scaleY(.3)}25%{transform:scaleY(1)}50%{transform:scaleY(.5)}75%{transform:scaleY(.85)}}
+/* the resting peek's artwork (02 §6.1–6.3, amended 2026-11-14): the track's artwork in place of the equalizer, which stays the fallback for a track without artwork; 18 × 18 in the notch's left wing, 16 × 16 at the top-bar tab's right end (6 px in) and the right-edge tab's foot (4 px up), out of the flow there; dimmed to .5 while paused; fades in and out (.is-leaving), and a new track's image fades in over the old one (img.is-out), so a track change is a cross-fade; a leaving artwork or equalizer in the notch's wing stands over the arriving one, not beside it */
+.m-peek-art{position:relative;display:block;width:18px;height:18px;flex:none;overflow:hidden;border-radius:var(--m-r-xs);background:var(--m-sunken);animation:m-in-fade 120ms var(--m-ease-out);transition:opacity 120ms var(--m-ease-out)}
+.m-peek-art img{position:absolute;top:0;left:0;display:block;width:100%;height:100%;object-fit:cover;animation:m-in-fade 120ms var(--m-ease-out)}
+.m-peek-art.is-paused{opacity:.5}
+.m-peek-art.is-leaving{opacity:0}
+.m-overlay-wing>.m-peek-art.is-leaving,.m-overlay-wing>.m-eq.is-leaving{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.m-peek>.m-peek-art{position:absolute;bottom:4px;left:50%;width:16px;height:16px;margin-left:-8px}
+.m-peek.is-top>.m-peek-art{top:50%;right:6px;bottom:auto;left:auto;margin:-8px 0 0}
+/* the Music tab's rows (02 §7.10, ADR-0066): [artwork 24] [title / artist, or album / artist · n tracks heard] [when]; the artwork is the track's own, radius.xs, or a ♪ tile on --m-sunken without one */
+.m-row.is-media{grid-template-columns:24px minmax(0,1fr) auto}
+.m-row-art{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex:none;overflow:hidden;border-radius:var(--m-r-xs);object-fit:cover;background:var(--m-sunken);color:var(--m-fg-3);font-size:12px;line-height:1}
+.m-row.is-media .m-row-meta .m-spinner{display:inline-flex;width:12px;justify-content:flex-end}
+.m-nowplaying{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:10px;height:44px;padding:4px 12px;overflow:hidden;animation:m-np-in 160ms var(--m-ease-in-out)}
+.m-nowplaying.is-leaving{animation:m-np-out 160ms var(--m-ease-in-out) forwards}
+@keyframes m-np-in{from{height:0;padding-top:0;padding-bottom:0;opacity:0}}
+@keyframes m-np-out{to{height:0;padding-top:0;padding-bottom:0;opacity:0}}
+.m-nowplaying-art{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--m-r-ctl);object-fit:cover;background:var(--m-sunken);color:var(--m-fg-3);font-size:15px;line-height:1;cursor:pointer}
+.m-nowplaying-text{display:flex;flex-direction:column;min-width:0;cursor:pointer}
+.m-nowplaying-title{overflow:hidden;font-size:13px;font-weight:500;line-height:18px;color:var(--m-fg);white-space:nowrap;text-overflow:ellipsis}
+.m-nowplaying-artist{overflow:hidden;font-size:12px;line-height:16px;color:var(--m-fg-2);white-space:nowrap;text-overflow:ellipsis}
+.m-nowplaying-controls{display:flex;align-items:center;gap:2px}
+.m-nowplaying-controls .m-btn-icon{width:24px;height:24px}
+.m-nowplaying-controls .m-spinner{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px}
+.m-nowplaying-bar{position:absolute;right:12px;bottom:0;left:12px;height:2px;border-radius:var(--m-r-pill);background:var(--m-line);overflow:hidden}
+.m-nowplaying-fill{display:block;width:var(--np-from,0%);height:100%;background:var(--m-fg-2);animation:m-np-progress var(--np-left,0ms) linear forwards}
+.m-nowplaying-fill.is-static{animation:none}
+@keyframes m-np-progress{from{width:var(--np-from,0%)}to{width:100%}}
+@media (prefers-reduced-motion:reduce){.m-eq,.m-eq.is-playing i,.m-peek-art,.m-peek-art img,.m-nowplaying,.m-nowplaying-fill{animation:none}.m-eq,.m-peek-art{transition:none}}
+[data-motion="reduced"] .m-eq,[data-motion="reduced"] .m-eq.is-playing i,[data-motion="reduced"] .m-peek-art,[data-motion="reduced"] .m-peek-art img,[data-motion="reduced"] .m-nowplaying,[data-motion="reduced"] .m-nowplaying-fill{animation:none}
+[data-motion="reduced"] .m-eq,[data-motion="reduced"] .m-peek-art{transition:none}
+
+/* mascot: the duck artwork as <img>; the state lives in an 8-px badge, poses are not drawn */
+.m-mascot{position:relative;display:inline-block;width:32px;height:32px;flex:none;--m-ring:var(--m-bg)}
+.m-list .m-mascot,.m-overlay .m-mascot,.m-pill .m-mascot,.m-peek .m-mascot,.m-card .m-mascot{--m-ring:var(--m-surface)}
+.m-mascot img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}
+[data-theme="dark"] .m-mascot img,.is-notch .m-mascot img{mix-blend-mode:screen;filter:contrast(1.15)}
+/* a chosen profile picture: shown as is, clipped round, never blended with the surface; a picture with a transparent ground sits on a sunken disc, so it reads on either pack */
+.m-mascot.is-picture{border-radius:50%;background:var(--m-sunken)}
+.m-mascot.is-picture img,[data-theme="dark"] .m-mascot.is-picture img,.is-notch .m-mascot.is-picture img{mix-blend-mode:normal;filter:none;border-radius:50%}
+.m-mascot.is-18{width:18px;height:18px}
+.m-mascot.is-20{width:20px;height:20px}
+.m-mascot.is-48{width:48px;height:48px}
+.m-badge-state{
+  position:absolute;
+  right:-1px;
+  bottom:-1px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--m-fg-3);
+  box-shadow:0 0 0 2px var(--m-ring);
+}
+.m-mascot.is-18 .m-badge-state,.m-mascot.is-20 .m-badge-state{width:6px;height:6px;right:-1px;bottom:-1px;box-shadow:0 0 0 1.5px var(--m-ring)}
+.m-mascot.is-48 .m-badge-state{width:10px;height:10px;right:1px;bottom:1px}
+.m-badge-state.is-waiting{background:var(--m-accent)}
+.m-badge-state.is-working{background:var(--m-info)}
+.m-badge-state.is-failed{background:var(--m-bad)}
+.m-badge-state.is-unread{background:var(--m-ok)}
+.m-badge-state.is-finished{background:var(--m-fg-3)}
+.m-badge-state.is-idle{background:var(--m-surface);box-shadow:0 0 0 2px var(--m-ring),inset 0 0 0 1.5px var(--m-fg-3)}
+.m-badge-state.is-untracked{background:var(--m-line-strong)}
+
+
+/* 10. STAGE AND CALLOUT GUTTER ------------------------------------------- */
+
+/* numbers sit in a 24-px gutter left of the frame; the frame itself is untouched */
+.m-figure{display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px;align-items:start}
+.m-callouts{position:relative;align-self:stretch;min-height:24px}
+.m-callout{
+  position:absolute;
+  left:0;
+  top:var(--y,0);
+  width:22px;
+  height:22px;
+  border-radius:var(--m-r-pill);
+  background:var(--m-sunken);
+  color:var(--m-fg-2);
+  font-size:11px;
+  font-weight:500;
+  line-height:22px;
+  text-align:center;
+}
+.m-stage{min-width:0}
+.m-callout-list{margin:10px 0 0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--m-fg-2)}
+.m-callout-list li{margin:2px 0;overflow-wrap:anywhere}
+.m-callout-list li::marker{color:var(--m-fg-3)}
+
+
+/* 11. CARDS, SESSION HEADER, TASK ROWS, THREAD, COMPOSER ------------------ */
+
+.m-card{min-width:0;padding:12px;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-surface)}
+.m-card.is-selected{background:var(--m-selected)}
+.m-card-head{display:flex;align-items:center;gap:8px;min-width:0;margin-bottom:8px}
+.m-card-title{min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-card-head .m-n{font-size:12px;color:var(--m-fg-3);flex:none}
+.m-card-head .m-actions{display:flex;gap:2px;margin-left:auto;flex:none}
+.m-card-actions{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.m-card-body{font-size:13px;line-height:1.5;color:var(--m-fg-2)}
+/* a theme's colors as card art (10 §4.5, 03 §7C.6): a window in the pack's bg and surface, its accent dot and fg bars, then one dot per role */
+.m-swatch{display:flex;align-items:center;height:56px;padding:0 10px;border-radius:var(--m-r-ctl);background:var(--m-bg)}
+.m-swatch span{display:flex;align-items:center;gap:8px;flex:1;height:28px;padding:0 8px;border-radius:var(--m-r-ctl);background:var(--m-surface)}
+.m-swatch i{display:block;width:8px;height:8px;border-radius:50%;background:var(--m-accent);flex:none}
+.m-swatch b{display:block;width:56px;height:7px;border-radius:var(--m-r-xs);background:var(--m-fg);opacity:.85}
+.m-swatch b + b{width:28px;opacity:.4}
+.m-swatch-dots{display:flex;gap:4px}
+.m-swatch-dots i{display:block;width:14px;height:14px;border-radius:var(--m-r-xs);box-shadow:inset 0 0 0 1px var(--m-line)}
+.m-swatch-dots .is-bg{background:var(--m-bg)}
+.m-swatch-dots .is-surface{background:var(--m-surface)}
+.m-swatch-dots .is-fg{background:var(--m-fg)}
+.m-swatch-dots .is-accent{background:var(--m-accent)}
+.m-swatch-dots .is-ok{background:var(--m-ok)}
+.m-swatch-dots .is-info{background:var(--m-info)}
+
+/* session detail header: 32 px artwork avatar, one-line title, one meta line, Resume + ⋮ */
+.m-session-head{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:center;min-width:0}
+.m-session-title{font-size:15px;font-weight:600;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-session-sub{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;min-width:0}
+
+/* query-card task rows: ○ todo · ◑ doing · ✱ urgent · ✓ done */
+.m-task{display:flex;align-items:center;gap:8px;height:32px;padding:0 4px;min-width:0;white-space:nowrap}
+.m-task-glyph{width:16px;flex:none;text-align:center;font:12px/1 var(--m-font-mono);color:var(--m-fg-2)}
+.m-task-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-task.is-done .m-task-title{color:var(--m-fg-3);text-decoration:line-through;text-decoration-thickness:1px}
+.m-task .m-t-meta{flex:none}
+
+.m-thread{display:flex;flex-direction:column;gap:10px;min-width:0}
+.m-thread-user{
+  align-self:flex-end;
+  max-width:78%;
+  padding:8px 12px;
+  border-radius:var(--m-r-card);
+  background:var(--m-sunken);
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+.m-thread-assistant{
+  padding:10px 12px;
+  border:1px solid var(--m-line);
+  border-radius:var(--m-r-card);
+  background:var(--m-surface);
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+.m-thread-assistant p + p{margin-top:6px}
+.m-thread-tool{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  height:28px;
+  padding:0 10px;
+  border-radius:var(--m-r-ctl);
+  background:var(--m-surface);
+  font-size:12px;
+  min-width:0;
+  white-space:nowrap;
+}
+.m-thread-tool::before{content:"▸";width:10px;flex:none;font-size:10px;color:var(--m-fg-3)}
+.m-thread-tool.is-open::before{content:"▾"}
+.m-thread-tool.is-open{border-radius:var(--m-r-ctl) var(--m-r-ctl) 0 0}
+.m-tool-name{font-family:var(--m-font-mono);color:var(--m-fg);flex:none}
+.m-tool-arg{font-family:var(--m-font-mono);color:var(--m-fg-2);min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-tool-meta{margin-left:auto;flex:none;font-size:11px;color:var(--m-fg-3)}
+.m-thread-tool-body{
+  margin-top:-10px;
+  padding:6px 10px 10px 28px;
+  border-radius:0 0 var(--m-r-ctl) var(--m-r-ctl);
+  background:var(--m-surface);
+  font:12px/1.5 var(--m-font-mono);
+  color:var(--m-fg-2);
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.m-thread-permission,.m-thread-question{padding:12px;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-surface)}
+.m-thread-head{display:flex;align-items:center;gap:8px;min-width:0;font-weight:600}
+.m-thread-head .m-t-meta{margin-left:auto;font-weight:400;flex:none}
+.m-cmd{
+  display:block;
+  margin:8px 0 10px;
+  padding:6px 10px;
+  border-radius:var(--m-r-ctl);
+  background:var(--m-sunken);
+  font:12px/1.4 var(--m-font-mono);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.m-choice{display:flex;align-items:center;gap:8px;height:26px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-choice input{width:14px;height:14px;margin:0;accent-color:var(--m-fg);flex:none}
+.m-thread-question fieldset{margin-top:6px}
+.m-thread-question legend{padding:0;margin:0 0 2px;font-size:11px;color:var(--m-fg-3)}
+
+.m-composer{display:flex;align-items:flex-end;gap:8px;padding-top:8px}
+.m-composer .m-input{flex:1}
+
+
+/* 11b. CHAT (§6: one column, Claude-app reference) ----------------------- */
+
+.m-chat{display:flex;flex-direction:column;max-width:720px;margin:0 auto;min-width:0}
+.m-chat-thread{display:flex;flex-direction:column;gap:24px;padding:24px 0;min-width:0}
+/* user bubble: radius 16, sunken, 12/16 padding, inset 24 px on the left; long text clamps at 8 lines */
+.m-bubble-user{margin-left:24px;padding:12px 16px;border-radius:16px;background:var(--m-sunken);font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.m-bubble-user.is-clamped .m-bubble-text{display:-webkit-box;-webkit-line-clamp:8;-webkit-box-orient:vertical;overflow:hidden}
+.m-show-more{display:inline-block;margin-top:6px;font-size:13px;color:var(--m-fg-2);cursor:pointer}
+/* assistant reply: plain text on the canvas, 15/1.5, footer = copy · pin · relative time, nothing else */
+.m-reply{min-width:0;font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.m-reply p + p,.m-reply ul,.m-reply ol,.m-reply ul + p,.m-reply ol + p{margin-top:12px}
+.m-reply ul,.m-reply ol{padding-left:22px}
+.m-reply li + li{margin-top:4px}
+.m-reply code{font-size:13px;padding:1px 5px;border-radius:4px;background:var(--m-sunken)}
+.m-reply-actions{display:flex;align-items:center;gap:2px;margin-top:8px;color:var(--m-fg-3)}
+.m-reply-actions .m-btn-icon{color:var(--m-fg-3)}
+.m-reply-time{margin-left:6px;font-size:11px;color:var(--m-fg-3)}
+/* activity groups: one fg-2 row per group with a chevron; open = one 13-px row per action */
+.m-activity{min-width:0}
+.m-activity-head{display:flex;align-items:center;gap:6px;height:28px;font-size:13px;color:var(--m-fg-2);white-space:nowrap;cursor:pointer}
+.m-activity-head::after{content:"›";color:var(--m-fg-3);font-size:14px}
+.m-activity.is-open > .m-activity-head::after{content:"▾";font-size:10px}
+.m-activity-body{display:none;padding:2px 0 2px 2px}
+.m-activity.is-open > .m-activity-body{display:block}
+.m-activity-row{display:flex;align-items:center;gap:8px;height:28px;min-width:0;font-size:13px;color:var(--m-fg-2);white-space:nowrap}
+.m-activity-row > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-activity-row::after{content:"›";flex:none;color:var(--m-fg-3);font-size:14px}
+.m-thumb{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex:none;border-radius:4px;background:var(--m-sunken);font:9px/1 var(--m-font-mono);color:var(--m-fg-3);text-transform:uppercase}
+.m-activity-status{margin-top:4px;font-size:12px;color:var(--m-fg-3)}
+/* shimmer: pending reply skeleton, 1.2 s sweep; the active activity label's text sweeps the same way.
+   --m-hover sits within three units of --m-sunken, so the band mixes 12 % fg into it to stay visible. */
+.m-shimmer{display:flex;flex-direction:column;gap:10px;padding:4px 0;min-width:0}
+.m-shimmer i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--m-sunken) 25%,color-mix(in oklab,var(--m-hover) 88%,var(--m-fg) 12%) 50%,var(--m-sunken) 75%);background-size:200% 100%;animation:m-shimmer 1.2s linear infinite}
+.m-shimmer i:nth-child(1){width:92%}
+.m-shimmer i:nth-child(2){width:76%}
+.m-shimmer i:nth-child(3){width:58%}
+.m-activity.is-active > .m-activity-head > span{background:linear-gradient(90deg,var(--m-fg-3) 25%,var(--m-fg) 50%,var(--m-fg-3) 75%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:m-shimmer 1.2s linear infinite}
+@keyframes m-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){
+  .m-shimmer i{animation:none;background:var(--m-sunken)}
+  .m-activity.is-active > .m-activity-head > span{animation:none;background:none;color:var(--m-fg-2);-webkit-background-clip:border-box;background-clip:border-box}
+}
+/* input: radius 24, sunken, no border, + at the left, ↵ at the right (fg once there is text); meta line below */
+.m-chat-input{display:flex;align-items:flex-end;gap:4px;min-height:48px;padding:8px;border-radius:24px;background:var(--m-sunken)}
+.m-chat-input .m-field{flex:1;min-width:0;padding:6px 6px 7px;border:0;background:none;color:var(--m-fg);font-size:15px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-chat-input .m-field::placeholder,.m-chat-input .m-field.is-placeholder{color:var(--m-fg-3)}
+.m-plus,.m-send{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex:none;border-radius:50%;color:var(--m-fg-2);font-size:20px;line-height:1}
+.m-plus:hover,.m-send:hover{background:var(--m-hover)}
+.m-send{color:var(--m-fg-3);font-size:16px}
+.m-chat-input.has-text .m-send{color:var(--m-fg)}
+.m-chat-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 14px 0;font-size:11px;color:var(--m-fg-3);white-space:nowrap}
+.m-chat-meta .m-effort{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--m-fg-2);cursor:pointer}
+.m-chat-meta .m-effort .m-caret{font-size:9px;color:var(--m-fg-3)}
+.m-chat-meta .m-model{display:inline-flex;align-items:center;gap:8px}
+/* + menu: 14-px rows, icon + label, hint right in fg-3; unavailable items dim with a one-line reason */
+.m-menu.is-plus{min-width:240px}
+.m-menu.is-plus .m-menu-item{height:auto;min-height:32px;padding:5px 8px;font-size:14px;gap:10px}
+.m-menu.is-plus .m-icon{color:var(--m-fg-2)}
+.m-menu-item .m-label{min-width:0;flex:1}
+.m-menu-item .m-reason{display:block;font-size:11px;color:var(--m-fg-3);line-height:1.3}
+.m-menu-item .m-hint{margin-left:auto;flex:none;font-size:11px;color:var(--m-fg-3)}
+.m-menu-item.is-dimmed{opacity:.55;cursor:default}
+.m-menu-item.is-dimmed:hover{background:none}
+/* slash popover: command + one-line description */
+.m-slash-pop{display:inline-flex;flex-direction:column;min-width:280px;max-width:100%;padding:4px;border-radius:var(--m-r-card);background:var(--m-surface);box-shadow:var(--m-shadow-pop)}
+.m-slash-row{display:flex;align-items:center;gap:10px;height:30px;padding:0 10px;border-radius:var(--m-r-ctl);min-width:0;white-space:nowrap}
+.m-slash-row.is-active{background:var(--m-hover)}
+.m-slash-row code{flex:none;font-size:13px;color:var(--m-fg)}
+.m-slash-row span{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:var(--m-fg-3)}
+
+
+/* 12. CALENDAR GRID ------------------------------------------------------ */
+
+.m-calendar{
+  display:grid;
+  grid-template-columns:40px repeat(7,minmax(0,1fr));
+  border-radius:var(--m-r-card);
+  background:var(--m-surface);
+  overflow:hidden;
+  font-size:11px;
+  color:var(--m-fg-2);
+}
+.m-cal-corner,.m-cal-day,.m-cal-hour,.m-cal-cell{border-bottom:1px solid var(--m-line);min-width:0}
+.m-cal-day,.m-cal-cell{border-left:1px solid var(--m-line)}
+.m-cal-day{padding:6px 6px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-cal-day b{margin-right:4px;font-size:13px;font-weight:600;color:var(--m-fg)}
+.m-cal-day.is-today{color:var(--m-fg);font-weight:600}   /* today: the header in --m-fg and the now-line, no column tint (03 §6.2) */
+.m-cal-hour{height:var(--m-cal-row,44px);padding:3px 6px 0 0;text-align:right;color:var(--m-fg-3)}
+.m-cal-cell{position:relative;height:var(--m-cal-row,44px)}   /* --m-cal-row: a smaller grid's hour (the onboarding preview); 44 px in the views */
+.m-calendar > :nth-last-child(-n+8){border-bottom:0}
+/* event chip: sunken fill, 3-px bar in the calendar's color (--cal), positioned by --top/--h */
+.m-cal-event{
+  position:absolute;
+  left:3px;
+  right:3px;
+  top:var(--top,2px);
+  height:var(--h,20px);
+  z-index:1;
+  padding:2px 6px;
+  border-left:3px solid var(--cal,var(--m-fg-3));
+  border-radius:4px;
+  background:var(--m-sunken);
+  color:var(--m-fg);
+  font-size:11px;
+  line-height:1.3;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.m-cal-event small{display:block;font-size:10px;color:var(--m-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* round 2 (§7.2): all-day row, collapsed-hours line, now-line, flat .m-event chips (no bar, no dot, no calendar color), agenda, month */
+.m-cal-allday{grid-column:1/-1;display:grid;grid-template-columns:40px repeat(7,minmax(0,1fr));border-bottom:1px solid var(--m-line)}
+.m-cal-allday > *{height:auto;min-height:28px;border-bottom:0}
+.m-cal-more{grid-column:1/-1;display:flex;align-items:center;height:20px;margin-top:-1px;padding-left:46px;border-top:1px solid var(--m-line);border-bottom:1px solid var(--m-line);color:var(--m-fg-3);cursor:pointer}
+.m-cal-now{position:absolute;left:0;right:0;top:var(--top,0);height:1px;background:var(--m-fg);z-index:2;pointer-events:none}
+.m-cal-now::before{content:"";position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--m-fg)}
+.m-event{display:block;min-width:0;padding:2px 6px;border-radius:var(--m-r-ctl);background:var(--m-sunken);color:var(--m-fg);font-size:12px;line-height:1.3;overflow:hidden;cursor:pointer}
+.m-event:hover{background:var(--m-hover)}
+.m-event.is-selected{background:var(--m-selected);box-shadow:0 0 0 1px var(--m-line-strong)}
+.m-month-cell.is-today{background:var(--m-selected)}
+.m-event > *{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-event b{font-weight:500}
+.m-cal-cell > .m-event{position:absolute;left:3px;right:3px;top:var(--top,2px);height:var(--h,20px);z-index:1}
+.m-cal-allday .m-event{position:static;height:auto;margin:3px}
+.m-agenda{width:240px;flex:none;min-width:0;padding:4px 8px;border-radius:var(--m-r-card);background:var(--m-surface)}
+.m-agenda .m-task .m-t-meta{width:44px;flex:none}
+.m-month{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-radius:var(--m-r-card);background:var(--m-surface);overflow:hidden;font-size:11px;color:var(--m-fg-2)}
+.m-month > :nth-child(7n+1){border-left:0}
+.m-month-cell{min-height:100px;padding:4px;border-left:1px solid var(--m-line);min-width:0}
+.m-month-cell b{display:block;margin:0 0 3px 3px;font-size:12px;font-weight:600;color:var(--m-fg)}
+.m-month-cell .m-event{margin-top:2px;padding:1px 6px}
+
+
+/* 13. STATS -------------------------------------------------------------- */
+
+.m-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:12px;min-width:0}
+.m-stat{min-width:0}
+.m-stat-n{font-size:20px;font-weight:500;line-height:1.2;letter-spacing:-.01em;white-space:nowrap}
+.m-stat-l{margin-top:2px;font-size:11px;color:var(--m-fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* the spend row (03 §7A.1): one hero figure, then the other totals, laid out by content */
+.m-stats.is-spend{grid-template-columns:repeat(4,max-content);gap:12px 40px}
+.m-stats.is-metrics{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+.m-stat.is-hero .m-stat-n{font-size:32px;line-height:1.1;letter-spacing:-.02em}
+/* a section heading with a control at its right (the breakdown's Models · Agents · Days) */
+.m-stats-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:28px}
+.m-stats-head .m-group-label{padding:0}
+.m-stats-bars{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end;height:72px;margin-top:10px}
+.m-stats-bar{height:var(--h,10%);min-height:2px;border-radius:3px 3px 0 0;background:var(--m-line-strong)}
+.m-stats-bar.is-today{background:var(--m-fg-2)}
+.m-stats-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:4px;font-size:11px;color:var(--m-fg-3);text-align:center}
+/* bars per local hour (24) and per week (up to 53): narrower gaps, every n-th label */
+.m-stats-bars.is-hours,.m-stats-days.is-hours{grid-template-columns:repeat(24,minmax(0,1fr));gap:2px}
+.m-stats-bars.is-weeks,.m-stats-days.is-weeks{grid-template-columns:repeat(var(--n,53),minmax(0,1fr));gap:2px}
+.m-stats-bars.is-hours{height:48px}
+.m-stats-days.is-hours span,.m-stats-days.is-weeks span{text-align:left;white-space:nowrap;overflow:visible}
+/* horizontal share bars (the breakdown by model): label, bar, figure */
+.m-hbars{display:grid;grid-template-columns:max-content minmax(0,1fr) max-content;gap:6px 10px;align-items:center;font-size:12px;min-width:0}
+.m-hbar-l{color:var(--m-fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.m-hbar{height:8px;border-radius:2px;background:var(--m-sunken);overflow:hidden}
+.m-hbar i{display:block;height:100%;width:var(--w,0%);border-radius:2px;background:var(--m-fg-3)}
+.m-hbar-n{color:var(--m-fg-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* a plain table of figures: 11-px headings, 28-px rows, numbers right-aligned and tabular */
+.m-table{width:100%;border-collapse:collapse;font-size:12px;color:var(--m-fg)}
+.m-table th{height:24px;padding:0 8px;text-align:left;font-size:11px;font-weight:500;color:var(--m-fg-3);border-bottom:1px solid var(--m-line);white-space:nowrap}
+.m-table td{height:28px;padding:0 8px;border-bottom:1px solid var(--m-line);white-space:nowrap}
+.m-table th:first-child,.m-table td:first-child{padding-left:2px}
+.m-table th:last-child,.m-table td:last-child{padding-right:2px}
+.m-table tr:last-child td{border-bottom:0}
+.m-table .is-num{text-align:right;font-variant-numeric:tabular-nums}
+.m-table .is-dim{color:var(--m-fg-3)}
+.m-table td .m-avatar-agent{display:inline-flex;vertical-align:middle;margin-right:8px}
+.m-table td code{font-size:11px}
+.m-stat-row{display:flex;align-items:center;justify-content:space-between;gap:8px;height:28px}
+/* day tracker (§7.3): 53 weeks × 7 days (a year ending today), 11-px squares, 2-px gaps; five steps of --m-ok over --m-sunken; tooltip on hover/focus */
+.m-tracker{position:relative;display:inline-grid;grid-template-columns:14px auto;gap:4px 6px;font-size:11px;color:var(--m-fg-3)}
+.m-tracker-months{grid-area:1/2;display:grid;grid-template-columns:repeat(var(--weeks,53),11px);gap:2px;height:14px;line-height:14px;white-space:nowrap}
+.m-tracker-days{grid-area:2/1;display:grid;grid-template-rows:repeat(7,11px);gap:2px;line-height:11px}
+.m-tracker-grid{grid-area:2/2;display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);grid-auto-columns:11px;gap:2px}
+.m-tracker-grid i,.m-tracker-legend i,.m-tracker .lvl-0{position:relative;display:block;width:11px;height:11px;border-radius:2px;background:var(--m-sunken)}
+.m-tracker .lvl-1{background:color-mix(in oklab,var(--m-ok) 25%,var(--m-sunken))}
+.m-tracker .lvl-2{background:color-mix(in oklab,var(--m-ok) 50%,var(--m-sunken))}
+.m-tracker .lvl-3{background:color-mix(in oklab,var(--m-ok) 75%,var(--m-sunken))}
+.m-tracker .lvl-4{background:var(--m-ok)}   /* 100 % */
+.m-tracker-grid i:hover,.m-tracker-grid i:focus-visible,.m-tracker-grid i.is-open{box-shadow:0 0 0 1px var(--m-line-strong)}
+.m-tracker-tip{display:none;position:absolute;right:-4px;bottom:calc(100% + 6px);z-index:3;padding:4px 8px;border-radius:var(--m-r-ctl);background:var(--m-surface);box-shadow:var(--m-shadow-pop);color:var(--m-fg);line-height:1.4;white-space:nowrap}
+.m-tracker-grid i:hover > .m-tracker-tip,.m-tracker-grid i:focus-visible > .m-tracker-tip,.m-tracker-grid i.is-open > .m-tracker-tip{display:block}
+.m-tracker-foot{grid-area:3/1/4/3;display:flex;justify-content:space-between;align-items:center;gap:16px;white-space:nowrap}
+.m-tracker-legend{display:inline-flex;align-items:center;gap:2px}
+/* skeleton (10 §3.7 Loading, §7.4.21): a view draws its final layout in blocks until its data lands, sweeping with the
+   shimmer gradient (§11b); each block takes the height of the line it stands in for through its margins (inline-block,
+   top-aligned, so the margins never collapse into the line's container), so nothing moves when the text replaces it */
+.m-skel{display:inline-block;vertical-align:top;width:100%;height:12px;border-radius:var(--m-r-ctl);background:linear-gradient(90deg,var(--m-sunken) 25%,color-mix(in oklab,var(--m-hover) 88%,var(--m-fg) 12%) 50%,var(--m-sunken) 75%);background-size:200% 100%;animation:m-shimmer 1.2s linear infinite}
+.m-skel.is-text{height:12px;margin:4px 0}   /* a 20-px line */
+.m-t-meta > .m-skel.is-text{margin:2px 0}   /* a 16-px line */
+.m-skel.is-n{height:20px;margin:2px 0}   /* the 24-px .m-stat-n line */
+.m-stat.is-hero .m-skel.is-n{height:32px;margin:1.6px 0}   /* the 35.2-px hero line */
+.m-skel.is-square{width:11px;height:11px;border-radius:2px;animation-delay:calc(var(--c,0) * -20ms)}   /* a tracker cell; the sweep travels across the week columns */
+.m-skel.is-bar{align-self:end;height:var(--h,60%);border-radius:3px 3px 0 0}
+.m-skel.w-40{width:40%}
+.m-skel.w-60{width:60%}
+.m-skel.w-80{width:80%}
+/* stale: a refetch keeps the figures shown, dimmed, until the new ones replace them */
+.m-stats{transition:opacity 120ms var(--m-ease-out)}
+.is-stale{opacity:.6}
+@media (prefers-reduced-motion:reduce){
+  .m-skel{animation:none;background:var(--m-sunken)}
+}
+[data-motion="reduced"] .m-skel{animation:none;background:var(--m-sunken)}
+
+
+/* 13b. VIEWS (ROUND 2 §7.5–7.11): BREADCRUMB, KEY CAPS, SHORTCUTS, INTEGRATIONS, AUTOMATIONS, SWITCH, FORM, PALETTE */
+
+.m-crumb{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--m-fg-3);white-space:nowrap}   /* every sub-detail page starts with one (§7.5) */
+.m-crumb > span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-crumb > span + span::before{content:"›";margin-right:6px}
+.m-crumb > span:last-child{color:var(--m-fg)}
+/* key caps: the Shortcuts view is the only place keys appear (ADR-0032); menu rows keep their plain muted letters */
+.m-key{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:4px;background:var(--m-sunken);color:var(--m-fg-2);font:11px/1 var(--m-font-mono)}
+.m-menu .m-key{padding:0;background:none;font-family:var(--m-font-ui)}
+.m-shortcut{display:grid;grid-template-columns:minmax(0,1fr) auto 64px 28px;gap:12px;align-items:center;height:40px;padding:0 6px 0 12px;min-width:0}
+.m-shortcut .m-keys{display:flex;gap:4px;border-radius:5px;cursor:text}   /* editable on click: the focus ring wraps the caps */
+.m-shortcut .is-conflict{color:var(--m-bad)}
+.m-shortcut:hover,.m-automation:hover,.m-profile:hover,.m-palette-row.is-active{background:var(--m-hover)}
+/* integration cards: icon · name · status line · count lines · one button + ⋮; .is-later dims with a one-line reason */
+.m-integrations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-width:0}
+/* card anatomy (03 §7C.1, ADR-0057): 40-px tile spanning both rows · head (name, status line) · ⋮ · body (meta lines, actions pinned to the bottom so a row of cards lines up) */
+.m-integration{display:grid;grid-template-columns:40px minmax(0,1fr) 28px;grid-template-rows:auto minmax(0,1fr);column-gap:12px;row-gap:8px;align-items:start;min-width:0;padding:16px;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-surface)}
+.m-integration > .m-brand{grid-row:1/3;width:40px;height:40px;border-radius:10px;background-size:20px 20px}
+.m-integration > .m-brand .m-brand-mark{width:20px;height:20px}
+.m-integration-head{grid-column:2;display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0;min-height:40px}
+.m-integration-status{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;line-height:16px;color:var(--m-fg-2);white-space:nowrap}
+.m-integration-status .m-state{flex:none}
+.m-integration-detail{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-state + .m-integration-detail::before{content:"· "}   /* the separator is structure, not data (10 §7.4.14) */
+.m-integration > .m-btn-icon{grid-column:3;grid-row:1;margin-top:8px}
+.m-integration-body{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:2px;min-width:0;align-self:stretch}
+.m-integration-body .m-meta{line-height:16px}
+.m-integration .m-card-actions{margin-top:auto;padding-top:12px}
+.m-integration.is-later{opacity:.55}
+.m-integration.is-later .m-meta{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* a page section (03 §7C.3): a bordered card with a 40-px head, a body (lists padded 4 / 8) and a foot for its buttons */
+.m-section{min-width:0;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-surface)}
+.m-section + .m-section{margin-top:12px}
+.m-section-head{display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-bottom:1px solid var(--m-line);font-size:12px;font-weight:500;color:var(--m-fg-2);white-space:nowrap}
+.m-section-head .m-t-meta{margin-left:auto;font-weight:400}
+.m-section-body{padding:12px 16px;min-width:0}
+.m-section-body.is-list{padding:4px 8px}
+.m-section-body > .m-form{max-width:none;margin:0}
+.m-section-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 16px 12px}
+.m-section-body + .m-section-foot{padding-top:0}
+/* watched rows (labels, conversations, calendars): name · one switch per column, headed */
+.m-source-head,.m-source-row{display:grid;grid-template-columns:minmax(0,1fr) 72px 72px;column-gap:8px;align-items:center;min-width:0;padding:0 8px}
+.m-source-head{height:28px;font-size:11px;color:var(--m-fg-3)}
+.m-source-head span:not(:first-child),.m-source-cell{text-align:right;display:flex;justify-content:flex-end}
+.m-source-row{height:36px;border-top:1px solid var(--m-line)}
+.m-source-row.is-two,.m-source-head.is-two{grid-template-columns:minmax(0,1fr) 72px}
+.m-source-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-source-name .m-t-meta{margin-left:6px}
+.m-brand{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--m-sunken) center/18px 18px no-repeat;color:var(--m-fg-3)}
+/* brand marks (10 §7.4.16, ADR-0053): one <symbol id="b-…"> per external app, drawn in currentColor; 18 px in a tile, 16 px in a row, 12 px inline; near-black brands follow the text color */
+.m-brand-mark{display:inline-block;flex:none;width:18px;height:18px;fill:currentColor;color:var(--m-fg);vertical-align:middle}
+.m-brand-mark.is-16{width:16px;height:16px}
+.m-brand-mark.is-12{width:12px;height:12px;vertical-align:-2px;margin-right:4px}
+.m-brand .m-brand-mark{width:18px;height:18px}
+/* Mode's own marks in a tile (the Marketplace card): the artwork blended like the mascot, its ground gone */
+.m-brand img{width:20px;height:20px;mix-blend-mode:multiply}
+[data-theme="dark"] .m-brand img,.is-notch .m-brand img{mix-blend-mode:screen;filter:contrast(1.15)}
+.m-connector-row.has-mark{grid-template-columns:88px 16px minmax(0,1fr) auto 28px}
+.m-seg-item .m-brand-mark{margin-right:4px}
+/* brand colors (generated by ui/scripts/brands.mjs from assets/brands/manifest.json) */
+.m-brand-mark.is-claudecode{color:#C86848}
+.m-brand-mark.is-claude{color:#C86848}
+.m-brand-mark.is-linear{color:#5E6AD2}
+.m-brand-mark.is-warp{color:#0087E0}
+.m-brand-mark.is-ghostty{color:#3551F3}
+.m-brand-mark.is-alacritty{color:#DB5600}
+.m-brand-mark.is-wezterm{color:#4E49EE}
+.m-brand-mark.is-groq{color:#EA452C}
+.m-brand-mark.is-mistral{color:#EB4300}
+.m-brand-mark.is-deepseek{color:#4F7CF4}
+.m-brand-mark.is-perplexity{color:#008FA4}
+.m-brand-mark.is-googlecloud{color:#3C7FED}
+.m-brand-mark.is-googlegemini{color:#8E75B2}
+[data-theme="dark"] .m-brand-mark.is-linear{color:#7786F1}
+[data-theme="dark"] .m-brand-mark.is-ghostty{color:#5D88FF}
+[data-theme="dark"] .m-brand-mark.is-wezterm{color:#7680FF}
+[data-theme="dark"] .m-brand-mark.is-groq{color:#F95439}
+[data-theme="dark"] .m-brand-mark.is-deepseek{color:#5A89FF}
+[data-theme="dark"] .m-brand-mark.is-googlecloud{color:#488BFB}
+[data-theme="dark"] .m-brand-mark.is-googlegemini{color:#9A81BF}
+/* /brand colors */
+.m-automation{display:grid;grid-template-columns:36px minmax(0,1fr) 88px auto 28px;gap:12px;align-items:center;height:44px;padding:0 6px 0 12px;min-width:0}   /* switch · name / trigger · action · last run · next run · ⋮ */
+/* the switch (10 §7.4.14): a 36 × 20 track, a 16-px white knob that travels 16 px; off on --m-switch-off, on on --m-ok; the knob stretches to 20 px while pressed */
+.m-switch{position:relative;display:inline-block;width:36px;height:20px;flex:none;padding:0;border:0;border-radius:var(--m-r-pill);background:var(--m-switch-off);cursor:pointer;transition:background-color 160ms var(--m-ease-in-out),box-shadow 160ms var(--m-ease-in-out),transform 80ms var(--m-ease-out)}
+.m-switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:var(--m-r-pill);background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform 160ms var(--m-ease-in-out),width 80ms var(--m-ease-out)}   /* the knob is white on every pack, the one literal color */
+.m-switch.is-on{background:var(--m-ok)}
+.m-switch.is-on::after{transform:translateX(16px)}
+.m-switch:active{transform:scale(.97)}
+.m-switch:active::after{width:20px}
+.m-switch.is-on:active::after{transform:translateX(12px)}   /* the stretched knob stays inside the track */
+.m-switch:focus-visible{box-shadow:inset 0 0 0 1px var(--m-line-strong)}
+.m-switch[disabled],.m-switch[aria-disabled="true"]{opacity:.5;cursor:default}
+.m-switch[disabled]:active,.m-switch[aria-disabled="true"]:active{transform:none}
+.m-switch[disabled]:active::after,.m-switch[aria-disabled="true"]:active::after{width:16px}
+.m-switch.is-on[disabled]:active::after,.m-switch.is-on[aria-disabled="true"]:active::after{transform:translateX(16px)}
+.m-form{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px 12px;align-items:center;max-width:680px;min-width:0}   /* label · control rows */
+.m-palette{width:560px;max-width:100%;margin:0 auto;padding:6px;border-radius:var(--m-r-overlay);background:var(--m-surface);box-shadow:var(--m-shadow-pop)}   /* ⌘K, centered */
+.m-palette-row{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:var(--m-r-ctl);min-width:0;white-space:nowrap}
+.m-palette-row .m-icon{color:var(--m-fg-3)}
+
+/* 13c. ONBOARDING (03 §2.8) ------------------------------------------------ */
+/* one panel over the dimmed shell (its size rounded down to even pixels, so it centers on whole pixels): copy and the step's controls left (40 %), a live preview of the real view right (60 %) bleeding off the right and bottom edges, a rail of ticks at the left edge, progress bars and Back / Continue at the bottom; sized against the layer (a size container), so the same rules hold in a window and in a wireframe frame */
+.m-ob-layer{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;container-type:size;background:color-mix(in srgb,var(--m-bg) 70%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.m-ob-panel{position:relative;display:grid;grid-template-columns:40% minmax(0,1fr);grid-template-rows:minmax(0,1fr) 64px;width:round(down,min(1000px,max(73cqw,860px),calc(100cqw - 32px)),2px);height:round(down,min(80cqh,640px),2px);border-radius:var(--m-r-card);background:var(--m-surface);box-shadow:var(--m-shadow-pop);overflow:hidden;color:var(--m-fg)}
+.m-ob-rail{position:absolute;left:24px;top:calc(50% - 32px);display:flex;flex-direction:column;gap:10px;transform:translateY(-50%)}
+.m-ob-rail i{display:block;width:8px;height:2px;border-radius:var(--m-r-pill);background:var(--m-line)}
+.m-ob-rail i.is-on{width:24px;background:var(--m-fg)}
+.m-ob-side{display:flex;flex-direction:column;gap:24px;min-width:0;min-height:0;padding:32px 28px 16px 64px;overflow:auto}
+.m-ob-side > :first-child{margin-top:auto}   /* centered while it fits, scrolled from the top when it does not */
+.m-ob-side > :last-child{margin-bottom:auto}
+.m-ob-copy{display:flex;flex-direction:column;gap:12px;min-width:0}
+.m-ob-eyebrow{display:flex;align-items:center;gap:6px;height:16px;font-size:12px;line-height:16px;color:var(--m-fg-2)}
+.m-ob-eyebrow .m-icon,.m-ob-eyebrow .m-brand-mark{width:14px;height:14px}
+.m-ob-title{margin:0;font-size:26px;font-weight:600;line-height:32px;letter-spacing:-.01em;text-wrap:balance}
+.m-ob-lede{margin:0;font-size:15px;line-height:23px;color:var(--m-fg-2);text-wrap:pretty}
+.m-ob-sets{display:flex;flex-direction:column;gap:10px;min-width:0}
+.m-ob-sets .m-meta{line-height:16px;white-space:normal}
+.m-ob-row{display:flex;align-items:center;gap:10px;min-width:0;min-height:32px}
+.m-ob-row > .m-btn,.m-ob-row > .m-t-meta,.m-ob-row > .m-ob-connected{margin-left:auto}
+.m-ob-account{display:flex;flex-direction:column;min-width:0}   /* an account row and the one line under it: the wait, the answer, the reason */
+.m-ob-row-note{display:flex;align-items:center;gap:6px;min-width:0;min-height:16px;padding-left:26px;font-size:12px;line-height:16px;color:var(--m-fg-2)}   /* under the name (16-px mark + 10-px gap) */
+.m-ob-row-note > .m-btn{height:20px;margin:-2px 0;padding:0 6px}
+.m-ob-row-note.is-quiet{color:var(--m-fg-3)}
+.m-ob-row-note.m-ob-error{color:var(--m-bad)}
+.m-ob-account .m-ob-row-name{flex:none}   /* the service keeps its name; the account name after "Connected ·" is what gets cut */
+.m-ob-connected{display:inline-flex;align-items:center;gap:6px;min-width:0;overflow:hidden;font-size:12px;color:var(--m-fg-2)}
+.m-ob-check{color:var(--m-ok)}
+.m-ob-row-name{min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-ob-error{font-size:12px;line-height:16px;color:var(--m-bad)}
+/* the preview: a window of the real view at its own size, 115 % of the column, so it bleeds off the panel's right edge and the stage's bottom; decorative (aria-hidden, no pointer) */
+.m-ob-stage{position:relative;min-width:0;min-height:0;overflow:hidden}
+.m-ob-preview{position:absolute;left:0;top:48px;display:flex;flex-direction:column;width:115%;height:115%;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-bg);overflow:hidden;pointer-events:none;user-select:none}
+.m-ob-preview > .m-main-head{flex:none}
+.m-ob-view{display:flex;flex-direction:column;gap:8px;min-height:0;padding:12px 16px 16px}   /* 12 px under the head's line, so the first list never touches it */
+.m-ob-view > .m-list{padding:4px 8px}
+.m-ob-view .m-group-label{padding-left:4px}
+.m-ob-why{padding:2px 12px 6px 48px;font-size:11px;line-height:16px;color:var(--m-fg-3)}
+.m-ob-enter{animation:m-ob-enter 320ms ease-out both}
+@keyframes m-ob-enter{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.m-ob-leave{opacity:0;transition:opacity 200ms ease-out}   /* what a click in a preview takes away fades, it does not vanish */
+/* a preview's head made of tabs (Inbox · Calendar): the head's height and line */
+.m-ob-preview > .m-tabs{flex:none;height:44px;padding:0 16px}
+/* the Calendar tab: the week grid, five weekdays at a 35-px hour so 10:00–18:00 shows inside the visible part from a 1024-px window up, and the selected event's detail panel (the view's own below 1100 px: a card over the grid) in the visible bottom-right corner (the preview is 115 % of the stage and starts 48 px down, so 15/115 of its width and 15/115 of its height plus 48 px are off the panel) */
+.m-ob-view > .m-calendar{flex:none;width:calc((100% + 32px) / 1.15 - 32px);grid-template-columns:40px repeat(5,minmax(0,1fr))}   /* as wide as the visible part, less the view's 16-px gutters; its hour row (--m-cal-row, 35 px at the least) is set from the stage's height so the grid meets the panel's bottom edge */
+.m-ob-view > .m-calendar .m-cal-allday{grid-template-columns:40px repeat(5,minmax(0,1fr))}
+.m-ob-view > .m-calendar > :nth-last-child(-n+8){border-bottom:1px solid var(--m-line)}
+.m-ob-view > .m-calendar > :nth-last-child(-n+6){border-bottom:0}
+.m-ob-detail{position:absolute;z-index:1;right:calc(100% * .15 / 1.15 + 12px);bottom:calc(100% * .15 / 1.15 + 60px);display:flex;flex-direction:column;gap:2px;width:280px;padding:12px;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-surface);box-shadow:var(--m-shadow-pop)}
+.m-ob-detail .m-group-label{padding-left:4px}
+.m-ob-detail > .m-meta{padding:0 4px}
+.m-ob-detail > .m-t-title{padding:0 4px}
+.m-ob-detail > .m-btn-group{margin-top:8px}
+.m-ob-preview .m-main-head > .m-t-title{flex:none}
+.m-main-head > .m-ob-search{flex:none;width:200px;margin-left:16px}   /* the Notes preview's search field, next to the title (the head's right edge is off the panel) */
+/* the drawn pointer of a preview (03 §2.8): the macOS arrow, 28 px, its tip on the point; it glides between targets and presses */
+.m-ob-cursor{position:absolute;z-index:2;width:28px;height:28px;margin:-3.7px 0 0 -6.4px;transform-origin:6.4px 3.7px;transition:left 600ms cubic-bezier(.2,.7,.2,1),top 600ms cubic-bezier(.2,.7,.2,1),opacity 240ms ease-out,transform 120ms ease-out;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));pointer-events:none}
+.m-ob-cursor path{fill:#FFFFFF;stroke:#1E1D1A;stroke-width:1.6;stroke-linejoin:round}   /* the OS pointer's own colors, the same in every pack */
+.m-ob-cursor.is-pressed{transform:scale(.86)}
+.m-ob-cursor.is-hidden{opacity:0}
+/* the screen behind the overlay previews: a sunken desktop with the pill where the placement puts it */
+.m-ob-screen{position:relative;flex:1;min-height:0;background:var(--m-sunken)}
+.m-ob-spot{position:absolute;top:10px;left:calc(50% / 1.15);transform:translateX(-50%)}
+.m-ob-screen.is-notch .m-ob-spot{top:0}
+.m-ob-screen.is-right-edge .m-ob-spot{top:96px;left:auto;right:calc(15% / 1.15 + 8px);transform:none}
+.m-ob-field{position:absolute;left:32px;top:120px;display:flex;flex-direction:column;gap:8px;width:400px}
+.m-ob-screen.is-right-edge .m-ob-field{top:40px}
+/* the dictation pill's listening meter: three bars in the mascot's place */
+.m-ob-meter{display:inline-flex;align-items:center;justify-content:center;gap:2px;width:18px;height:18px;flex:none}
+.m-ob-meter i{display:block;width:3px;height:10px;border-radius:var(--m-r-pill);background:var(--m-fg);animation:m-ob-meter 900ms ease-in-out infinite}
+.m-ob-meter i:nth-child(2){height:14px;animation-delay:-300ms}
+.m-ob-meter i:nth-child(3){animation-delay:-600ms}
+.m-ob-note{gap:2px}   /* the Dictation preview's note: its title, the bullets as typed, the caret on the next line */
+.m-ob-note > .m-t-title{margin-bottom:6px}
+.m-ob-note-line{display:flex;align-items:center;min-height:20px;font-size:13px;line-height:20px;white-space:nowrap}
+.m-ob-note-line .m-caret{width:1px;height:14px;margin-left:1px;background:var(--m-fg);flex:none}
+.m-ob-field > .m-composer{padding-top:0}
+.m-ob-chat .m-chat-thread{justify-content:flex-end;gap:12px;min-height:160px;padding:4px 0 8px}   /* room for the ask and the answer from the start, so the field stays put */
+.m-ob-pick{position:relative;display:inline-flex;min-width:0}   /* the Automations preview's pickers: the menu each opens, under it */
+.m-ob-pick > .m-menu{position:absolute;z-index:1;top:calc(100% + 4px);left:0}
+.m-ob-preview .m-menu-item.is-hover{background:var(--m-hover)}   /* the drawn pointer's hover */
+.m-ob-time{flex:none;width:64px}
+@keyframes m-ob-meter{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+.m-pill .m-spinner{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex:none}
+/* Done: what was set, then what was skipped (fg-3) with its Settings path */
+.m-ob-lines{display:flex;flex-direction:column;justify-content:center;gap:2px;height:100%;padding:32px 48px 16px 8px;min-width:0}
+.m-ob-line{display:flex;align-items:center;gap:10px;min-height:28px;font-size:13px;line-height:20px;color:var(--m-fg)}
+.m-ob-line.is-skipped{color:var(--m-fg-3)}
+.m-ob-glyph{display:inline-flex;align-items:center;justify-content:center;width:14px;height:20px;flex:none}   /* the kit spinner while what was set is read, then the check or the step's icon */
+.m-ob-glyph .m-spinner{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px}
+.m-ob-glyph > .m-ob-check{animation:m-ob-pop 200ms cubic-bezier(.2,.7,.2,1) backwards}   /* backwards: once in, nothing of the animation stays on it */
+.m-ob-skip{display:inline-flex;color:var(--m-fg-3);animation:m-ob-fade 200ms ease-out backwards}
+.m-ob-skip .m-icon,.m-ob-skip .m-brand-mark{width:14px;height:14px;margin:0;vertical-align:0;color:var(--m-fg-3)}   /* the step's own icon, the Claude Code mark too, in fg-3 */
+@keyframes m-ob-pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+@keyframes m-ob-fade{from{opacity:0}to{opacity:1}}
+/* Welcome: centered, the mascot, the name, one line; around them a faint matrix at the mascot's pitch (9-px squares of 7, --m-line mixed into the surface), full at the panel's top and side edges and corners, fading to the plain surface behind the mascot, the name and the line and under the bottom row (the step bars stay legible). The panel's color stays --m-surface: site/bot.js reads it for the mascot's paper. */
+.m-ob-panel[data-step="welcome"]{background:linear-gradient(to top,var(--m-surface) 52px,transparent 96px),radial-gradient(ellipse 58% 60% at 50% 44%,var(--m-surface) 50%,transparent 100%),linear-gradient(90deg,var(--m-surface) 2px,transparent 2px) 0 0/9px 9px,linear-gradient(var(--m-surface) 2px,transparent 2px) 0 0/9px 9px,linear-gradient(color-mix(in srgb,var(--m-line) 50%,var(--m-surface)),color-mix(in srgb,var(--m-line) 50%,var(--m-surface)));background-color:var(--m-surface)}
+.m-ob-welcome{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:0;padding:32px;text-align:center}
+.m-ob-welcome .m-ob-lede{max-width:420px}
+.m-ob-bot{display:block;width:200px;height:200px;color:var(--m-fg)}   /* the landing page's matrix mascot (site/bot.js, hero-matrix, mounted with pointer: 'gaze': its idle life and its eyes following the pointer, no other pointer play), ink in fg on the panel's surface */
+/* a step coming in: the side column and the stage (or the welcome block) fade and slide 10 px, from the right on Continue, from the left on Back */
+.m-ob-panel [data-enter]{animation:m-ob-in 240ms ease-out both}
+.m-ob-panel [data-enter="back"]{animation-name:m-ob-in-back}
+@keyframes m-ob-in{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+@keyframes m-ob-in-back{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+/* notes captured on the Notes step: task rows under the field, newest on top, about three rows, faded at the bottom when there are more */
+.m-ob-captured{display:flex;flex-direction:column;flex:none;height:96px;overflow:hidden;margin-top:-4px}   /* three rows from the first paint, newest on top: nothing above it moves when a note lands */
+.m-ob-captured-empty{height:32px;padding:0 4px;font-size:13px;line-height:32px;color:var(--m-fg-3)}
+.m-ob-captured.is-more{-webkit-mask-image:linear-gradient(to bottom,#000 70%,transparent);mask-image:linear-gradient(to bottom,#000 70%,transparent)}
+/* the dictation hold key and the model's progress */
+.m-ob-hold{font-size:13px;line-height:24px;color:var(--m-fg-2)}
+.m-ob-hold .m-keys{display:inline-flex;gap:4px;margin:0 2px 0 4px;vertical-align:middle}
+.m-ob-getting{display:flex;flex-direction:column;gap:6px}
+.m-ob-busy{display:flex;align-items:center;gap:6px}
+.m-ob-progress{height:2px;border-radius:var(--m-r-pill);background:var(--m-line);overflow:hidden}
+.m-ob-progress > i{display:block;height:100%;background:var(--m-fg);transition:width 200ms linear}
+/* the bottom row: one bar per step (fg up to the current), Back and Continue at the right */
+.m-ob-foot{grid-column:1/-1;display:flex;align-items:center;gap:8px;min-width:0;padding:0 20px 0 24px}
+.m-ob-bars{display:flex;gap:6px;margin-right:auto}
+.m-ob-bars i{display:block;width:24px;height:3px;border-radius:var(--m-r-pill);background:var(--m-line)}
+.m-ob-bars i.is-on{background:var(--m-fg)}
+/* under 900 px of window width the columns stack: the preview on top, 220 px tall */
+@container (max-width:899px){
+  .m-ob-panel{grid-template-columns:minmax(0,1fr);grid-template-rows:220px minmax(0,1fr) 64px;width:round(down,calc(100cqw - 32px),2px);height:round(down,min(calc(100cqh - 32px),720px),2px)}
+  .m-ob-stage{grid-row:1}
+  .m-ob-side{grid-row:2;justify-content:flex-start;gap:16px;padding:20px 24px 8px}
+  .m-ob-rail{display:none}
+  .m-ob-preview{left:24px;top:20px;width:calc(100% - 24px);height:300px}
+  .m-ob-lines{padding:20px 24px 8px}
+  .m-ob-welcome{grid-row:1/3}
+}
+@media (prefers-reduced-motion:reduce){.m-ob-enter,.m-ob-meter i,.m-ob-panel [data-enter],.m-ob-glyph > .m-ob-check,.m-ob-skip{animation:none}.m-ob-cursor{display:none}.m-ob-leave,.m-ob-progress > i{transition:none}}
+
+
+/* 13d. SETTINGS (10 §7.4.19): PAGE LIST, PAGE COLUMN, GROUPS, CARDS AND ROWS; SELECT AND COMBOBOX; NOTICES; SWATCH GRID */
+
+/* the page list: a filter field, then icon + label items in hairline-separated groups; 200 px, icons only when collapsed */
+.m-snav{display:flex;flex-direction:column;gap:2px;width:200px;flex:none;min-width:0;padding:12px 8px}
+.m-snav-search{margin-bottom:8px}
+.m-snav-item{display:flex;align-items:center;gap:8px;width:100%;height:28px;padding:0 8px;border:0;border-radius:var(--m-r-ctl);background:none;color:var(--m-fg-2);font:inherit;font-size:13px;line-height:20px;text-align:left;white-space:nowrap;cursor:pointer}
+.m-snav-item:hover{background:var(--m-hover)}
+.m-snav-item.is-active{background:var(--m-selected);color:var(--m-fg)}
+.m-snav-item:focus-visible{box-shadow:inset 0 0 0 1px var(--m-line-strong)}
+.m-snav-item .m-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.m-snav-sep{height:1px;margin:6px 8px;background:var(--m-line);flex:none}
+.m-snav.is-collapsed{width:56px;align-items:center}
+.m-snav.is-collapsed .m-snav-search,.m-snav.is-collapsed .m-label{display:none}
+.m-snav.is-collapsed .m-snav-item{width:40px;justify-content:center;padding:0}
+.m-snav.is-collapsed .m-snav-sep{width:24px}
+/* the page column: centered at 680 px (.is-wide lifts the cap: a gallery, logs), the page title, then groups */
+.m-set-page{width:100%;max-width:680px;min-width:0;margin-inline:auto;padding:24px 16px}
+.m-set-page.is-wide{max-width:none}
+.m-set-page > .m-t-page{margin-bottom:16px}
+/* a group: its heading, then one card of rows; the heading never repeats a row's title */
+.m-set-group{min-width:0}
+.m-set-head{margin:20px 0 8px;font-size:13px;font-weight:500;line-height:20px;color:var(--m-fg-2)}
+.m-set-group:first-child > .m-set-head,.m-t-page + .m-set-group > .m-set-head{margin-top:0}
+.m-set-card{min-width:0;padding:0 16px;border-radius:var(--m-r-card);background:var(--m-surface)}
+/* a row: title (+ tag) and one description line left, the control right; .is-stack puts a wide control under the text at full width */
+.m-set-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;min-width:0;min-height:56px;padding:12px 0}
+.m-set-row + .m-set-row{border-top:1px solid var(--m-line)}
+.m-set-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.m-set-title{font-size:13px;font-weight:500;line-height:20px;color:var(--m-fg)}
+.m-set-title > .m-tag{margin-left:6px;color:var(--m-fg-3);font-weight:400}
+.m-icon.m-set-device{display:inline-block;width:14px;height:14px;color:var(--m-fg-3)}
+.m-set-title > .m-set-device{margin-left:6px;vertical-align:-2px}
+.m-set-desc{font-size:12px;line-height:16px;color:var(--m-fg-2)}
+.m-set-ctl{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 8px;min-width:0}   /* the control, a unit beside it; an error takes the next line */
+.m-set-ctl > .m-input{width:200px}
+.m-set-ctl > .m-input[type="number"]{width:96px}
+.m-set-ctl > .m-combo{width:200px}   /* a combobox sits where a short text input would */
+.m-set-unit{font-size:12px;line-height:16px;color:var(--m-fg-2);white-space:nowrap}
+.m-set-err{flex-basis:100%;font-size:12px;line-height:16px;color:var(--m-bad);text-align:right;animation:m-in-rise 120ms var(--m-ease-out)}
+.m-set-row.is-stack{grid-template-columns:minmax(0,1fr);gap:8px}
+.m-set-row.is-stack > .m-set-ctl{flex-direction:column;flex-wrap:nowrap;align-items:stretch}
+.m-set-row.is-stack > .m-set-ctl > .m-input,.m-set-row.is-stack > .m-set-ctl > .m-combo{width:100%}
+.m-set-row.is-stack .m-set-err{text-align:left}
+/* the compact variant (dialogs): no card surface, 40-px rows; the hairlines stay */
+.m-set-group.is-compact > .m-set-card{padding:0;border-radius:0;background:none}
+.m-set-group.is-compact .m-set-row{min-height:40px;padding:8px 0}
+
+/* select (10 §7.4.5): a 28-px button with the value and a chevron that opens a .m-menu under it, at least as wide */
+.m-select{display:inline-flex;align-items:center;gap:6px;min-width:120px;max-width:260px;height:28px;margin:0;padding:0 8px 0 10px;border:0;border-radius:var(--m-r-ctl);background:var(--m-surface);box-shadow:inset 0 0 0 1px var(--m-line);color:var(--m-fg);font:inherit;font-size:13px;line-height:20px;text-align:left;white-space:nowrap;flex:none;cursor:pointer}
+.m-select:hover{background:var(--m-hover)}
+.m-select:focus-visible{box-shadow:inset 0 0 0 1px var(--m-line-strong)}
+.m-select[disabled]{opacity:.5;cursor:default}
+.m-select.is-wide{width:100%;max-width:none}
+.m-select-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-select.is-placeholder .m-select-label{color:var(--m-fg-3)}
+.m-select-chev{width:12px;height:12px;color:var(--m-fg-3)}
+/* combobox: free text with suggestions; the same menu opens from the chevron inside the field */
+.m-combo{position:relative;display:flex;align-items:center;min-width:0}
+.m-combo > .m-input{padding-right:32px}
+.m-combo-chev{position:absolute;top:0;right:0;color:var(--m-fg-3)}
+.m-combo-chev .m-icon{width:12px;height:12px}
+
+/* a notice (10 §7.4.20): sunken, a 12-px state glyph, one line of text, an optional quiet action at the right; never a colored side bar */
+.m-notice{display:flex;align-items:center;gap:8px;min-width:0;min-height:32px;padding:8px 12px;border-radius:var(--m-r-ctl);background:var(--m-sunken);color:var(--m-fg-2);font-size:12px;line-height:16px;animation:m-in-rise 120ms var(--m-ease-out)}
+.m-notice > span{flex:1;min-width:0}
+.m-notice > .m-btn{height:24px;margin:-4px -6px -4px 0}
+.m-notice-glyph{width:12px;flex:none;font:12px/16px var(--m-font-mono);font-style:normal;text-align:center;color:var(--m-fg-3)}
+.m-notice-glyph::before{content:"○"}
+.m-notice.is-bad .m-notice-glyph{color:var(--m-bad)}
+.m-notice.is-bad .m-notice-glyph::before{content:"✕"}
+
+/* swatch grid (10 §7.4.19): a popover's grid of picks, five to a row; the pick is a 48-px round button around 40-px art, ringed in fg when chosen */
+.m-swatches{display:grid;grid-template-columns:repeat(var(--m-cols,5),48px);gap:8px;padding:8px}
+.m-swatch-cell{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;margin:0;padding:0;border:0;border-radius:50%;background:none;color:inherit;cursor:pointer}
+.m-swatch-cell:hover{background:var(--m-hover)}
+.m-swatch-cell.is-on{box-shadow:inset 0 0 0 2px var(--m-fg)}
+.m-swatch-cell:focus-visible{box-shadow:inset 0 0 0 1px var(--m-line-strong)}
+.m-swatch-cell.is-on:focus-visible{box-shadow:inset 0 0 0 2px var(--m-fg),0 0 0 1px var(--m-line-strong)}
+
+
+/* 13e. MOTION (10 §3.7): nothing appears or changes state abruptly; reduced motion switches all of it off */
+
+@keyframes m-in-rise{from{opacity:0;transform:translateY(4px)}}
+@keyframes m-in-pop{from{opacity:0;transform:scale(.98)}}
+@keyframes m-in-fade{from{opacity:0}}
+/* a hover color fades in 80 ms */
+.m-sidebar-item,.m-sidebar-subitem,.m-sidebar-more,.m-row,.m-avatar-edit,.m-msg,.m-menu-item,.m-tree-item,.m-plus,.m-send,.m-event,.m-shortcut,.m-automation,.m-profile,.m-palette-row,.m-snav-item{transition:background-color 80ms var(--m-ease-out)}
+.m-select,.m-swatch-cell{transition:background-color 80ms var(--m-ease-out),box-shadow 80ms var(--m-ease-out),transform 80ms var(--m-ease-out)}
+.m-input,.m-chips{transition:box-shadow 80ms var(--m-ease-out)}
+/* a press: pressables shrink a little, rows and items darken to selected */
+.m-seg-item:active,.m-tab:active,.m-select:not([disabled]):active,.m-swatch-cell:active{transform:scale(.97)}
+.m-sidebar-item:active,.m-sidebar-subitem:active,.m-menu-item:not(.is-dimmed):active,.m-snav-item:active{background:var(--m-selected)}
+/* entering: counts rise in; a list that opts in staggers its children by --i (20 ms each, ten at most) */
+.m-count{animation:m-in-rise 120ms var(--m-ease-out)}
+/* a row a choice reveals (a model's Other… opens the Model id row) rises in under it; a chip a picker adds rises in too */
+.m-set-row.is-entering,.m-chip.is-entering{animation:m-in-rise 120ms var(--m-ease-out)}
+.m-stagger > *{animation:m-in-rise 120ms var(--m-ease-out) backwards;animation-delay:calc(min(var(--i,0),10) * 20ms)}
+/* reduced motion (the OS setting, or a root marked data-motion="reduced"): every transition and animation ends at once */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0s !important;animation-delay:0s !important;transition-duration:0s !important;transition-delay:0s !important}
+}
+[data-motion="reduced"],[data-motion="reduced"] *,[data-motion="reduced"] *::before,[data-motion="reduced"] *::after{animation-duration:0s !important;animation-delay:0s !important;transition-duration:0s !important;transition-delay:0s !important}
+
+/* 14. DOC-PAGE CHROME (wireframe pages themselves) ------------------------ */
+
+.wf-page{max-width:1360px;margin:0 auto;padding:28px 16px 80px;min-width:0}
+.wf-h1{margin:0 0 4px;font-size:20px;font-weight:600;line-height:1.25}
+.wf-status{margin:0 0 12px;font:12px/1.4 var(--m-font-mono);color:var(--m-fg-3)}
+.wf-summary{max-width:860px;margin:0 0 8px;font-size:13px;line-height:1.55;color:var(--m-fg-2)}
+.wf-toc{display:flex;flex-wrap:wrap;gap:4px 14px;margin:12px 0 0;padding:0;list-style:none;font-size:12px}
+.wf-toc a{color:var(--m-fg-2)}
+.wf-section{margin-top:36px;padding-top:16px;border-top:1px solid var(--m-line);min-width:0}
+.wf-h2{margin:0 0 4px;font-size:15px;font-weight:600;line-height:1.3}
+.wf-h2 code{font-size:13px;color:var(--m-fg-2)}
+.wf-note{max-width:860px;margin:0 0 14px;font-size:12px;line-height:1.5;color:var(--m-fg-3)}
+.wf-note code{font-size:11px;color:var(--m-fg-2)}
+.wf-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
+.wf-demo{min-width:0;padding:16px;border:1px solid var(--m-line);border-radius:var(--m-r-card);background:var(--m-bg);color:var(--m-fg)}
+.wf-demo > .wf-theme{margin:-4px 0 12px;font:11px/1 var(--m-font-mono);color:var(--m-fg-3)}
+.wf-ex{margin-bottom:18px;min-width:0}
+.wf-ex:last-child{margin-bottom:0}
+.wf-caption{margin:0 0 8px;font:11px/1.4 var(--m-font-mono);color:var(--m-fg-3);overflow-wrap:anywhere}
+.wf-caption b{font-weight:500;color:var(--m-fg-2)}
+.wf-flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
+.wf-item{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.wf-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;min-width:0}
+.wf-type{display:flex;flex-direction:column;gap:4px}
+.wf-type span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;min-width:0}
+.lg-card{
+  min-width:0;
+  overflow-wrap:anywhere;
+  padding:12px;
+  border:1px solid var(--m-line);
+  border-radius:var(--m-r-card);
+  background:var(--m-surface);
+  font-size:12px;
+  line-height:1.5;
+  color:var(--m-fg-2);
+}
+.lg-card h4{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--m-fg)}
+.lg-card ul,.lg-card ol{margin:0;padding-left:18px}
+.lg-card li{margin:2px 0}
+.lg-card code{font-size:11px;color:var(--m-fg)}
+.lg-sw{
+  display:inline-block;
+  width:14px;
+  height:14px;
+  margin-right:6px;
+  border-radius:4px;
+  vertical-align:-3px;
+  box-shadow:inset 0 0 0 1px rgba(128,128,128,.25);
+}
+.lg-row{display:flex;align-items:center;gap:6px;margin:3px 0;min-width:0}
+.lg-row code{flex:none}
+.lg-row .lg-v{margin-left:auto;font-family:var(--m-font-mono);font-size:11px;color:var(--m-fg-3);flex:none}
+@media (max-width:900px){
+  .wf-pair{grid-template-columns:1fr}
+  .m-overlay,.m-overlay.is-notch,.m-overlay.is-rightedge{width:100%}
+}

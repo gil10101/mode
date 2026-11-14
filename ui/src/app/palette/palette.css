@@ -1,0 +1,6 @@
+/* The command palette's placement (10 §7.4.15): top-centered at 20 % of the
+   window height, no scrim (nothing else changes while it is open). The panel
+   itself is the kit's .m-palette. */
+.pl-host{position:fixed;left:0;right:0;top:20vh;z-index:40;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 16px;pointer-events:none}
+.pl-host > .m-palette{pointer-events:auto;max-height:60vh;overflow:auto}
+.pl-host .m-palette-row{cursor:pointer}
