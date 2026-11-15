@@ -84,8 +84,8 @@
 }
 
 /* ---- the bundled faces (ui/src/kit/fonts.css, with the site's paths) ---- */
-@font-face{font-family:"Geist";font-style:normal;font-weight:300 600;font-display:swap;src:url(../assets/fonts/Geist-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Geist";font-style:normal;font-weight:300 600;font-display:swap;src:url(../assets/fonts/Geist-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Geist";font-style:normal;font-weight:400 600;font-display:swap;src:url(../assets/fonts/Geist-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Geist";font-style:normal;font-weight:400 600;font-display:swap;src:url(../assets/fonts/Geist-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Geist Mono";font-style:normal;font-weight:400 600;font-display:swap;src:url(../assets/fonts/GeistMono-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* the page's own pair: Geist Pixel for the big headings, Geist for everything else (nav, tags, chips, meta, copy).
    The vignettes keep the app's face (--m-font-ui) because they draw the app. */
@@ -232,12 +232,12 @@ html.has-sheet{overflow:hidden}
 /* ---- hero ---- */
 /* summation.com's structure: the words left, the mascot right, then the window full width under both */
 .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:center;text-align:left;padding-block:72px 40px}
-/* the hero's type: a light grotesque set tight, the headline on two lines, the lede a step under it in the same weight
-   (58/61 at −0.04em, 20/24 at −0.01em, 30 px between them, 48 to the command) */
+/* the hero's type: the page's own faces at the reference's sizes and places, the headline on two lines
+   (58/61, the lede 20/24, 30 px between them, 48 to the command) */
 .hero-text{display:flex;flex-direction:column;align-items:flex-start;gap:24px}
-.hero h1{font-family:var(--font-head);font-size:58px;line-height:1.05;font-weight:300;letter-spacing:-.04em;max-width:600px;text-wrap:balance}
+.hero h1{font-size:58px;line-height:1.05;font-weight:400;letter-spacing:0;max-width:600px;text-wrap:balance}
 .hero h1 + .lede{margin-top:6px}
-.lede{font-family:var(--font-body);font-size:20px;line-height:24px;font-weight:300;letter-spacing:-.01em;color:var(--m-fg-2);max-width:573px}
+.lede{font-family:var(--font-body);font-size:20px;line-height:24px;color:var(--m-fg-2);max-width:573px}
 .hero .lede + .install{margin-top:24px}
 .hero .tag{justify-content:flex-start}
 /* the mascot on a sunken disc: the live bot (site/bot.js mounts every canvas[data-bot] and marks the wrapper is-live),
