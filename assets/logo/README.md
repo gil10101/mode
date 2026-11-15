@@ -55,7 +55,19 @@ The owner's second review (2026-10-29): glasses must sit with the eye in the mid
 
 **Shipped set** (`final/bot-<variant>-{light,dark}.png`, fourteen variants in the core's order): `beret` (T1), `specs` (T20), `tophat` (T3), `mustache` (T4), `beanie` (T17), `cap` (T18), `squares` (T19), `monocle` (T8), then round 5's `crown`, `headphones`, `ears`, `wizard`, `patch`, `chef`.
 
-**Round 5** (2026-11-15, `candidates/round5/`): the owner asked for more costumes. Six accessories drawn in code on the mark (`scripts/make-avatar-draws.py`), not by hand: a crown, headphones (a band and one cup), cat ears, a wizard hat, an eye patch and a chef's toque. `scripts/make-avatar-variants.py` takes them as they are (the head is the mark's already) and writes the pairs.
+**Round 5** (2026-11-15, `candidates/round5/`): the owner asked for more costumes. A first set drawn as plain geometry in code was rejected ("very badly drawn") and is not kept. The shipped six are template draws like round 4's: the approved light bot head (Canva media `MAHYZAbhYEs`) as the image reference, one accessory added, nothing else changed.
+
+| Label | Variant | File | Canva |
+|---|---|---|---|
+| U1 | Crown | `candidates/round5/U1-crown-light.png` | [MAHbAjdiQIs](https://www.canva.com/M/MAHbAjdiQIs) |
+| U2 | Headphones | `candidates/round5/U2-headphones-light.png` | [MAHbAgg8zIU](https://www.canva.com/M/MAHbAgg8zIU) |
+| U3 | Cat ears | `candidates/round5/U3-ears-light.png` | [MAHbAh5Y9To](https://www.canva.com/M/MAHbAh5Y9To) |
+| U4 | Wizard hat | `candidates/round5/U4-wizard-light.png` | [MAHbAiQbe5Y](https://www.canva.com/M/MAHbAiQbe5Y) |
+| U5 | Eye patch | `candidates/round5/U5-patch-light.png` | [MAHbAvatGvs](https://www.canva.com/M/MAHbAvatGvs) |
+| U6 | Chef hat, first draw (rejected: the head was redrawn narrower and the hat ran off the frame) | `candidates/round5/U6-chef-light.png` | [MAHbAoYXFRU](https://www.canva.com/M/MAHbAoYXFRU) |
+| U7 | Chef hat, smaller, the head kept in place | `candidates/round5/U7-chef-light.png` | [MAHbAsz6puM](https://www.canva.com/M/MAHbAsz6puM) |
+
+The pin step learned three things for them: the headphones are scaled by the eye spacing (the cup sits where the head's right edge is read), the wizard hat's eyes get the eyewear's tolerance, and where a moved draw stops short of the left or bottom edge its last column or row carries on to it.
 
 | Label | Variant | Corner | Colors | File | Canva |
 |---|---|---|---|---|---|
