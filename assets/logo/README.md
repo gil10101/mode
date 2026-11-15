@@ -53,7 +53,9 @@ The owner's review rules, checked by the script on every pinned variant: the hea
 
 The owner's second review (2026-10-29): glasses must sit with the eye in the middle of the lens (the script now measures the charcoal room on each side of the eye inside its frame), the beanie's folded brim must read clearly, and the cap must sit at an angle; T15–T20 answer that.
 
-**Shipped set** (`final/bot-<variant>-{light,dark}.png`, eight variants in the core's order): `beret` (T1), `specs` (T20), `tophat` (T3), `mustache` (T4), `beanie` (T17), `cap` (T18), `squares` (T19), `monocle` (T8).
+**Shipped set** (`final/bot-<variant>-{light,dark}.png`, fourteen variants in the core's order): `beret` (T1), `specs` (T20), `tophat` (T3), `mustache` (T4), `beanie` (T17), `cap` (T18), `squares` (T19), `monocle` (T8), then round 5's `crown`, `headphones`, `ears`, `wizard`, `patch`, `chef`.
+
+**Round 5** (2026-11-15, `candidates/round5/`): the owner asked for more costumes. Six accessories drawn in code on the mark (`scripts/make-avatar-draws.py`), not by hand: a crown, headphones (a band and one cup), cat ears, a wizard hat, an eye patch and a chef's toque. `scripts/make-avatar-variants.py` takes them as they are (the head is the mark's already) and writes the pairs.
 
 | Label | Variant | Corner | Colors | File | Canva |
 |---|---|---|---|---|---|

@@ -30,7 +30,7 @@ function healthTitle(h: { offline: boolean; paused_accounts: string[]; hooks: st
   return null
 }
 
-function HeadControls({ phraseId, leadTaken }: { phraseId: string; leadTaken?: boolean }) {
+function HeadControls({ phraseId, leadTaken }: { phraseId?: string; leadTaken?: boolean }) {
   const { m, runner, act, openMenu, setTab } = useOverlay()
   const health = useOverlayStore((s) => s.health)
   const title = healthTitle(health)
@@ -94,20 +94,23 @@ export function Expanded() {
   const counts = useMemo(() => tabCounts({ rows, inbox, notes, agenda }), [rows, inbox, notes, agenda])
   const captureSaved = useOverlayStore((s) => s.captureSaved)
   const health = useOverlayStore((s) => s.health)
-  // The reply card's head reads "Mode", with the spinner while the request runs (02 §5.7).
+  // The head names what is happening, with the mascot before it. With nothing to name (at rest, and on the
+  // reply card, whose head holds only the spinner while the request runs: 02 §5.7, §7.1) both stay out.
   const reply = m.reply ?? null
-  const phrase = reply ? 'Mode' : m.flash ? m.flash.text : pill ? pill.parts.slice(0, 2).join(' · ') : 'Mode'
+  const phrase = reply ? null : m.flash ? m.flash.text : pill ? pill.parts.slice(0, 2).join(' · ') : null
   const busy = reply && !reply.done ? <Spinner /> : null
-  const phraseId = 'ov-head-phrase'
+  const phraseId = phrase === null ? undefined : 'ov-head-phrase'
 
   const head =
     placement === 'notch' ? (
       <div className="m-overlay-wings">
         <div className="m-overlay-wing">
-          <MascotOrDot />
-          <span className="m-ellipsis" id={phraseId} data-testid="head-phrase">
-            {phrase}
-          </span>
+          {phrase !== null && <MascotOrDot />}
+          {phrase !== null && (
+            <span className="m-ellipsis" id={phraseId} data-testid="head-phrase">
+              {phrase}
+            </span>
+          )}
           {busy}
         </div>
         <div className="m-overlay-housing" />
@@ -117,10 +120,12 @@ export function Expanded() {
       </div>
     ) : (
       <div className="m-overlay-head">
-        <MascotOrDot />
-        <span className="m-ellipsis" style={{ fontWeight: 500 }} id={phraseId} data-testid="head-phrase">
-          {phrase}
-        </span>
+        {phrase !== null && <MascotOrDot />}
+        {phrase !== null && (
+          <span className="m-ellipsis" style={{ fontWeight: 500 }} id={phraseId} data-testid="head-phrase">
+            {phrase}
+          </span>
+        )}
         {busy}
         {!reply && pill && pill.count > 0 && (
           <span className="m-count" style={{ marginLeft: 'auto' }}>

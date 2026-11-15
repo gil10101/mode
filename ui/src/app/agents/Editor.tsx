@@ -44,7 +44,7 @@ export const AGENT_TABS: readonly [AgentTab, string][] = [
   ['advanced', 'Advanced'],
 ]
 const EFFORT_LABEL: Record<Effort, string> = { low: 'Low', medium: 'Medium', high: 'High', xhigh: 'Extra high', max: 'Max' }
-const VARIANT_LABEL: Record<string, string> = { '': 'Plain', beret: 'Beret', specs: 'Specs', tophat: 'Top hat', mustache: 'Mustache', beanie: 'Beanie', cap: 'Cap', squares: 'Squares', monocle: 'Monocle' }
+const VARIANT_LABEL: Record<string, string> = { '': 'Plain', beret: 'Beret', specs: 'Specs', tophat: 'Top hat', mustache: 'Mustache', beanie: 'Beanie', cap: 'Cap', squares: 'Squares', monocle: 'Monocle', crown: 'Crown', headphones: 'Headphones', ears: 'Cat ears', wizard: 'Wizard hat', patch: 'Eye patch', chef: 'Chef hat' }
 
 function tilde(p: string): string {
   return p.replace(/^\/Users\/[^/]+/, '~').replace(/^\/home\/[^/]+/, '~')

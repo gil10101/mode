@@ -27,7 +27,7 @@ const START_ON = [
   ['notes', 'Notes'],
 ] as const
 
-const VARIANT_NAME: Record<string, string> = { plain: 'Plain', beret: 'Beret', specs: 'Specs', tophat: 'Top hat', mustache: 'Mustache', beanie: 'Beanie', cap: 'Cap', squares: 'Squares', monocle: 'Monocle' }
+const VARIANT_NAME: Record<string, string> = { plain: 'Plain', beret: 'Beret', specs: 'Specs', tophat: 'Top hat', mustache: 'Mustache', beanie: 'Beanie', cap: 'Cap', squares: 'Squares', monocle: 'Monocle', crown: 'Crown', headphones: 'Headphones', ears: 'Cat ears', wizard: 'Wizard hat', patch: 'Eye patch', chef: 'Chef hat' }
 
 export const SECTIONS_5: SectionSpec[] = [
   {

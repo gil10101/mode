@@ -84,8 +84,8 @@
 }
 
 /* ---- the bundled faces (ui/src/kit/fonts.css, with the site's paths) ---- */
-@font-face{font-family:"Geist";font-style:normal;font-weight:400 600;font-display:swap;src:url(../assets/fonts/Geist-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Geist";font-style:normal;font-weight:400 600;font-display:swap;src:url(../assets/fonts/Geist-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Geist";font-style:normal;font-weight:300 600;font-display:swap;src:url(../assets/fonts/Geist-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Geist";font-style:normal;font-weight:300 600;font-display:swap;src:url(../assets/fonts/Geist-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"Geist Mono";font-style:normal;font-weight:400 600;font-display:swap;src:url(../assets/fonts/GeistMono-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* the page's own pair: Geist Pixel for the big headings, Geist for everything else (nav, tags, chips, meta, copy).
    The vignettes keep the app's face (--m-font-ui) because they draw the app. */
@@ -232,9 +232,13 @@ html.has-sheet{overflow:hidden}
 /* ---- hero ---- */
 /* summation.com's structure: the words left, the mascot right, then the window full width under both */
 .hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:center;text-align:left;padding-block:72px 40px}
+/* the hero's type: a light grotesque set tight, the headline on two lines, the lede a step under it in the same weight
+   (58/61 at −0.04em, 20/24 at −0.01em, 30 px between them, 48 to the command) */
 .hero-text{display:flex;flex-direction:column;align-items:flex-start;gap:24px}
-.hero h1{font-size:60px;line-height:64px;font-weight:400;letter-spacing:0;max-width:none;text-wrap:balance}
-.lede{font-family:var(--font-body);font-size:20px;line-height:30px;color:var(--m-fg-2);max-width:600px}
+.hero h1{font-family:var(--font-head);font-size:58px;line-height:1.05;font-weight:300;letter-spacing:-.04em;max-width:600px;text-wrap:balance}
+.hero h1 + .lede{margin-top:6px}
+.lede{font-family:var(--font-body);font-size:20px;line-height:24px;font-weight:300;letter-spacing:-.01em;color:var(--m-fg-2);max-width:573px}
+.hero .lede + .install{margin-top:24px}
 .hero .tag{justify-content:flex-start}
 /* the mascot on a sunken disc: the live bot (site/bot.js mounts every canvas[data-bot] and marks the wrapper is-live),
    the still picture until it does or when it is absent */
@@ -954,7 +958,6 @@ html.has-sheet{overflow:hidden}
 @media (min-width:1440px){
   .wrap{max-width:1360px;padding-inline:max(40px,env(safe-area-inset-left,0px)) max(40px,env(safe-area-inset-right,0px))}
   .ftext{padding:40px 36px}
-  .hero h1{font-size:66px;line-height:70px}
 }
 
 /* ---- large (1600 and up): a 1520 container, the type and the shots a step up ---- */
@@ -982,8 +985,8 @@ html.has-sheet{overflow:hidden}
   .feat h3{font-size:18px;line-height:26px}
   .feat p{font-size:14px;line-height:22px}
   .hero{padding-block:96px 48px}
-  .hero h1{font-size:78px;line-height:82px}
-  .lede{font-size:22px;line-height:34px;max-width:640px}
+  .hero h1{font-size:64px;max-width:680px}
+  .lede{font-size:22px;line-height:27px;max-width:640px}
   .shots{gap:28px;padding-block:0 120px}
   .order,.shot p,.ledger p{font-size:16px;line-height:24px}
   .fcard{min-height:640px}
@@ -1004,7 +1007,7 @@ html.has-sheet{overflow:hidden}
 
 /* ---- extra large (1920 and up): a 1760 container, the widest the page gets (2560 keeps it); the bento and the feature cards follow it ---- */
 @media (min-width:1920px){
-  .hero h1{font-size:84px;line-height:88px}
+  .hero h1{font-size:72px;max-width:760px}
   .wrap{max-width:1760px}
   .fcard{min-height:640px}
 }
@@ -1013,8 +1016,8 @@ html.has-sheet{overflow:hidden}
 @media (max-width:900px){
   .band > .wrap{padding-block:64px}
   .hero{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:56px 40px}
-  .hero h1{font-size:42px;line-height:46px}
-  .lede{font-size:18px;line-height:28px}
+  .hero h1{font-size:46px;max-width:480px}
+  .lede{font-size:18px;line-height:22px}
   .hero-bot{justify-content:center}
   .hero-bot canvas,.hero-bot img{width:clamp(180px,40vw,320px)}
   h2{font-size:30px;line-height:36px}
@@ -1053,8 +1056,10 @@ html.has-sheet{overflow:hidden}
   .bento{gap:12px}
   .hero{gap:24px;padding-block:40px 32px}
   .hero-text{gap:20px}
-  .hero h1{font-size:30px;line-height:34px}
-  .lede{font-size:15px;line-height:22px}
+  .hero h1{font-size:34px}
+  .hero h1 + .lede{margin-top:0}
+  .hero .lede + .install{margin-top:12px}
+  .lede{font-size:16px;line-height:20px}
   h2{font-size:24px;line-height:28px}
   h3{font-size:14px;line-height:20px}
   .order,.shot p{font-size:13px;line-height:20px}

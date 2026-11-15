@@ -24,6 +24,18 @@ import squaresLight from '../../../assets/logo/final/bot-squares-light.png'
 import squaresDark from '../../../assets/logo/final/bot-squares-dark.png'
 import monocleLight from '../../../assets/logo/final/bot-monocle-light.png'
 import monocleDark from '../../../assets/logo/final/bot-monocle-dark.png'
+import crownLight from '../../../assets/logo/final/bot-crown-light.png'
+import crownDark from '../../../assets/logo/final/bot-crown-dark.png'
+import headphonesLight from '../../../assets/logo/final/bot-headphones-light.png'
+import headphonesDark from '../../../assets/logo/final/bot-headphones-dark.png'
+import earsLight from '../../../assets/logo/final/bot-ears-light.png'
+import earsDark from '../../../assets/logo/final/bot-ears-dark.png'
+import wizardLight from '../../../assets/logo/final/bot-wizard-light.png'
+import wizardDark from '../../../assets/logo/final/bot-wizard-dark.png'
+import patchLight from '../../../assets/logo/final/bot-patch-light.png'
+import patchDark from '../../../assets/logo/final/bot-patch-dark.png'
+import chefLight from '../../../assets/logo/final/bot-chef-light.png'
+import chefDark from '../../../assets/logo/final/bot-chef-dark.png'
 import anaPicture from '../../../assets/sample/ana.png'
 // The sample track's artwork (Now playing, 02 §7.1): a crop of Winslow Homer's Northeaster (public domain; scripts/make-sample-artwork.py).
 import nowPlayingArt from '../../../assets/sample/nowplaying.png'
@@ -37,7 +49,7 @@ import themeDark from '../../../assets/kinds/theme-dark.png'
 export { duckLight, duckDark, botLight, botDark, anaPicture, nowPlayingArt }
 
 /** The accessory variants of the bot head, in the core's assignment order (`naming::AVATAR_VARIANTS`). */
-export const AVATAR_VARIANTS = ['beret', 'specs', 'tophat', 'mustache', 'beanie', 'cap', 'squares', 'monocle'] as const
+export const AVATAR_VARIANTS = ['beret', 'specs', 'tophat', 'mustache', 'beanie', 'cap', 'squares', 'monocle', 'crown', 'headphones', 'ears', 'wizard', 'patch', 'chef'] as const
 export type AvatarVariant = (typeof AVATAR_VARIANTS)[number]
 
 /** The Marketplace's kinds (03 §7C.6): the parcel for the Marketplace itself, the alarm clock for automations, the palette for themes; agents wear the bot. */
@@ -56,13 +68,13 @@ export const artwork: Readonly<Record<'light' | 'dark', Artwork>> = {
   light: {
     duck: duckLight,
     bot: botLight,
-    bots: { beret: beretLight, specs: specsLight, tophat: tophatLight, mustache: mustacheLight, beanie: beanieLight, cap: capLight, squares: squaresLight, monocle: monocleLight },
+    bots: { beret: beretLight, specs: specsLight, tophat: tophatLight, mustache: mustacheLight, beanie: beanieLight, cap: capLight, squares: squaresLight, monocle: monocleLight, crown: crownLight, headphones: headphonesLight, ears: earsLight, wizard: wizardLight, patch: patchLight, chef: chefLight },
     kinds: { marketplace: marketplaceLight, automation: automationLight, theme: themeLight },
   },
   dark: {
     duck: duckDark,
     bot: botDark,
-    bots: { beret: beretDark, specs: specsDark, tophat: tophatDark, mustache: mustacheDark, beanie: beanieDark, cap: capDark, squares: squaresDark, monocle: monocleDark },
+    bots: { beret: beretDark, specs: specsDark, tophat: tophatDark, mustache: mustacheDark, beanie: beanieDark, cap: capDark, squares: squaresDark, monocle: monocleDark, crown: crownDark, headphones: headphonesDark, ears: earsDark, wizard: wizardDark, patch: patchDark, chef: chefDark },
     kinds: { marketplace: marketplaceDark, automation: automationDark, theme: themeDark },
   },
 }

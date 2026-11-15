@@ -15,8 +15,21 @@ pub const AVATAR_HUES: u64 = 12;
 /// The session-avatar variants of 05 §11.2 (ADR-0050): the bot mark wearing one
 /// accessory, drawn in `assets/logo/final/bot-<variant>-{light,dark}.png`, in
 /// assignment order. `''` on a row draws the plain mark.
-pub const AVATAR_VARIANTS: [&str; 8] = [
-    "beret", "specs", "tophat", "mustache", "beanie", "cap", "squares", "monocle",
+pub const AVATAR_VARIANTS: [&str; 14] = [
+    "beret",
+    "specs",
+    "tophat",
+    "mustache",
+    "beanie",
+    "cap",
+    "squares",
+    "monocle",
+    "crown",
+    "headphones",
+    "ears",
+    "wizard",
+    "patch",
+    "chef",
 ];
 
 /// The variant with the lowest `count`, the earlier one in [`AVATAR_VARIANTS`]
