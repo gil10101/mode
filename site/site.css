@@ -67,29 +67,19 @@
   --m-info:#5F8FC4;
 }
 
-/* ---- the gradient art behind a menu tile or a feature card: the Paper pack's avatar hues (10 §5.10),
-   as radial washes over a diagonal base; the grain filter on top is the page's #grain ---- */
+/* ---- the art behind a menu tile or a feature card: an ordered dither (a 4×4 Bayer matrix on a 20×20 grid) in the
+   accent on the sunken ground, falling off from one corner; --art-1 to --art-4 are the four corners ---- */
 :root{
-  --art-1:radial-gradient(circle at 22% 26%,#D35400 0%,transparent 55%),radial-gradient(circle at 80% 20%,#B9770E 0%,transparent 52%),radial-gradient(circle at 30% 84%,#C0392B 0%,transparent 58%),linear-gradient(135deg,#B85C5C 0%,#6E4FA3 100%);
-  --art-2:radial-gradient(circle at 22% 26%,#2F6F9F 0%,transparent 55%),radial-gradient(circle at 80% 20%,#2E8B7A 0%,transparent 52%),radial-gradient(circle at 30% 84%,#6E4FA3 0%,transparent 58%),linear-gradient(135deg,#4F5FA8 0%,#2E8B7A 100%);
-  --art-3:radial-gradient(circle at 22% 26%,#3F7D4E 0%,transparent 55%),radial-gradient(circle at 80% 20%,#7D8C2A 0%,transparent 52%),radial-gradient(circle at 30% 84%,#2E8B7A 0%,transparent 58%),linear-gradient(135deg,#7D8C2A 0%,#2F6F9F 100%);
-  --art-4:radial-gradient(circle at 22% 26%,#8E4A8E 0%,transparent 55%),radial-gradient(circle at 80% 20%,#B0497A 0%,transparent 52%),radial-gradient(circle at 30% 84%,#6E4FA3 0%,transparent 58%),linear-gradient(135deg,#B0497A 0%,#2F6F9F 100%);
+  --art-1:0deg;--art-2:90deg;--art-3:180deg;--art-4:270deg;
+  --dither:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM10 0h1v1h-1zM12 0h1v1h-1zM14 0h1v1h-1zM16 0h1v1h-1zM1 1h1v1h-1zM3 1h1v1h-1zM5 1h1v1h-1zM7 1h1v1h-1zM9 1h1v1h-1zM13 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM14 2h1v1h-1zM1 3h1v1h-1zM3 3h1v1h-1zM5 3h1v1h-1zM7 3h1v1h-1zM0 4h1v1h-1zM1 4h1v1h-1zM2 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM12 4h1v1h-1zM1 5h1v1h-1zM3 5h1v1h-1zM5 5h1v1h-1zM9 5h1v1h-1zM0 6h1v1h-1zM2 6h1v1h-1zM4 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM1 7h1v1h-1zM3 7h1v1h-1zM0 8h1v1h-1zM1 8h1v1h-1zM2 8h1v1h-1zM4 8h1v1h-1zM6 8h1v1h-1zM8 8h1v1h-1zM1 9h1v1h-1zM5 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM0 12h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM1 13h1v1h-1zM0 14h1v1h-1zM2 14h1v1h-1zM0 16h1v1h-1z'/%3E%3C/svg%3E");
   --notch-bg:#1E1D1A;          /* the kit's notch ground (mode.css §1): the pill in the first bento card */
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --art-1:radial-gradient(circle at 22% 26%,#FF9452 0%,transparent 55%),radial-gradient(circle at 80% 20%,#E6B84D 0%,transparent 52%),radial-gradient(circle at 30% 84%,#FF6B5B 0%,transparent 58%),linear-gradient(135deg,#EE7B8D 0%,#A08AE8 100%);
-    --art-2:radial-gradient(circle at 22% 26%,#5BA9E6 0%,transparent 55%),radial-gradient(circle at 80% 20%,#4FC2BA 0%,transparent 52%),radial-gradient(circle at 30% 84%,#A08AE8 0%,transparent 58%),linear-gradient(135deg,#7A94F2 0%,#4FC2BA 100%);
-    --art-3:radial-gradient(circle at 22% 26%,#5CC28E 0%,transparent 55%),radial-gradient(circle at 80% 20%,#9ACB5B 0%,transparent 52%),radial-gradient(circle at 30% 84%,#4FC2BA 0%,transparent 58%),linear-gradient(135deg,#9ACB5B 0%,#5BA9E6 100%);
-    --art-4:radial-gradient(circle at 22% 26%,#C97CD9 0%,transparent 55%),radial-gradient(circle at 80% 20%,#E27AB5 0%,transparent 52%),radial-gradient(circle at 30% 84%,#A08AE8 0%,transparent 58%),linear-gradient(135deg,#E27AB5 0%,#5BA9E6 100%);
     --notch-bg:#111110;
   }
 }
 :root[data-theme="dark"]{
-  --art-1:radial-gradient(circle at 22% 26%,#FF9452 0%,transparent 55%),radial-gradient(circle at 80% 20%,#E6B84D 0%,transparent 52%),radial-gradient(circle at 30% 84%,#FF6B5B 0%,transparent 58%),linear-gradient(135deg,#EE7B8D 0%,#A08AE8 100%);
-  --art-2:radial-gradient(circle at 22% 26%,#5BA9E6 0%,transparent 55%),radial-gradient(circle at 80% 20%,#4FC2BA 0%,transparent 52%),radial-gradient(circle at 30% 84%,#A08AE8 0%,transparent 58%),linear-gradient(135deg,#7A94F2 0%,#4FC2BA 100%);
-  --art-3:radial-gradient(circle at 22% 26%,#5CC28E 0%,transparent 55%),radial-gradient(circle at 80% 20%,#9ACB5B 0%,transparent 52%),radial-gradient(circle at 30% 84%,#4FC2BA 0%,transparent 58%),linear-gradient(135deg,#9ACB5B 0%,#5BA9E6 100%);
-  --art-4:radial-gradient(circle at 22% 26%,#C97CD9 0%,transparent 55%),radial-gradient(circle at 80% 20%,#E27AB5 0%,transparent 52%),radial-gradient(circle at 30% 84%,#A08AE8 0%,transparent 58%),linear-gradient(135deg,#E27AB5 0%,#5BA9E6 100%);
   --notch-bg:#111110;
 }
 
@@ -211,20 +201,20 @@ h3{font-size:16px;line-height:22px;font-weight:500}
 .pfoot{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:8px -8px -8px;padding:12px 18px;border-top:1px solid var(--m-line);border-radius:0 0 var(--m-r-overlay) var(--m-r-overlay);background:var(--m-sunken);font-size:12px;line-height:16px;color:var(--m-fg-3)}
 .pfoot a{flex:none;color:var(--m-fg);font-weight:500}
 .pfoot a:hover{text-decoration:underline;text-underline-offset:3px}
-/* the art tile: a gradient wash, a hairline inside, grain on top, a white glyph; it grows a step under the pointer */
-.art{position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;border-radius:10px;background:var(--art,var(--art-2));box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);overflow:hidden;color:#fff;transition:transform .5s cubic-bezier(.22,1,.36,1)}
-.art::after{content:"";position:absolute;inset:0;z-index:-1;filter:url(#grain);opacity:.28;mix-blend-mode:soft-light;pointer-events:none}
+/* the art tile: the sunken ground, a hairline, the dither in the accent from one corner, the glyph in the page's ink;
+   under the pointer the dither turns a quarter and the tile grows a step */
+.art{position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;border-radius:10px;background:var(--m-sunken);box-shadow:inset 0 0 0 1px var(--m-line);overflow:hidden;color:var(--m-fg);transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.art::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--m-accent);-webkit-mask:var(--dither) center/100% 100% no-repeat;mask:var(--dither) center/100% 100% no-repeat;transform:rotate(var(--art,var(--art-2)));opacity:.7;pointer-events:none;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .3s}
 .art .icon{width:18px;height:18px}
-.art .mark{width:18px;height:18px;color:#fff}
+.art .mark{width:18px;height:18px;color:var(--m-fg)}
 .plist a:hover .art{transform:scale(1.06)}
-/* the feature card in a panel: art behind, a dark veil at the foot, the title on it */
-.feature{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;min-height:204px;padding:14px;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#fff}
-.feature-art{position:absolute;inset:0;z-index:-2;background:var(--art,var(--art-2));transition:transform .7s cubic-bezier(.32,.72,0,1)}
-.feature-art::after{content:"";position:absolute;inset:0;filter:url(#grain);opacity:.28;mix-blend-mode:soft-light}
-.feature::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(transparent 30%,rgba(0,0,0,.62))}
-.feature:hover .feature-art{transform:scale(1.06)}
+.plist a:hover .art::after{transform:rotate(calc(var(--art,var(--art-2)) + 90deg));opacity:1}
+/* the feature card in a panel: the same dither at a larger cell from the top right corner, the title at the foot in the page's ink */
+.feature{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;min-height:204px;padding:14px;border-radius:12px;overflow:hidden;background:var(--m-sunken);box-shadow:inset 0 0 0 1px var(--m-line);color:var(--m-fg)}
+.feature-art{position:absolute;inset:0;z-index:-1;background:var(--m-accent);-webkit-mask:var(--dither) top left/180px 180px no-repeat;mask:var(--dither) top left/180px 180px no-repeat;opacity:.7;transform:scaleX(-1);transition:transform .7s cubic-bezier(.32,.72,0,1),opacity .3s}
+.feature:hover .feature-art{transform:scale(-1.08,1.08);opacity:1}
 .feature strong{font-size:15px;line-height:19px;font-weight:600;letter-spacing:-.015em;text-wrap:balance}
-.feature span{font-size:12px;line-height:16px;color:rgba(255,255,255,.78)}
+.feature span{font-size:12px;line-height:16px;color:var(--m-fg-2)}
 /* the phone menu: a button that becomes a cross, a sheet under the bar */
 .burger{position:relative;display:none;width:32px;height:32px;border:0;border-radius:var(--m-r-ctl);background:var(--m-sunken);cursor:pointer}
 .burger:hover{background:var(--m-selected)}
@@ -855,7 +845,7 @@ html.has-sheet{overflow:hidden}
 .v-mtext small.v-swap > span:first-child{overflow:hidden;text-overflow:ellipsis}
 .v-mtext small.v-swap > span:last-child{position:absolute;top:0;left:0;right:0;white-space:normal;line-height:13px}
 .v-tier{display:flex;align-items:center;align-self:stretch;font-size:11px;color:var(--m-fg-2)}
-.v-tier .v-swap{display:inline-grid;align-items:center}
+.v-tier .v-swap{display:inline-grid;align-items:center;justify-items:end}
 .v-tier .v-swap > span:last-child{color:var(--m-fg-3)}
 .v-tier.is-urgent .v-swap > span:last-child{color:var(--m-accent)}
 .feat.is-e:hover .v-tier .v-swap > span,.feat.is-e:focus-within .v-tier .v-swap > span{transition-delay:.2s}
@@ -941,6 +931,11 @@ html.has-sheet{overflow:hidden}
 .chips li{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 5px;border-radius:var(--m-r-ctl);background:var(--m-surface);border:1px solid var(--m-line);font-size:13px;white-space:nowrap}
 .chips .tile{width:26px;height:26px;border-radius:var(--m-r-xs)}
 .chips .tile img,.chips .tile .mark{width:16px;height:16px}
+/* an agent Mode does not read yet: the chip in outline, its mark in gray, a "soon" word after the name */
+.chips li.is-soon{background:transparent;border-style:dashed;color:var(--m-fg-3)}
+.chips li.is-soon .tile{background:transparent}
+.chips li.is-soon .tile img,.chips li.is-soon .tile .mark{filter:grayscale(1);opacity:.5;color:var(--m-fg-3)}
+.chips li.is-soon small{margin-left:-2px;padding:1px 5px;border-radius:var(--m-r-pill);background:var(--m-sunken);font-size:10px;line-height:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--m-fg-3)}
 .close{display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px}
 .close h2{max-width:720px}
 .close img{width:96px;height:96px;border-radius:var(--m-r-pill);background:var(--m-sunken)}
@@ -1105,7 +1100,6 @@ html.has-sheet{overflow:hidden}
 }
 
 /* a narrow phone: the hero tag wraps, the platforms take the second line, so no dot is left at the end of the first */
-@media (max-width:523px){.tag-badge + span + .tag-dot{display:none}}
 
 /* The event panel's linked rows (03 §6.6): in the narrow panel the why goes under the title. */
 .r-cdetail .m-task.r-link{display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:8px}

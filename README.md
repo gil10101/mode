@@ -15,6 +15,8 @@
   <img alt="license" src="https://img.shields.io/badge/license-MIT-lightgrey">
 </p>
 
+<p align="center"><a href="https://mode-livid.vercel.app">Website</a> · <a href="https://mode-livid.vercel.app/docs">Documentation</a></p>
+
 <p align="center">
   <img src="assets/readme/demo.gif" width="100%" alt="A session asks for permission in the app window; the pill grows out of the notch and the pointer allows it there; the session finishes, the pointer clicks the reply box, and a dictation fills it while the pill shows listening, then transcribing, then the words typed. With the window stepped back, a "Hey Mode, what's on my list today" request grows the notch into a reply card that streams the answer with its citations; then a track plays with its artwork on the resting notch, and the pointer opens the overlay on the Now playing strip, skips to the next track, and plays a recently played track again from the Music tab">
 </p>
