@@ -101,6 +101,18 @@ document.querySelectorAll('.fsteps').forEach((list) => {
   const tabs = [...list.querySelectorAll('[role="tab"][data-view]')]
   const renders = [...list.closest('.fcard').querySelectorAll('.render[data-view]')]
   let timer = 0
+  // one column (tablet and phone): the steps are a row of chips and the chosen step's words sit in one line under them
+  const note = document.createElement('p')
+  note.className = 'fnote'
+  list.after(note)
+  list.classList.add('has-note')
+  const say = (tab) => {
+    const words = tab.querySelector('span > span')
+    note.textContent = words ? words.textContent : ''
+    note.classList.remove('is-in')
+    void note.offsetWidth
+    note.classList.add('is-in')
+  }
   const select = (tab, focus) => {
     tabs.forEach((t) => {
       const on = t === tab
@@ -112,8 +124,10 @@ document.querySelectorAll('.fsteps').forEach((list) => {
       r.classList.toggle('is-on', on)
       r.inert = !on
     })
+    say(tab)
     if (focus) tab.focus()
   }
+  say(tabs.find((t) => t.getAttribute('aria-selected') === 'true') || tabs[0])
   renders.forEach((r) => { r.inert = !r.classList.contains('is-on') })
   // a resting pointer selects, but only one that moved: opening a step reflows the list under a still pointer,
   // and that must not select the step that slid beneath it
@@ -136,7 +150,7 @@ document.querySelectorAll('.fsteps').forEach((list) => {
     tab.addEventListener('click', () => { clearTimeout(timer); pending = tab; select(tab) })
     tab.addEventListener('keydown', (e) => {
       const i = tabs.indexOf(tab)
-      const to = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: tabs.length - 1 }[e.key]
+      const to = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key]
       if (to === undefined) return
       e.preventDefault()
       select(tabs[(to + tabs.length) % tabs.length], true)
