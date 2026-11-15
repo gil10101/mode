@@ -19,3 +19,6 @@ dist/
 # the mode-hook sidecar built by ui/scripts/build-hook.mjs (bundle.externalBin)
 /crates/mode-app/binaries/
 __pycache__/
+# the site as a host serves it (scripts/build-site.mjs), and the Vercel CLI's link to its project
+/.site/
+.vercel

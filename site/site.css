@@ -1110,3 +1110,49 @@ html.has-sheet{overflow:hidden}
 /* The event panel's linked rows (03 §6.6): in the narrow panel the why goes under the title. */
 .r-cdetail .m-task.r-link{display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:8px}
 .r-cdetail .r-link .m-t-meta{grid-column:2;line-height:14px;padding-bottom:2px}
+
+/* ---- the documentation page (site/docs.html): the landing's header and footer around a section list
+   that stays in view and one column of text. The same tokens and faces; the captures are the README's. ---- */
+.docs{display:grid;grid-template-columns:200px minmax(0,1fr);gap:72px;align-items:start;padding-block:56px 96px}
+.docs-nav{position:sticky;top:84px;display:flex;flex-direction:column;gap:20px;max-height:calc(100vh - 108px);overflow:auto;overscroll-behavior:contain;font-family:var(--font-head);scrollbar-width:none}
+.docs-nav h4{margin-bottom:4px;font-size:12px;line-height:16px;font-weight:500;color:var(--m-fg-3)}
+.docs-nav a{display:block;margin-inline:-10px;padding:4px 10px;border-radius:var(--m-r-ctl);font-size:14px;line-height:22px;color:var(--m-fg-2);transition:background-color .08s,color .08s}
+.docs-nav a:hover{background:var(--m-hover);color:var(--m-fg)}
+.docs-nav a:active{background:var(--m-selected)}
+.docs-nav a[aria-current]{background:var(--m-selected);color:var(--m-fg)}
+.docs-nav a:focus-visible{box-shadow:inset 0 0 0 1px var(--m-line-strong)}
+.docs-body{display:flex;flex-direction:column;gap:72px;max-width:760px;min-width:0}
+.docs-body h1{font-size:48px;line-height:52px;font-weight:400}
+.doc{display:flex;flex-direction:column;gap:16px;scroll-margin-top:84px}
+.doc h2{font-size:28px;line-height:34px}
+.doc p,.doc li,.doc dd{color:var(--m-fg-2)}
+.doc strong,.doc dt{color:var(--m-fg);font-weight:500}
+.doc a:not(.btn){color:var(--m-fg);text-decoration:underline;text-decoration-color:var(--m-line-strong);text-underline-offset:3px;transition:text-decoration-color .08s}
+.doc a:not(.btn):hover{text-decoration-color:var(--m-fg)}
+.doc code:not(.install-line){padding:2px 6px;border-radius:var(--m-r-xs);background:var(--m-sunken);color:var(--m-fg)}
+.doc ul,.doc ol{display:flex;flex-direction:column;gap:8px}
+.doc ul > li,.doc ol > li{position:relative;padding-left:22px}
+.doc ul > li::before{content:"";position:absolute;left:6px;top:11px;width:4px;height:4px;border-radius:var(--m-r-pill);background:var(--m-fg-3)}
+.doc ol{counter-reset:step}
+.doc ol > li{counter-increment:step}
+.doc ol > li::before{content:counter(step);position:absolute;left:0;top:0;width:14px;font:500 13px/26px var(--font-head);color:var(--m-fg-3);text-align:right}
+.doc .frame{margin-block:4px}
+.doc .install{align-self:flex-start}
+.doc-note{padding:12px 16px;border-radius:var(--m-r-ctl);background:var(--m-sunken);font-size:14px;line-height:22px}   /* a notice: a sunken ground, no bar on its side (10 §7.4.20) */
+.doc-defs{display:grid;grid-template-columns:max-content minmax(0,1fr);margin:0;border-top:1px solid var(--m-line)}
+.doc-defs dt,.doc-defs dd{margin:0;padding-block:10px;border-bottom:1px solid var(--m-line)}
+.doc-defs dt{padding-right:32px;font-family:var(--font-head)}
+.doc-defs.is-wide{grid-template-columns:minmax(0,5fr) minmax(0,8fr)}
+@media (max-width:900px){
+  .docs{grid-template-columns:minmax(0,1fr);gap:40px;padding-block:40px 64px}
+  .docs-nav{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 32px;max-height:none;padding-bottom:32px;border-bottom:1px solid var(--m-line)}
+  .docs-body{gap:56px}
+  .docs-body h1{font-size:36px;line-height:40px}
+  .doc h2{font-size:24px;line-height:30px}
+}
+@media (max-width:600px){
+  .doc-defs.is-wide{grid-template-columns:minmax(0,1fr)}
+  .doc-defs.is-wide dt{padding-bottom:0;border-bottom:0}
+  .doc-defs.is-wide dd{padding-top:2px}
+}
+@media (prefers-reduced-motion:reduce){.docs-nav a,.doc a{transition:none}}

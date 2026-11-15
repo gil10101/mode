@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mode documentation</title>
+<meta name="description" content="How to install Mode and use it: the notch, sessions, notes, inbox, calendar, Chat, dictation, integrations and privacy.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../assets/logo/final/bot-light-32.png">
+<link rel="icon" href="../assets/logo/final/bot-dark-32.png" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="../assets/logo/final/bot-light-128.png">
+<link rel="stylesheet" href="../docs/wireframes/mode.css">
+<link rel="stylesheet" href="site.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+
+<!-- The marks and icons this page uses, as on the landing page (ui/scripts/check-site.mjs holds them to their sources). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="b-github" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></symbol>
+  <symbol id="i-sessions" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="5" /><path d="M9 11v3M15 11v3" /></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 13h5l2 3h4l2-3h5" /><path d="M5 5h14l2 8v6H3v-6z" /></symbol>
+  <symbol id="i-notes" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z" /><path d="M9 12h6M9 16h4" /></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" /></symbol>
+  <symbol id="i-stats" viewBox="0 0 24 24"><path d="M5 20v-9M12 20V5M19 20v-7" /></symbol>
+  <symbol id="i-agents" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M5 20a7 7 0 0 1 14 0" /><path d="M9 8h.01M15 8h.01" /></symbol>
+  <symbol id="i-automations" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" /><path d="M12 8v4l3 2" /></symbol>
+  <symbol id="i-integrations" viewBox="0 0 24 24"><path d="M9 3v4M15 3v4M6 7h12v4a6 6 0 0 1-12 0z" /><path d="M12 17v4" /></symbol>
+  <symbol id="i-shortcuts" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="11" rx="2" /><path d="M7 11h.01M11 11h.01M15 11h.01M7 14h10" /></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h3M11 7h9M4 12h9M17 12h3M4 17h5M13 17h7" /><circle cx="9" cy="7" r="2" /><circle cx="15" cy="12" r="2" /><circle cx="11" cy="17" r="2" /></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z" /><path d="M15 3v4h4" /></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.5 1.5" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.5-1.5" /></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="m4 20 4-1L19 8l-3-3L5 16z" /><path d="m14 7 3 3" /></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h9" /></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><span>Mode</span></a>
+    <nav class="menu" aria-label="Sections" data-state="closed">
+      <div class="track">
+        <span class="hl" aria-hidden="true"></span>
+        <ul class="items">
+          <li class="item">
+            <button class="trigger" type="button" aria-expanded="false" aria-controls="menu-product">Product<svg class="chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="panel" id="menu-product" style="--pw:620px" inert>
+              <ul class="plist is-two">
+                <li><a href="index.html#does"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-sessions"/></svg></span><span class="ptext"><strong>The notch</strong><span>One pill, the panel on hover</span></span></a></li>
+                <li><a href="index.html#sessions"><span class="art" style="--art:var(--art-2)"><svg class="icon"><use href="#i-agents"/></svg></span><span class="ptext"><strong>Sessions</strong><span>Every agent session, one roster</span></span></a></li>
+                <li><a href="index.html#notes"><span class="art" style="--art:var(--art-3)"><svg class="icon"><use href="#i-notes"/></svg></span><span class="ptext"><strong>Notes</strong><span>A markdown vault with a query bar</span></span></a></li>
+                <li><a href="index.html#inbox"><span class="art" style="--art:var(--art-4)"><svg class="icon"><use href="#i-inbox"/></svg></span><span class="ptext"><strong>Inbox</strong><span>Gmail and Slack, ranked by urgency</span></span></a></li>
+                <li><a href="index.html#inbox"><span class="art" style="--art:var(--art-2)"><svg class="icon"><use href="#i-calendar"/></svg></span><span class="ptext"><strong>Calendar</strong><span>The week, the month, the join link</span></span></a></li>
+                <li><a href="index.html#agents"><span class="art" style="--art:var(--art-4)"><svg class="icon"><use href="#i-automations"/></svg></span><span class="ptext"><strong>Agents and automations</strong><span>Ways of working, on a schedule</span></span></a></li>
+                <li><a href="index.html#window"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-chat"/></svg></span><span class="ptext"><strong>Chat</strong><span>Answers from your own data, cited</span></span></a></li>
+                <li><a href="index.html#window"><span class="art" style="--art:var(--art-3)"><svg class="icon"><use href="#i-stats"/></svg></span><span class="ptext"><strong>Stats</strong><span>Tokens, and a year of activity</span></span></a></li>
+              </ul>
+              <div class="pfoot"><span>Every view, pictured with its sample data.</span><a href="https://github.com/gil10101/mode#a-tour">The tour ↗</a></div>
+            </div>
+          </li>
+          <li class="item">
+            <button class="trigger" type="button" aria-expanded="false" aria-controls="menu-connect">Connect<svg class="chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="panel" id="menu-connect" style="--pw:600px" inert>
+              <div class="pbody">
+                <a class="feature" href="index.html#integrations" style="--art:var(--art-2)"><span class="feature-art" aria-hidden="true"></span><strong>Plugs into what you run</strong><span>Agents · terminals · inbox · providers</span></a>
+                <ul class="plist">
+                  <li><a href="index.html#integrations"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-integrations"/></svg></span><span class="ptext"><strong>Integrations</strong><span>Hooks, your accounts, your keys</span></span></a></li>
+                  <li><a href="index.html#integrations"><span class="art" style="--art:var(--art-3)"><svg class="icon"><use href="#i-settings"/></svg></span><span class="ptext"><strong>AI providers</strong><span>A route per feature, with backups</span></span></a></li>
+                  <li><a href="https://github.com/gil10101/mode_cat"><span class="art" style="--art:var(--art-2)"><svg class="icon"><use href="#i-link"/></svg></span><span class="ptext"><strong>Catalog ↗</strong><span>Packs to install from, on GitHub</span></span></a></li>
+                </ul>
+              </div>
+              <div class="pfoot"><span>Your accounts, keys and notes stay on this machine.</span><a href="#privacy">Privacy</a></div>
+            </div>
+          </li>
+          <li class="item">
+            <button class="trigger" type="button" aria-expanded="false" aria-controls="menu-resources">Resources<svg class="chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="panel" id="menu-resources" style="--pw:620px" inert>
+              <ul class="plist is-two">
+                <li><a href="https://github.com/gil10101/mode"><span class="art" style="--art:var(--art-2)"><svg class="mark"><use href="#b-github"/></svg></span><span class="ptext"><strong>Source code ↗</strong><span>The repository, MIT</span></span></a></li>
+                <li><a href="#install"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-shortcuts"/></svg></span><span class="ptext"><strong>Get started</strong><span>One command installs it</span></span></a></li>
+                <li><a href="#top"><span class="art" style="--art:var(--art-3)"><svg class="icon"><use href="#i-file"/></svg></span><span class="ptext"><strong>Documentation</strong><span>Every view, and how to set it up</span></span></a></li>
+                <li><a href="#troubleshooting"><span class="art" style="--art:var(--art-4)"><svg class="icon"><use href="#i-settings"/></svg></span><span class="ptext"><strong>Troubleshooting</strong><span>First open, permissions, hooks</span></span></a></li>
+              </ul>
+              <div class="pfoot"><span>Alpha. The builds are unsigned for now.</span><a href="#requirements">Requirements</a></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="bar-end">
+      <a class="btn is-small is-mark" href="https://github.com/gil10101/mode" aria-label="Mode on GitHub"><svg class="mark"><use href="#b-github"/></svg></a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Menu"></button>
+    </div>
+  </div>
+  <div class="sheet" id="sheet" hidden>
+    <div class="wrap">
+      <h4>Product</h4>
+      <ul class="plist">
+        <li><a href="index.html#does"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-sessions"/></svg></span><span class="ptext"><strong>The notch</strong><span>One pill, the panel on hover</span></span></a></li>
+        <li><a href="index.html#sessions"><span class="art" style="--art:var(--art-2)"><svg class="icon"><use href="#i-agents"/></svg></span><span class="ptext"><strong>Sessions</strong><span>Every agent session, one roster</span></span></a></li>
+        <li><a href="index.html#notes"><span class="art" style="--art:var(--art-3)"><svg class="icon"><use href="#i-notes"/></svg></span><span class="ptext"><strong>Notes</strong><span>A markdown vault with a query bar</span></span></a></li>
+        <li><a href="index.html#inbox"><span class="art" style="--art:var(--art-4)"><svg class="icon"><use href="#i-inbox"/></svg></span><span class="ptext"><strong>Inbox and calendar</strong><span>Gmail and Slack, ranked by urgency</span></span></a></li>
+        <li><a href="index.html#agents"><span class="art" style="--art:var(--art-4)"><svg class="icon"><use href="#i-automations"/></svg></span><span class="ptext"><strong>Agents and automations</strong><span>Ways of working, on a schedule</span></span></a></li>
+        <li><a href="index.html#window"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-chat"/></svg></span><span class="ptext"><strong>Chat and Stats</strong><span>Answers from your own data, cited</span></span></a></li>
+      </ul>
+      <h4>Connect</h4>
+      <ul class="plist">
+        <li><a href="index.html#integrations"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-integrations"/></svg></span><span class="ptext"><strong>Integrations</strong><span>Hooks, your accounts, your keys</span></span></a></li>
+      </ul>
+      <h4>Resources</h4>
+      <ul class="plist">
+        <li><a href="https://github.com/gil10101/mode"><span class="art" style="--art:var(--art-2)"><svg class="mark"><use href="#b-github"/></svg></span><span class="ptext"><strong>Source code ↗</strong><span>The repository, MIT</span></span></a></li>
+        <li><a href="#install"><span class="art" style="--art:var(--art-1)"><svg class="icon"><use href="#i-shortcuts"/></svg></span><span class="ptext"><strong>Get started</strong><span>One command installs it</span></span></a></li>
+        <li><a href="#top"><span class="art" style="--art:var(--art-3)"><svg class="icon"><use href="#i-file"/></svg></span><span class="ptext"><strong>Documentation</strong><span>Every view, and how to set it up</span></span></a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main id="top" class="wrap docs">
+  <nav class="docs-nav" aria-label="Documentation">
+    <div>
+      <h4>Start</h4>
+      <ul>
+        <li><a href="#install">Install</a></li>
+        <li><a href="#first-run">First run</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>The two surfaces</h4>
+      <ul>
+        <li><a href="#notch">The notch</a></li>
+        <li><a href="#sessions">Sessions</a></li>
+        <li><a href="#notes">Notes</a></li>
+        <li><a href="#inbox">Inbox</a></li>
+        <li><a href="#calendar">Calendar</a></li>
+        <li><a href="#chat">Chat</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>More of it</h4>
+      <ul>
+        <li><a href="#dictation">Dictation and Hey Mode</a></li>
+        <li><a href="#music">Now playing and Music</a></li>
+        <li><a href="#agents">Agents</a></li>
+        <li><a href="#automations">Automations</a></li>
+        <li><a href="#marketplace">Marketplace</a></li>
+        <li><a href="#themes">Themes</a></li>
+        <li><a href="#stats">Stats</a></li>
+        <li><a href="#shortcuts">Shortcuts</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Set up</h4>
+      <ul>
+        <li><a href="#integrations">Integrations</a></li>
+        <li><a href="#providers">AI providers</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="docs-body">
+    <h1>Documentation</h1>
+
+    <section class="doc" id="install">
+      <h2>Install</h2>
+      <p>One command. It fetches the build for this machine from the latest release, checks it against the release's checksum list and installs it.</p>
+      <div class="install">
+        <code class="install-line" id="docs-install-line">curl -fsSL https://<wbr>raw.githubusercontent.com/<wbr>gil10101/<wbr>mode/<wbr>main/<wbr>scripts/<wbr>install.sh | sh</code>
+        <button class="copy" type="button" data-copy="docs-install-line" aria-label="Copy the install command"><svg class="icon is-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon is-check" aria-hidden="true"><use href="#i-check"/></svg></button>
+        <span class="sr-only" aria-live="polite"></span>
+      </div>
+      <ul>
+        <li><strong>macOS.</strong> Mode.app goes into Applications.</li>
+        <li><strong>Linux.</strong> A .deb is installed with dpkg, or an AppImage goes into <code>~/.local/bin</code>.</li>
+        <li><strong>Windows.</strong> The installer runs.</li>
+      </ul>
+      <p>When no release fits the machine, the command builds Mode from source instead. That needs Rust and Node 22 and takes several minutes. During the alpha this can be the case on every machine.</p>
+      <p class="doc-note">The builds are unsigned for now. The first time Mode opens, macOS asks you to confirm it in System Settings, under Privacy &amp; Security; Windows shows a SmartScreen prompt.</p>
+    </section>
+
+    <section class="doc" id="first-run">
+      <h2>First run</h2>
+      <p>Mode opens on a short setup. Every step can be skipped and done later from Settings or Integrations.</p>
+      <ol>
+        <li><strong>Where the overlay lives.</strong> On a MacBook with a notch it is the notch. On any other screen you choose a bar at the top center or a panel on the right edge.</li>
+        <li><strong>Hooks.</strong> Mode shows the exact change it would make to Claude Code's settings file as a diff. Nothing is written until you accept it, and a backup of the file is kept.</li>
+        <li><strong>Notes.</strong> Pick the folder for your notes. The default is <code>~/Mode/Notes</code>.</li>
+        <li><strong>Accounts and AI.</strong> Connect what you use, and choose where Chat gets its answers.</li>
+        <li><strong>Dictation.</strong> Off unless you turn it on.</li>
+      </ol>
+    </section>
+
+    <section class="doc" id="requirements">
+      <h2>Requirements</h2>
+      <ul>
+        <li>macOS 15 Sequoia, Windows 11, or Linux on x86_64.</li>
+        <li>Claude Code, for everything about sessions.</li>
+        <li>A Google account for Gmail and Calendar, and your Slack workspaces for Slack.</li>
+        <li>An API key from a model provider, or a local model, for Chat and urgency scoring.</li>
+      </ul>
+      <p class="doc-note">Mode is in alpha. It has been run on macOS and Linux. The Windows build compiles but has not been tried on a real machine yet. Sign-in for Gmail, Google Calendar and Slack is not switched on in the builds yet.</p>
+    </section>
+
+    <section class="doc" id="notch">
+      <h2>The notch</h2>
+      <figure class="frame"><img src="../assets/readme/overlay.webp" alt="The expanded overlay in the notch: the Sessions tab with a permission card, and tabs for Inbox, Notes, Calendar and Music" width="1600" height="560" loading="lazy"></figure>
+      <p>The overlay sits in the notch and shows one thing: whatever needs you most. It never takes focus from the app you are in, and it never holds a session up.</p>
+      <ul>
+        <li><strong>At rest.</strong> The mascot, and the artwork of the track that is playing.</li>
+        <li><strong>The pill.</strong> When something needs you, the notch grows into one line, chosen by priority: a session waiting on a permission or a question comes first.</li>
+        <li><strong>The panel.</strong> Hover the notch and it opens with tabs for Sessions, Inbox, Notes, Calendar and Music. Allow or deny a permission, answer a question, snooze a message, tick a task, all without leaving your work.</li>
+      </ul>
+      <figure class="frame"><img src="../assets/readme/placements.webp" alt="The overlay as a top-center bar and as a right-edge panel" width="1600" height="620" loading="lazy"></figure>
+      <p>Without a notch the overlay is a bar at the top center of the screen or a panel on its right edge. The placement, what the overlay shows when nothing is happening, and which tab it opens on are in Settings, under Overlay.</p>
+    </section>
+
+    <section class="doc" id="sessions">
+      <h2>Sessions</h2>
+      <figure class="frame"><img src="../assets/readme/hero.webp" alt="The Sessions view with a waiting session open and its permission card" width="1600" height="1000" loading="lazy"></figure>
+      <p>Every Claude Code session on this machine is a row in one roster, whichever terminal it runs in. Mode learns about them through Claude Code's hooks and by reading each session's transcript.</p>
+      <dl class="doc-defs">
+        <dt>working</dt><dd>The agent is running.</dd>
+        <dt>waiting</dt><dd>It needs a permission or an answer from you.</dd>
+        <dt>failed</dt><dd>The last turn ended in an error.</dd>
+        <dt>unread</dt><dd>It finished and you have not looked yet.</dd>
+        <dt>idle</dt><dd>Nothing is happening.</dd>
+        <dt>done</dt><dd>You marked it finished.</dd>
+        <dt>untracked</dt><dd>A session Mode can see but gets no hooks from.</dd>
+      </dl>
+      <ul>
+        <li><strong>Approve from anywhere.</strong> A permission request or a question shows as a card in the notch and in the app window. Answer it there and the session carries on.</li>
+        <li><strong>The session's page.</strong> An overview thread, the files it changed with their diffs, its subagents, and the raw transcript.</li>
+        <li><strong>The terminal.</strong> Sessions that Mode starts or resumes run in a terminal tab inside the window. For the rest, Mode jumps to the terminal they run in.</li>
+        <li><strong>Launch.</strong> Start a session with a folder, an agent, a permission mode and a model.</li>
+        <li><strong>Usage.</strong> A gauge of tokens and turns on every session.</li>
+      </ul>
+    </section>
+
+    <section class="doc" id="notes">
+      <h2>Notes</h2>
+      <figure class="frame"><img src="../assets/readme/notes.webp" alt="The Notes view: saved views on the left, notes grouped by status, the query bar underneath" width="1600" height="1000" loading="lazy"></figure>
+      <p>Notes are markdown files in a folder you choose. Mode indexes them; the files stay yours and open in any editor.</p>
+      <ul>
+        <li><strong>Tasks.</strong> A note can carry a status (Todo, Doing, Done), an urgent flag, a when (today, tomorrow, a date) and tags.</li>
+        <li><strong>Views.</strong> Group notes and save the grouping as a view. The board shows the same notes as columns by status.</li>
+        <li><strong>The query bar.</strong> Ask in plain words, such as "urgent tasks for today". Each phrase Mode understood becomes a chip, and the answer floats over the view as cards.</li>
+        <li><strong>Quick capture.</strong> Write a note from anywhere, without opening the window.</li>
+        <li><strong>Links.</strong> A note can be tied to the session and the messages it belongs to.</li>
+      </ul>
+    </section>
+
+    <section class="doc" id="inbox">
+      <h2>Inbox</h2>
+      <figure class="frame"><img src="../assets/readme/inbox.webp" alt="The Inbox view: Gmail and Slack messages ranked by urgency, each with a one-line reason" width="1600" height="1000" loading="lazy"></figure>
+      <p>Gmail and Slack in one list, ranked by how much each message needs you. Several accounts of each, and only the Slack channels you choose.</p>
+      <ul>
+        <li><strong>Ranking.</strong> People you marked as important and direct messages come first. The rest is scored by the model you chose, with one line that says why.</li>
+        <li><strong>Triage.</strong> Snooze, archive, mark read, or open the message where it lives. Replies are written in Gmail or Slack, not in Mode.</li>
+        <li><strong>Alerts.</strong> Rules decide what makes a sound or a notification. Quiet hours hold those back; the list itself keeps updating.</li>
+      </ul>
+    </section>
+
+    <section class="doc" id="calendar">
+      <h2>Calendar</h2>
+      <figure class="frame"><img src="../assets/readme/calendar.webp" alt="The Calendar view: the week with the next event's join link, and the agenda for today and tomorrow" width="1600" height="1000" loading="lazy"></figure>
+      <p>Google Calendar as a week and a month, with the agenda for today and tomorrow beside it. The next events are in the notch, with the join link when a meeting has one.</p>
+    </section>
+
+    <section class="doc" id="chat">
+      <h2>Chat</h2>
+      <figure class="frame"><img src="../assets/readme/chat.webp" alt="The Chat view: an answer with citations to notes and sessions" width="1600" height="1000" loading="lazy"></figure>
+      <p>An assistant that answers from your own notes, sessions, messages and calendar. Every answer cites what it read, and a citation opens the note, the session or the thread.</p>
+      <ul>
+        <li><strong>Actions.</strong> It can also act inside Mode for you, not only answer.</li>
+        <li><strong>Where answers come from.</strong> A provider you add with your own key, or a model running on this machine. See <a href="#providers">AI providers</a>.</li>
+        <li><strong>History.</strong> Conversations are kept for 90 days unless you change that in Settings, under Chat.</li>
+      </ul>
+    </section>
+
+    <section class="doc" id="dictation">
+      <h2>Dictation and Hey Mode</h2>
+      <figure class="frame"><img src="../assets/readme/reply.webp" alt="The notch grown into a reply card: today's three tasks with citation chips, and Open in Chat, Copy and Dismiss" width="1600" height="560" loading="lazy"></figure>
+      <p>Hold the dictation key, speak, release. The words are typed into the Mode field you are in, or captured as a note when no field has focus.</p>
+      <ul>
+        <li><strong>On this machine.</strong> Speech is turned into text here, by a model Mode downloads once (57 MB). The audio never leaves the device.</li>
+        <li><strong>Hey Mode.</strong> Start with "Hey Mode" and the rest goes to Chat as a request.</li>
+        <li><strong>The reply card.</strong> Ask while another app is in front and the answer streams into the notch, with its citations and buttons to open it in Chat, copy it or dismiss it. The card closes on its own after 20 seconds.</li>
+      </ul>
+      <p>Dictation is off until you turn it on in Settings, under Dictation. The key is set in the Shortcuts view.</p>
+    </section>
+
+    <section class="doc" id="music">
+      <h2>Now playing and Music</h2>
+      <figure class="frame"><img src="../assets/readme/music.webp" alt="The expanded overlay in the notch on the Music tab: recently played tracks and albums with their artwork" width="1600" height="560" loading="lazy"></figure>
+      <p>The track your player is on shows under the overlay's header with previous, play or pause, and next. Its artwork sits on the resting notch while it plays.</p>
+      <ul>
+        <li><strong>Read locally.</strong> Mode asks the player on this machine. It never signs in to a streaming account.</li>
+        <li><strong>The Music tab.</strong> The tracks and albums Mode saw playing here, newest first. A click plays one again in the player it came from.</li>
+        <li><strong>History.</strong> A track is recorded after ten seconds of play. Mode keeps 90 days or 500 plays, on this device only; Settings, under Overlay, clears it.</li>
+      </ul>
+      <p class="doc-note">On macOS this works with Spotify and Music, and macOS asks once whether Mode may control the player. Windows and Linux support is written but not yet tested.</p>
+    </section>
+
+    <section class="doc" id="agents">
+      <h2>Agents</h2>
+      <figure class="frame"><img src="../assets/readme/profiles.webp" alt="An agent profile: model and effort, backup models, instructions and memories" width="1600" height="1000" loading="lazy"></figure>
+      <p>An agent is a way of working that a session is launched as: a model and an effort level, backup models for when the first is unavailable, instructions, memories read at every start, and the tools and rules it runs under.</p>
+    </section>
+
+    <section class="doc" id="automations">
+      <h2>Automations</h2>
+      <figure class="frame"><img src="../assets/readme/automations.webp" alt="The Automations view: scheduled runs and their run history" width="1600" height="1000" loading="lazy"></figure>
+      <p>An automation runs on a schedule, such as weekdays at 08:00, and either starts a session or asks Chat for you. Every run is kept in its history with what it did.</p>
+    </section>
+
+    <section class="doc" id="marketplace">
+      <h2>Marketplace</h2>
+      <figure class="frame"><img src="../assets/readme/marketplace.webp" alt="The Marketplace catalog of packs" width="1600" height="1000" loading="lazy"></figure>
+      <p>Agents, automations and themes travel as packs: plain JSON files. Export one from any row, import one with a preview of what it adds, or install from the <a href="https://github.com/gil10101/mode_cat">catalog</a>. There is no account and no payment.</p>
+    </section>
+
+    <section class="doc" id="themes">
+      <h2>Themes</h2>
+      <figure class="frame"><img src="../assets/readme/themes.webp" alt="Three windows in Paper, Catppuccin Mocha and Nord" width="1600" height="1000" loading="lazy"></figure>
+      <p>Mode follows the system's light or dark appearance by default. Paper is built in, and Gruvbox, Nord and Catppuccin Mocha come as packs. A theme is a JSON file of colors, so you can write and import your own. The window and the overlay change together.</p>
+    </section>
+
+    <section class="doc" id="stats">
+      <h2>Stats</h2>
+      <figure class="frame"><img src="../assets/readme/stats.webp" alt="Stats: the week's metrics, a year of activity as a contribution graph, and the breakdown by model" width="1600" height="1000" loading="lazy"></figure>
+      <p>Tokens, sessions and files for the week, spend at list price, a year of activity as a grid of days, and the breakdown by model, agent and day.</p>
+    </section>
+
+    <section class="doc" id="shortcuts">
+      <h2>Shortcuts</h2>
+      <figure class="frame"><img src="../assets/readme/shortcuts.webp" alt="The Shortcuts view listing every key" width="1600" height="1000" loading="lazy"></figure>
+      <p>The Shortcuts view is the one place every key is listed, and where each is changed. The set can be exported and imported as a file. The command palette reaches every view, session, note and action by typing a few letters.</p>
+    </section>
+
+    <section class="doc" id="integrations">
+      <h2>Integrations</h2>
+      <figure class="frame"><img src="../assets/readme/integrations.webp" alt="The Integrations view: Claude Code hooks, Gmail, Slack, Google Calendar, the AI backends and the Marketplace, each with its health" width="1600" height="1000" loading="lazy"></figure>
+      <p>One card per connection, each with its health.</p>
+      <ul>
+        <li><strong>Claude Code.</strong> Install, update or uninstall the hooks. Each change is shown as a diff first, your other hooks are left as they are, and a backup of the settings file is kept. A test sends one event through to prove the round trip.</li>
+        <li><strong>Gmail, Google Calendar, Slack.</strong> Sign in with each account; several of each are fine.</li>
+        <li><strong>Marketplace.</strong> The catalog of packs to install from.</li>
+      </ul>
+    </section>
+
+    <section class="doc" id="providers">
+      <h2>AI providers</h2>
+      <figure class="frame"><img src="../assets/readme/backends.webp" alt="The AI backends panel: providers, a route per feature, and fallbacks" width="1600" height="1000" loading="lazy"></figure>
+      <p>Chat, urgency scoring and the query bar each run on a provider you choose.</p>
+      <ul>
+        <li><strong>Hosted.</strong> The Claude API with your own key, any endpoint that speaks the same protocol, or any OpenAI-compatible endpoint.</li>
+        <li><strong>Local.</strong> A model served on this machine by Ollama or LM Studio.</li>
+        <li><strong>Routes.</strong> Each feature has its own route, with backups for when the first provider is down.</li>
+        <li><strong>Local only.</strong> One switch keeps every AI feature on local models, so nothing is sent to a hosted provider.</li>
+      </ul>
+    </section>
+
+    <section class="doc" id="privacy">
+      <h2>Privacy</h2>
+      <ul>
+        <li><strong>Stored on this machine.</strong> Sessions, messages and settings live in a local database; notes are files in your folder. Mode has no server and no account.</li>
+        <li><strong>No telemetry.</strong> Mode reports nothing about you or how you use it.</li>
+        <li><strong>Secrets.</strong> API keys and sign-in tokens are kept in the operating system's keychain, not in files.</li>
+        <li><strong>What leaves the device.</strong> Requests to the services you connect, and the text an AI feature sends to the provider you chose for it. Settings, under Privacy, lists this per connection and per feature, next to the local-only switch.</li>
+        <li><strong>Audio.</strong> Dictation is transcribed on this machine; the audio never leaves it.</li>
+        <li><strong>Retention.</strong> How long sessions, messages and conversations are kept is set in Settings.</li>
+        <li><strong>Your data out.</strong> Export and import are in Settings, under Advanced.</li>
+      </ul>
+    </section>
+
+    <section class="doc" id="troubleshooting">
+      <h2>Troubleshooting</h2>
+      <dl class="doc-defs is-wide">
+        <dt>macOS will not open Mode</dt><dd>The build is unsigned. Open System Settings, Privacy &amp; Security, and confirm Mode there once.</dd>
+        <dt>Windows shows SmartScreen</dt><dd>Choose More info, then Run anyway.</dd>
+        <dt>Sessions do not appear</dt><dd>Open Integrations, Claude Code. If the hooks are missing, install them; then run the test.</dd>
+        <dt>Dictation hears nothing</dt><dd>Allow Mode under System Settings, Privacy &amp; Security, Microphone, then hold the key again.</dd>
+        <dt>Now playing stays empty</dt><dd>macOS asks once whether Mode may control the player. If that was refused, allow it under Privacy &amp; Security, Automation.</dd>
+        <dt>Hey Mode answers with an error</dt><dd>Chat has no provider yet. Add one under Integrations, AI backends.</dd>
+        <dt>The overlay is in the wrong place</dt><dd>Change its placement in Settings, under Overlay.</dd>
+      </dl>
+      <p>Logs and a diagnostics page are in Settings, under Advanced. Problems and ideas go to the <a href="https://github.com/gil10101/mode/issues">issue tracker</a>.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="band">
+  <div class="wrap foot meta">
+    <span>Mode · Tauri 2 and Rust · alpha</span>
+  </div>
+</footer>
+
+</body>
+</html>

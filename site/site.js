@@ -1,4 +1,4 @@
-// The landing page's one script (site/index.html): the header's scrolled state, the three menus
+// The site's one script (site/index.html, site/docs.html): the header's scrolled state, the three menus
 // (hover with intent, click, keyboard; one open at a time; Escape and focus-out close) and the
 // phone sheet behind the menu button; then the step lists of the feature sections, which swap the render, the
 // fit of each render to its pane, and the small interactions inside the renders; and the hero's copy button.
@@ -290,3 +290,25 @@ document.querySelectorAll('[data-copy]').forEach((button) => {
     timer = setTimeout(() => { button.classList.remove('is-done'); live.textContent = '' }, 1600)
   })
 })
+
+/* ---- the documentation page's section list (site/docs.html): the entry of the section being read is marked,
+   so the list says where the reader is. Nothing happens on a page without the list. ---- */
+{
+  const links = [...document.querySelectorAll('.docs-nav a[href^="#"]')]
+  const sections = links.map((a) => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean)
+  if (sections.length) {
+    const mark = () => {
+      // the last section whose top has passed under the header; at the page's end, the last one
+      let current = sections[0]
+      for (const sec of sections) if (sec.getBoundingClientRect().top <= 120) current = sec
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) current = sections[sections.length - 1]
+      for (const a of links) {
+        if (a.getAttribute('href') === `#${current.id}`) a.setAttribute('aria-current', 'location')
+        else a.removeAttribute('aria-current')
+      }
+    }
+    addEventListener('scroll', mark, { passive: true })
+    addEventListener('resize', mark)
+    mark()
+  }
+}
